@@ -42,7 +42,7 @@ const services = {
       { id: 'body-sculpt', name: 'Cryo Body Sculpting', duration: '30-60 min/area', price: 300, icon: Sparkles },
       { id: 'facial', name: 'Cryo Facial (Frotox)', duration: '20-30 min', price: 125, icon: Heart },
       { id: 'scalp', name: 'Scalp & Hair Therapy', duration: '20-30 min', price: 125, icon: Sparkles },
-      { id: 'skin', name: 'Skin Health / Tattoo Brightening', duration: '20-30 min', price: 100, icon: Sparkles }
+      { id: 'scalp', name: 'Scalp & Hair Therapy', duration: '20-30 min', price: 125, icon: Sparkles }
     ]
   },
   packages: {
