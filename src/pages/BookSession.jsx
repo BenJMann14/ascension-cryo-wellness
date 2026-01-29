@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import AddressValidator from '@/components/booking/AddressValidator';
@@ -19,6 +19,23 @@ export default function BookSession() {
     services: []
   });
   const [paymentData, setPaymentData] = useState(null);
+
+  // Check for Stripe return
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    const success = urlParams.get('success');
+    
+    if (success && sessionId) {
+      // Payment successful, show confirmation
+      const confirmationNumber = 'ASC-' + sessionId.slice(-8).toUpperCase();
+      setPaymentData({
+        confirmationNumber,
+        sessionId
+      });
+      setCurrentStep(5); // Jump to confirmation step
+    }
+  }, []);
 
   const handleAddressValidated = (data) => {
     setBookingData(prev => ({ ...prev, addressData: data }));

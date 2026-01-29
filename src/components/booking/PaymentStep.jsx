@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import { base44 } from '@/api/base44Client';
 import { 
   CreditCard, 
   Lock, 
@@ -11,7 +12,8 @@ import {
   Clock,
   MapPin,
   User,
-  ShoppingCart
+  ShoppingCart,
+  AlertCircle
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,59 +23,41 @@ import { Button } from "@/components/ui/button";
 
 export default function PaymentStep({ bookingData, onSubmit, onBack }) {
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [cardData, setCardData] = useState({
-    number: '',
-    expiry: '',
-    cvc: '',
-    name: ''
-  });
+  const [error, setError] = useState(null);
 
   const { addressData, calendarData, customerData, services } = bookingData;
 
   const totalPrice = services.reduce((sum, s) => sum + s.price, 0);
 
-  const formatCardNumber = (value) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
-    const parts = [];
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-    return parts.length ? parts.join(' ') : value;
-  };
-
-  const formatExpiry = (value) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    if (v.length >= 2) {
-      return v.slice(0, 2) + '/' + v.slice(2, 4);
-    }
-    return v;
-  };
-
-  const handleCardChange = (field, value) => {
-    let formattedValue = value;
-    if (field === 'number') formattedValue = formatCardNumber(value);
-    if (field === 'expiry') formattedValue = formatExpiry(value);
-    if (field === 'cvc') formattedValue = value.replace(/\D/g, '').slice(0, 4);
-    setCardData(prev => ({ ...prev, [field]: formattedValue }));
-  };
-
-  const handleSubmit = async () => {
+  const handleCheckout = async () => {
     setIsProcessing(true);
+    setError(null);
     
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // In production, this would integrate with Stripe
-    const confirmationNumber = 'ASC-' + Date.now().toString(36).toUpperCase();
-    
-    onSubmit({
-      confirmationNumber,
-      paymentMethod,
-      totalPaid: totalPrice
-    });
+    try {
+      // Check if running in iframe (preview mode)
+      if (window.self !== window.top) {
+        setError('Payment checkout is only available from the published app. Please open this app in a new tab to complete your booking.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const { data } = await base44.functions.invoke('createCheckoutSession', {
+        services,
+        bookingData,
+        origin: window.location.origin
+      });
+
+      if (data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setError(err.message || 'Failed to initiate checkout. Please try again.');
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -157,123 +141,85 @@ export default function PaymentStep({ bookingData, onSubmit, onBack }) {
 
         {/* Payment Form */}
         <GlassCard className="p-6 order-1 lg:order-2">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Payment Method</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Secure Payment</h3>
           
-          {/* Payment Method Selection */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {[
-              { id: 'card', label: 'Credit Card', icon: '💳' },
-              { id: 'apple', label: 'Apple Pay', icon: '' },
-              { id: 'google', label: 'Google Pay', icon: '🅖' },
-              { id: 'paypal', label: 'PayPal', icon: '🅿️' }
-            ].map(method => (
-              <button
-                key={method.id}
-                onClick={() => setPaymentMethod(method.id)}
-                className={`
-                  p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2 text-sm font-medium
-                  ${paymentMethod === method.id 
-                    ? 'border-cyan-500 bg-cyan-50 text-cyan-700' 
-                    : 'border-slate-200 hover:border-slate-300 text-slate-600'
-                  }
-                `}
-              >
-                <span>{method.icon}</span>
-                {method.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Card Form */}
-          {paymentMethod === 'card' && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-4"
-            >
-              <div className="space-y-2">
-                <Label htmlFor="cardName">Cardholder Name</Label>
-                <Input
-                  id="cardName"
-                  value={cardData.name}
-                  onChange={(e) => handleCardChange('name', e.target.value)}
-                  placeholder="John Doe"
-                  className="h-12"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cardNumber">Card Number</Label>
-                <div className="relative">
-                  <Input
-                    id="cardNumber"
-                    value={cardData.number}
-                    onChange={(e) => handleCardChange('number', e.target.value)}
-                    placeholder="4242 4242 4242 4242"
-                    maxLength={19}
-                    className="h-12 pl-12"
-                  />
-                  <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <div className="space-y-4">
+            <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-4 border border-cyan-200">
+              <div className="flex items-start gap-3">
+                <Lock className="w-5 h-5 text-cyan-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-slate-900 mb-1">Powered by Stripe</h4>
+                  <p className="text-sm text-slate-600">
+                    Your payment is processed securely through Stripe. We support all major credit cards, Apple Pay, Google Pay, and more.
+                  </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="expiry">Expiry Date</Label>
-                  <Input
-                    id="expiry"
-                    value={cardData.expiry}
-                    onChange={(e) => handleCardChange('expiry', e.target.value)}
-                    placeholder="MM/YY"
-                    maxLength={5}
-                    className="h-12"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cvc">CVC</Label>
-                  <Input
-                    id="cvc"
-                    value={cardData.cvc}
-                    onChange={(e) => handleCardChange('cvc', e.target.value)}
-                    placeholder="123"
-                    maxLength={4}
-                    className="h-12"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Other payment methods placeholder */}
-          {paymentMethod !== 'card' && (
-            <div className="text-center py-8 text-slate-500">
-              <p>You'll be redirected to complete payment with {paymentMethod === 'apple' ? 'Apple Pay' : paymentMethod === 'google' ? 'Google Pay' : 'PayPal'}</p>
             </div>
-          )}
 
-          {/* Security Note */}
-          <div className="flex items-center gap-2 text-sm text-slate-500 mt-6">
-            <Lock className="w-4 h-4" />
-            <span>Your payment is secured with 256-bit SSL encryption</span>
-          </div>
-
-          {/* Submit Button */}
-          <GradientButton
-            onClick={handleSubmit}
-            disabled={isProcessing}
-            className="w-full mt-6"
-            size="lg"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Lock className="w-5 h-5" />
-                Pay ${totalPrice} & Confirm Booking
-              </>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-50 border border-red-200 rounded-xl p-4"
+              >
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-red-900 mb-1">Payment Error</h4>
+                    <p className="text-sm text-red-700">{error}</p>
+                  </div>
+                </div>
+              </motion.div>
             )}
-          </GradientButton>
+
+            <div className="bg-slate-50 rounded-xl p-4">
+              <h4 className="font-medium text-slate-900 mb-2">What happens next?</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-cyan-600" />
+                  You'll be redirected to Stripe's secure checkout
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-cyan-600" />
+                  Complete payment with your preferred method
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-cyan-600" />
+                  Receive instant confirmation & booking details
+                </li>
+              </ul>
+            </div>
+
+            {/* Security Note */}
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <Lock className="w-4 h-4" />
+              <span>Your payment is secured with 256-bit SSL encryption</span>
+            </div>
+
+            {/* Submit Button */}
+            <GradientButton
+              onClick={handleCheckout}
+              disabled={isProcessing}
+              className="w-full"
+              size="lg"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Redirecting to Stripe...
+                </>
+              ) : (
+                <>
+                  <Lock className="w-5 h-5" />
+                  Continue to Payment - ${totalPrice}
+                </>
+              )}
+            </GradientButton>
+
+            <p className="text-xs text-center text-slate-500">
+              By clicking continue, you agree to our cancellation policy
+            </p>
+          </div>
         </GlassCard>
       </div>
 
