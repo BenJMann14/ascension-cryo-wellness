@@ -303,7 +303,6 @@ function ServiceCard({ service, isExpanded, onToggle }) {
                 <span>{service.duration}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-slate-500">
-                <DollarSign className="w-4 h-4" />
                 <span>From ${Math.min(...service.pricing.map(p => p.price))}</span>
               </div>
             </div>
