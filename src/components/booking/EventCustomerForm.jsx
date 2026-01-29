@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   User, 
   Mail, 
-  Phone, 
-  MapPin,
+  Phone,
   ArrowLeft,
   CheckCircle2,
   Shield
@@ -22,9 +21,6 @@ export default function EventCustomerForm({ onSubmit, onBack }) {
     lastName: '',
     email: '',
     phone: '',
-    address: '',
-    city: '',
-    zip: '',
     waiverAccepted: false,
     marketingOptIn: false
   });
@@ -53,9 +49,6 @@ export default function EventCustomerForm({ onSubmit, onBack }) {
     } else if (!/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(formData.phone)) {
       newErrors.phone = 'Invalid phone number';
     }
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
-    if (!formData.city.trim()) newErrors.city = 'City is required';
-    if (!formData.zip.trim()) newErrors.zip = 'ZIP code is required';
     if (!formData.waiverAccepted) newErrors.waiver = 'You must accept the waiver to continue';
 
     setErrors(newErrors);
@@ -76,12 +69,6 @@ export default function EventCustomerForm({ onSubmit, onBack }) {
         email: formData.email,
         phone: formData.phone,
         marketingOptIn: formData.marketingOptIn
-      },
-      addressData: {
-        address: formData.address,
-        city: formData.city,
-        zip: formData.zip,
-        fullAddress: `${formData.address}, ${formData.city}, TX ${formData.zip}`
       }
     });
   };
@@ -168,58 +155,6 @@ export default function EventCustomerForm({ onSubmit, onBack }) {
             {errors.phone && (
               <p className="text-sm text-red-600">{errors.phone}</p>
             )}
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-6 mb-6">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-cyan-600" />
-            Event Location
-          </h3>
-          
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="address">Street Address *</Label>
-              <Input
-                id="address"
-                value={formData.address}
-                onChange={(e) => handleChange('address', e.target.value)}
-                placeholder="123 Main St"
-                className={errors.address ? 'border-red-500' : ''}
-              />
-              {errors.address && (
-                <p className="text-sm text-red-600">{errors.address}</p>
-              )}
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => handleChange('city', e.target.value)}
-                  placeholder="San Antonio"
-                  className={errors.city ? 'border-red-500' : ''}
-                />
-                {errors.city && (
-                  <p className="text-sm text-red-600">{errors.city}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="zip">ZIP Code *</Label>
-                <Input
-                  id="zip"
-                  value={formData.zip}
-                  onChange={(e) => handleChange('zip', e.target.value)}
-                  placeholder="78201"
-                  className={errors.zip ? 'border-red-500' : ''}
-                />
-                {errors.zip && (
-                  <p className="text-sm text-red-600">{errors.zip}</p>
-                )}
-              </div>
-            </div>
           </div>
         </GlassCard>
 

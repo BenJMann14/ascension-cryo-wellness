@@ -41,8 +41,7 @@ export default function EventBookingFlow() {
   const handleCustomerInfo = (data) => {
     setBookingData(prev => ({ 
       ...prev, 
-      customerData: data.customerData,
-      addressData: data.addressData
+      customerData: data.customerData
     }));
     setCurrentStep(2);
   };
