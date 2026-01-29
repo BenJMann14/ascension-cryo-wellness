@@ -67,7 +67,7 @@ const services = {
   }
 };
 
-export default function ServiceSelector({ onSubmit, onBack }) {
+export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, totalSteps = 5 }) {
   const [selectedServices, setSelectedServices] = useState([]);
   const [activeCategory, setActiveCategory] = useState('recovery');
 

@@ -35,7 +35,7 @@ const services = [
   },
   {
     icon: Zap,
-    name: 'Complete Recovery',
+    name: 'Complete Recovery Stack',
     description: 'Cryo + Compression + Red Light',
     duration: '35-40 min',
     price: 140,

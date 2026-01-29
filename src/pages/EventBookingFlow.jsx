@@ -93,6 +93,8 @@ export default function EventBookingFlow() {
               <ServiceSelector 
                 onSubmit={handleServicesSelect}
                 onBack={() => window.history.back()}
+                currentStep={1}
+                totalSteps={3}
               />
             )}
             {currentStep === 1 && (
