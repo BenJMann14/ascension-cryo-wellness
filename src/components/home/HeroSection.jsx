@@ -84,20 +84,20 @@ export default function HeroSection() {
             </div>
 
             {/* Trust indicators */}
-            <div className="mt-12 flex items-center gap-8">
+            <div className="mt-12 flex items-center gap-4 sm:gap-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-slate-900">5-60</div>
-                <div className="text-sm text-slate-500">Min Sessions</div>
+                <div className="text-xl sm:text-3xl font-bold text-slate-900">5-60 min</div>
+                <div className="text-xs sm:text-sm text-slate-500">Sessions</div>
               </div>
-              <div className="w-px h-12 bg-slate-200" />
+              <div className="w-px h-10 sm:h-12 bg-slate-200" />
               <div className="text-center">
-                <div className="text-3xl font-bold text-slate-900">60mi</div>
-                <div className="text-sm text-slate-500">Service Radius</div>
+                <div className="text-xl sm:text-3xl font-bold text-slate-900">60 mi</div>
+                <div className="text-xs sm:text-sm text-slate-500">Service Radius</div>
               </div>
-              <div className="w-px h-12 bg-slate-200" />
+              <div className="w-px h-10 sm:h-12 bg-slate-200" />
               <div className="text-center">
-                <div className="text-3xl font-bold text-slate-900">100%</div>
-                <div className="text-sm text-slate-500">Mobile</div>
+                <div className="text-xl sm:text-3xl font-bold text-slate-900">100%</div>
+                <div className="text-xs sm:text-sm text-slate-500">Mobile</div>
               </div>
             </div>
           </motion.div>

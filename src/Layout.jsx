@@ -62,7 +62,7 @@ export default function Layout({ children, currentPageName }) {
                 <span className={`text-xl font-bold ${isScrolled || !isHomePage ? 'text-slate-900' : 'text-slate-900'}`}>
                   Ascension
                 </span>
-                <span className="hidden sm:inline text-xs text-slate-500 block -mt-1">Cryo & Wellness</span>
+                <span className="hidden sm:inline text-xs text-slate-500 block mt-0.5">Cryo & Wellness</span>
               </div>
             </Link>
 
@@ -164,7 +164,7 @@ export default function Layout({ children, currentPageName }) {
                 </div>
                 <div>
                   <span className="text-xl font-bold">Ascension</span>
-                  <span className="text-xs text-slate-400 block">Cryo & Wellness</span>
+                  <span className="text-xs text-slate-400 block mt-0.5">Cryo & Wellness</span>
                 </div>
               </div>
               <p className="text-slate-400 mb-4 text-sm leading-relaxed">

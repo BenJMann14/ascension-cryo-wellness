@@ -19,40 +19,75 @@ export default function ServiceAreaSection() {
             className="relative"
           >
             <div className="relative aspect-square max-w-lg mx-auto">
-              {/* Circular service area visualization */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                {/* Outer ring - 60 mile radius */}
-                <motion.div 
-                  className="absolute w-full h-full rounded-full border-2 border-dashed border-cyan-300 opacity-50"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-                />
+              {/* Map background with San Antonio area */}
+              <div className="absolute inset-0 rounded-3xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-xl">
+                {/* Stylized map roads */}
+                <svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 400">
+                  {/* Major highways */}
+                  <path d="M0,200 Q100,180 200,200 T400,200" stroke="#64748b" strokeWidth="3" fill="none" />
+                  <path d="M200,0 Q220,100 200,200 T200,400" stroke="#64748b" strokeWidth="3" fill="none" />
+                  <path d="M50,50 Q200,150 350,50" stroke="#64748b" strokeWidth="2" fill="none" />
+                  <path d="M50,350 Q200,250 350,350" stroke="#64748b" strokeWidth="2" fill="none" />
+                  <path d="M100,100 L300,300" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
+                  <path d="M300,100 L100,300" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
+                  {/* Loop 410 representation */}
+                  <circle cx="200" cy="200" r="60" stroke="#64748b" strokeWidth="2" fill="none" />
+                  {/* Loop 1604 representation */}
+                  <circle cx="200" cy="200" r="100" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="5,5" />
+                </svg>
                 
-                {/* Middle ring */}
-                <div className="absolute w-3/4 h-3/4 rounded-full border border-cyan-200 opacity-40" />
+                {/* Area labels */}
+                <div className="absolute top-[15%] left-[25%] text-[10px] text-slate-500 font-medium">Helotes</div>
+                <div className="absolute top-[20%] right-[20%] text-[10px] text-slate-500 font-medium">Stone Oak</div>
+                <div className="absolute bottom-[25%] left-[15%] text-[10px] text-slate-500 font-medium">Alamo Heights</div>
+                <div className="absolute bottom-[20%] right-[25%] text-[10px] text-slate-500 font-medium">Converse</div>
+                <div className="absolute top-[45%] right-[10%] text-[10px] text-slate-500 font-medium">Schertz</div>
+                <div className="absolute bottom-[35%] left-[35%] text-[10px] text-slate-500 font-medium">San Antonio</div>
                 
-                {/* Inner area */}
-                <div className="absolute w-1/2 h-1/2 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 opacity-60" />
-                
-                {/* Center point - San Antonio */}
-                <div className="relative">
+                {/* Service radius circle */}
+                <div className="absolute inset-0 flex items-center justify-center">
                   <motion.div 
-                    className="w-6 h-6 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute w-[85%] h-[85%] rounded-full border-2 border-dashed border-cyan-400 opacity-60"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
                   />
-                  <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                    <span className="px-3 py-1 bg-slate-900 text-white text-sm rounded-full font-medium">
-                      Leon Valley / San Antonio
-                    </span>
+                  
+                  {/* Fill for service area */}
+                  <div className="absolute w-[85%] h-[85%] rounded-full bg-gradient-to-br from-cyan-400/10 to-blue-500/10" />
+                  
+                  {/* Leon Valley marker */}
+                  <div className="absolute" style={{ top: '42%', left: '38%' }}>
+                    <motion.div 
+                      className="relative"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full shadow-lg shadow-cyan-500/40 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-white rounded-full" />
+                      </div>
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-blue-600" />
+                    </motion.div>
+                    <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                      <span className="px-3 py-1.5 bg-slate-900 text-white text-xs rounded-full font-semibold shadow-lg">
+                        Leon Valley
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* 60 mile label */}
-              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
+              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg border border-slate-200">
                 <span className="text-2xl font-bold text-cyan-600">60</span>
                 <span className="text-sm text-slate-600 ml-1">mile radius</span>
+              </div>
+              
+              {/* Map legend */}
+              <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg border border-slate-200">
+                <div className="flex items-center gap-2 text-xs text-slate-600">
+                  <div className="w-3 h-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full" />
+                  <span>Service Area</span>
+                </div>
               </div>
             </div>
           </motion.div>
