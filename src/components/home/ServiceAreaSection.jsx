@@ -20,29 +20,36 @@ export default function ServiceAreaSection() {
           >
             <div className="relative aspect-square max-w-lg mx-auto">
               {/* Map background with San Antonio area */}
-              <div className="absolute inset-0 rounded-3xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-xl">
-                {/* Stylized map roads */}
-                <svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 400">
-                  {/* Major highways */}
-                  <path d="M0,200 Q100,180 200,200 T400,200" stroke="#64748b" strokeWidth="3" fill="none" />
-                  <path d="M200,0 Q220,100 200,200 T200,400" stroke="#64748b" strokeWidth="3" fill="none" />
-                  <path d="M50,50 Q200,150 350,50" stroke="#64748b" strokeWidth="2" fill="none" />
-                  <path d="M50,350 Q200,250 350,350" stroke="#64748b" strokeWidth="2" fill="none" />
-                  <path d="M100,100 L300,300" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
-                  <path d="M300,100 L100,300" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
-                  {/* Loop 410 representation */}
-                  <circle cx="200" cy="200" r="60" stroke="#64748b" strokeWidth="2" fill="none" />
-                  {/* Loop 1604 representation */}
-                  <circle cx="200" cy="200" r="100" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="5,5" />
+              <div className="absolute inset-0 rounded-3xl overflow-hidden bg-gradient-to-br from-teal-900 via-emerald-800 to-teal-800 shadow-xl">
+                {/* Stylized map roads based on reference */}
+                <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 400 400">
+                  {/* I-10 (horizontal across) */}
+                  <path d="M0,240 L400,240" stroke="#e2e8f0" strokeWidth="2.5" fill="none" />
+                  {/* I-35 (vertical north-south) */}
+                  <path d="M280,0 L280,400" stroke="#e2e8f0" strokeWidth="2.5" fill="none" />
+                  {/* Loop 410 (inner loop) */}
+                  <ellipse cx="220" cy="220" rx="85" ry="90" stroke="#cbd5e1" strokeWidth="2" fill="none" />
+                  {/* Loop 1604 (outer loop) */}
+                  <ellipse cx="220" cy="220" rx="150" ry="155" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="4,3" />
+                  {/* Highway 90 */}
+                  <path d="M50,320 Q200,300 350,340" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
+                  {/* Highway 281 */}
+                  <path d="M220,0 Q230,200 240,400" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
+                  {/* Highway 151 */}
+                  <path d="M0,200 L200,220" stroke="#94a3b8" strokeWidth="1.5" fill="none" />
                 </svg>
                 
-                {/* Area labels */}
-                <div className="absolute top-[15%] left-[25%] text-[10px] text-slate-500 font-medium">Helotes</div>
-                <div className="absolute top-[20%] right-[20%] text-[10px] text-slate-500 font-medium">Stone Oak</div>
-                <div className="absolute bottom-[25%] left-[15%] text-[10px] text-slate-500 font-medium">Alamo Heights</div>
-                <div className="absolute bottom-[20%] right-[25%] text-[10px] text-slate-500 font-medium">Converse</div>
-                <div className="absolute top-[45%] right-[10%] text-[10px] text-slate-500 font-medium">Schertz</div>
-                <div className="absolute bottom-[35%] left-[35%] text-[10px] text-slate-500 font-medium">San Antonio</div>
+                {/* Area labels based on map reference */}
+                <div className="absolute top-[12%] left-[18%] text-[9px] text-slate-200 font-medium">Helotes</div>
+                <div className="absolute top-[8%] left-[35%] text-[9px] text-slate-200 font-medium">Shavano Park</div>
+                <div className="absolute top-[14%] right-[15%] text-[9px] text-slate-200 font-medium">Hollywood Park</div>
+                <div className="absolute top-[18%] right-[8%] text-[9px] text-slate-200 font-medium">Windcrest</div>
+                <div className="absolute top-[35%] right-[5%] text-[9px] text-slate-200 font-medium">Kirby</div>
+                <div className="absolute bottom-[30%] right-[10%] text-[9px] text-slate-200 font-medium">Alamo Heights</div>
+                <div className="absolute bottom-[22%] left-[35%] text-[10px] text-white font-semibold">San Antonio</div>
+                <div className="absolute top-[38%] left-[8%] text-[9px] text-slate-200 font-medium">Leon Valley</div>
+                <div className="absolute top-[30%] left-[30%] text-[9px] text-slate-200 font-medium">Castle Hills</div>
+                <div className="absolute bottom-[32%] left-[28%] text-[9px] text-slate-200 font-medium">Balcones Heights</div>
                 
                 {/* Service radius circle */}
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -56,19 +63,19 @@ export default function ServiceAreaSection() {
                   <div className="absolute w-[85%] h-[85%] rounded-full bg-gradient-to-br from-cyan-400/10 to-blue-500/10" />
                   
                   {/* Leon Valley marker */}
-                  <div className="absolute" style={{ top: '42%', left: '38%' }}>
+                  <div className="absolute" style={{ top: '38%', left: '23%' }}>
                     <motion.div 
                       className="relative"
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full shadow-lg shadow-cyan-500/40 flex items-center justify-center">
+                      <div className="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full shadow-lg shadow-cyan-400/60 flex items-center justify-center">
                         <div className="w-3 h-3 bg-white rounded-full" />
                       </div>
-                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-blue-600" />
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-blue-500" />
                     </motion.div>
                     <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                      <span className="px-3 py-1.5 bg-slate-900 text-white text-xs rounded-full font-semibold shadow-lg">
+                      <span className="px-3 py-1.5 bg-white text-slate-900 text-xs rounded-full font-semibold shadow-lg">
                         Leon Valley
                       </span>
                     </div>

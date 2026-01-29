@@ -24,8 +24,9 @@ const services = [
     icon: Sun,
     title: "Red Light Therapy",
     description: "Cellular regeneration and tissue repair through therapeutic light wavelengths.",
-    color: "from-amber-400 to-orange-500",
-    bgColor: "bg-amber-50"
+    color: "from-red-500 to-rose-600",
+    bgColor: "bg-red-50",
+    iconColor: "text-red-500"
   },
   {
     icon: Activity,
@@ -75,7 +76,7 @@ export default function ServicesOverview() {
             >
               <GlassCard className="h-full p-6 group">
                 <div className={`w-14 h-14 ${service.bgColor} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
-                  <service.icon className={`w-7 h-7 bg-gradient-to-r ${service.color} bg-clip-text text-cyan-500`} />
+                  <service.icon className={service.iconColor || 'text-cyan-500'} style={{ width: '28px', height: '28px' }} />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
                 <p className="text-slate-600 mb-5 leading-relaxed">{service.description}</p>

@@ -87,7 +87,7 @@ export default function About() {
                 transition={{ duration: 4, repeat: Infinity }}
               >
                 <img 
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/b2920fb6f_IMG_8051.jpg" 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/dacbf80ae_IMG_8053.jpg" 
                   alt="Martin with family"
                   className="w-full h-full object-cover"
                 />
@@ -124,7 +124,7 @@ export default function About() {
               </p>
               <div className="prose prose-lg text-slate-600 space-y-4">
                 <p>
-                  Martin Tomlin is a dedicated San Antonio firefighter and husband who founded 
+                  Martin Tomlin is a dedicated San Antonio firefighter, husband, and father who founded 
                   Ascension Cryo & Wellness to bring elite recovery solutions directly to athletes 
                   and high-performers in the San Antonio area.
                 </p>

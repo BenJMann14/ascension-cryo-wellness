@@ -38,6 +38,7 @@ export default function Layout({ children, currentPageName }) {
 
   useEffect(() => {
     setMobileMenuOpen(false);
+    window.scrollTo(0, 0);
   }, [location]);
 
   const isHomePage = currentPageName === 'Home';
