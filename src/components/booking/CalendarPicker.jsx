@@ -1,0 +1,276 @@
+import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isAfter, isBefore, addMonths, subMonths, setHours, setMinutes } from 'date-fns';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, ArrowRight, ArrowLeft } from 'lucide-react';
+import GlassCard from '@/components/ui/GlassCard';
+import GradientButton from '@/components/ui/GradientButton';
+import { Button } from "@/components/ui/button";
+
+// Generate time slots from 8 AM to 6 PM
+const generateTimeSlots = () => {
+  const slots = [];
+  for (let hour = 8; hour <= 18; hour++) {
+    slots.push(`${hour.toString().padStart(2, '0')}:00`);
+    if (hour < 18) {
+      slots.push(`${hour.toString().padStart(2, '0')}:30`);
+    }
+  }
+  return slots;
+};
+
+const TIME_SLOTS = generateTimeSlots();
+
+// Simulated unavailable times (in production, this would come from calendar integration)
+const UNAVAILABLE_DATES = [
+  // Example: Martin's 48-hour shifts
+  new Date(2025, 0, 15),
+  new Date(2025, 0, 16),
+  new Date(2025, 0, 22),
+  new Date(2025, 0, 23),
+  new Date(2025, 0, 29),
+  new Date(2025, 0, 30),
+];
+
+const UNAVAILABLE_TIMES = {
+  // Example: Some times already booked
+  '2025-01-20': ['09:00', '09:30', '14:00', '14:30'],
+  '2025-01-21': ['10:00', '10:30', '11:00'],
+};
+
+export default function CalendarPicker({ onSelect, onBack }) {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+
+  const minDate = addDays(new Date(), 2); // 48 hours minimum notice
+  const maxDate = addDays(new Date(), 30); // 30 days in advance
+
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  // Get day of week for first day (0 = Sunday)
+  const startDayOfWeek = monthStart.getDay();
+  const paddingDays = Array(startDayOfWeek).fill(null);
+
+  const isDateUnavailable = (date) => {
+    // Check if before min date or after max date
+    if (isBefore(date, minDate) || isAfter(date, maxDate)) return true;
+    // Check if in unavailable dates list
+    return UNAVAILABLE_DATES.some(d => isSameDay(d, date));
+  };
+
+  const getAvailableTimesForDate = (date) => {
+    if (!date) return [];
+    const dateKey = format(date, 'yyyy-MM-dd');
+    const unavailableTimes = UNAVAILABLE_TIMES[dateKey] || [];
+    return TIME_SLOTS.filter(time => !unavailableTimes.includes(time));
+  };
+
+  const availableTimes = selectedDate ? getAvailableTimesForDate(selectedDate) : [];
+
+  const handleDateSelect = (date) => {
+    if (!isDateUnavailable(date)) {
+      setSelectedDate(date);
+      setSelectedTime(null);
+    }
+  };
+
+  const handleContinue = () => {
+    onSelect({
+      date: selectedDate,
+      time: selectedTime,
+      formattedDate: format(selectedDate, 'EEEE, MMMM d, yyyy'),
+      formattedTime: selectedTime
+    });
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 rounded-full mb-4">
+          <CalendarIcon className="w-5 h-5 text-cyan-600" />
+          <span className="font-medium text-cyan-700">Step 2 of 5</span>
+        </div>
+        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+          Select Date & Time
+        </h2>
+        <p className="text-slate-600">
+          Choose your preferred appointment date and time
+        </p>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Calendar */}
+        <GlassCard className="p-6">
+          {/* Month Navigation */}
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+              disabled={isBefore(subMonths(currentMonth, 1), startOfMonth(new Date()))}
+            >
+              <ChevronLeft className="w-5 h-5 text-slate-600" />
+            </button>
+            <h3 className="text-lg font-semibold text-slate-900">
+              {format(currentMonth, 'MMMM yyyy')}
+            </h3>
+            <button
+              onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <ChevronRight className="w-5 h-5 text-slate-600" />
+            </button>
+          </div>
+
+          {/* Day Headers */}
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              <div key={day} className="text-center text-xs font-medium text-slate-500 py-2">
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-1">
+            {paddingDays.map((_, i) => (
+              <div key={`pad-${i}`} className="aspect-square" />
+            ))}
+            {daysInMonth.map(day => {
+              const isUnavailable = isDateUnavailable(day);
+              const isSelected = selectedDate && isSameDay(day, selectedDate);
+              const isCurrentMonth = isSameMonth(day, currentMonth);
+
+              return (
+                <button
+                  key={day.toISOString()}
+                  onClick={() => handleDateSelect(day)}
+                  disabled={isUnavailable}
+                  className={`
+                    aspect-square rounded-lg text-sm font-medium transition-all
+                    ${isSelected 
+                      ? 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg' 
+                      : isUnavailable
+                        ? 'text-slate-300 cursor-not-allowed'
+                        : 'text-slate-700 hover:bg-cyan-50 hover:text-cyan-700'
+                    }
+                  `}
+                >
+                  {format(day, 'd')}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Legend */}
+          <div className="mt-4 flex items-center gap-4 text-xs text-slate-500">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded" />
+              <span>Selected</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-slate-200 rounded" />
+              <span>Unavailable</span>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* Time Slots */}
+        <GlassCard className="p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-cyan-600" />
+            Available Times
+          </h3>
+
+          {selectedDate ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedDate.toISOString()}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <p className="text-slate-600 mb-4">
+                  {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                </p>
+                <div className="grid grid-cols-3 gap-2 max-h-80 overflow-y-auto">
+                  {availableTimes.map(time => (
+                    <button
+                      key={time}
+                      onClick={() => setSelectedTime(time)}
+                      className={`
+                        py-3 px-4 rounded-lg text-sm font-medium transition-all
+                        ${selectedTime === time
+                          ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                          : 'bg-slate-100 text-slate-700 hover:bg-cyan-100 hover:text-cyan-700'
+                        }
+                      `}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+                {availableTimes.length === 0 && (
+                  <p className="text-slate-500 text-center py-8">
+                    No available times for this date. Please select another date.
+                  </p>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            <div className="text-center py-12 text-slate-500">
+              <CalendarIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p>Select a date to view available times</p>
+            </div>
+          )}
+        </GlassCard>
+      </div>
+
+      {/* Selection Summary & Actions */}
+      {selectedDate && selectedTime && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <GlassCard className="p-4 bg-gradient-to-r from-cyan-50 to-blue-50">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                  <CalendarIcon className="w-6 h-6 text-cyan-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">
+                    {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+                  </p>
+                  <p className="text-cyan-600 font-medium">{selectedTime}</p>
+                </div>
+              </div>
+            </div>
+          </GlassCard>
+        </motion.div>
+      )}
+
+      {/* Navigation */}
+      <div className="flex flex-col sm:flex-row gap-3 justify-between">
+        <Button
+          variant="outline"
+          onClick={onBack}
+          className="order-2 sm:order-1"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+        <GradientButton
+          onClick={handleContinue}
+          disabled={!selectedDate || !selectedTime}
+          className="order-1 sm:order-2"
+          size="lg"
+        >
+          Continue
+          <ArrowRight className="w-5 h-5" />
+        </GradientButton>
+      </div>
+    </div>
+  );
+}
