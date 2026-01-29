@@ -107,7 +107,7 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 rounded-full mb-4">
           <ShoppingCart className="w-5 h-5 text-cyan-600" />
-          <span className="font-medium text-cyan-700">Step 4 of 5</span>
+          <span className="font-medium text-cyan-700">Step {currentStep} of {totalSteps}</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
           Select Your Services
