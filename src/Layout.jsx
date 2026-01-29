@@ -20,6 +20,7 @@ const navLinks = [
   { name: 'Pricing', page: 'Pricing' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
+  { name: 'Admin', page: 'AdminDashboard', adminOnly: true },
 ];
 
 export default function Layout({ children, currentPageName }) {
@@ -68,7 +69,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.map((link) => (
+              {navLinks.filter(link => !link.adminOnly).map((link) => (
                 <Link
                   key={link.page}
                   to={createPageUrl(link.page)}
@@ -122,7 +123,7 @@ export default function Layout({ children, currentPageName }) {
               className="lg:hidden bg-white border-t"
             >
               <div className="px-4 py-6 space-y-4">
-                {navLinks.map((link) => (
+                {navLinks.filter(link => !link.adminOnly).map((link) => (
                   <Link
                     key={link.page}
                     to={createPageUrl(link.page)}

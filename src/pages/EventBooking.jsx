@@ -30,6 +30,7 @@ import { Badge } from "@/components/ui/badge";
 const themes = {
   volleyball: {
     name: 'Volleyball Tournament',
+    emoji: '🏐',
     gradient: 'from-orange-500 to-amber-600',
     bgGradient: 'from-orange-50 to-amber-50',
     accent: 'text-orange-600',
@@ -37,8 +38,19 @@ const themes = {
     headline: 'Fast Court-Side Recovery',
     subhead: 'Get back in the game faster'
   },
+  basketball: {
+    name: 'Basketball Tournament',
+    emoji: '🏀',
+    gradient: 'from-orange-600 to-red-600',
+    bgGradient: 'from-orange-50 to-red-50',
+    accent: 'text-orange-600',
+    accentBg: 'bg-orange-100',
+    headline: 'Court-Side Recovery',
+    subhead: 'Dominate every quarter'
+  },
   marathon: {
-    name: 'Marathon / Running Event',
+    name: 'Marathon / Running',
+    emoji: '🏃',
     gradient: 'from-blue-600 to-indigo-700',
     bgGradient: 'from-blue-50 to-indigo-50',
     accent: 'text-blue-600',
@@ -47,13 +59,74 @@ const themes = {
     subhead: 'Recover like a champion'
   },
   hyrox: {
-    name: 'Hyrox / CrossFit Competition',
+    name: 'Hyrox / CrossFit',
+    emoji: '🏋️',
     gradient: 'from-red-600 to-slate-800',
     bgGradient: 'from-red-50 to-slate-100',
     accent: 'text-red-600',
     accentBg: 'bg-red-100',
     headline: 'Elite Athlete Recovery',
     subhead: 'Train harder, recover faster'
+  },
+  soccer: {
+    name: 'Soccer Tournament',
+    emoji: '⚽',
+    gradient: 'from-green-600 to-emerald-700',
+    bgGradient: 'from-green-50 to-emerald-50',
+    accent: 'text-green-600',
+    accentBg: 'bg-green-100',
+    headline: 'Pitch-Side Recovery',
+    subhead: 'Stay match-ready all tournament'
+  },
+  football: {
+    name: 'Football Event',
+    emoji: '🏈',
+    gradient: 'from-amber-700 to-orange-900',
+    bgGradient: 'from-amber-50 to-orange-50',
+    accent: 'text-amber-700',
+    accentBg: 'bg-amber-100',
+    headline: 'Gridiron Recovery',
+    subhead: 'Recover and dominate'
+  },
+  tennis: {
+    name: 'Tennis Tournament',
+    emoji: '🎾',
+    gradient: 'from-lime-500 to-green-600',
+    bgGradient: 'from-lime-50 to-green-50',
+    accent: 'text-lime-600',
+    accentBg: 'bg-lime-100',
+    headline: 'Between-Set Recovery',
+    subhead: 'Serve up your best game'
+  },
+  triathlon: {
+    name: 'Triathlon',
+    emoji: '🏊',
+    gradient: 'from-cyan-500 to-blue-600',
+    bgGradient: 'from-cyan-50 to-blue-50',
+    accent: 'text-cyan-600',
+    accentBg: 'bg-cyan-100',
+    headline: 'Triple-Sport Recovery',
+    subhead: 'Swim. Bike. Run. Recover.'
+  },
+  mma: {
+    name: 'MMA / Combat Sports',
+    emoji: '🥊',
+    gradient: 'from-red-700 to-slate-900',
+    bgGradient: 'from-red-50 to-slate-100',
+    accent: 'text-red-700',
+    accentBg: 'bg-red-100',
+    headline: 'Fighter Recovery',
+    subhead: 'Recover like a warrior'
+  },
+  general: {
+    name: 'Sports Event',
+    emoji: '🏆',
+    gradient: 'from-cyan-500 to-blue-600',
+    bgGradient: 'from-cyan-50 to-blue-50',
+    accent: 'text-cyan-600',
+    accentBg: 'bg-cyan-100',
+    headline: 'Elite Recovery Station',
+    subhead: 'Perform at your peak'
   }
 };
 
@@ -76,7 +149,9 @@ const STEPS = ['services', 'info', 'waiver', 'payment', 'confirmation'];
 
 export default function EventBooking() {
   const urlParams = new URLSearchParams(window.location.search);
-  const eventTheme = urlParams.get('theme') || 'hyrox';
+  const eventTheme = urlParams.get('theme') || 'general';
+  const eventName = urlParams.get('event') || '';
+  const showPricing = urlParams.get('pricing') !== '0';
   
   const [step, setStep] = useState(0);
   const [selectedServices, setSelectedServices] = useState([]);
@@ -153,9 +228,13 @@ export default function EventBooking() {
           <div className="flex items-center justify-center gap-2 mb-2">
             <Snowflake className="w-6 h-6" />
             <span className="font-bold text-lg">Ascension</span>
+            <span className="text-2xl">{theme.emoji}</span>
           </div>
           <h1 className="text-2xl font-bold mb-1">{theme.headline}</h1>
           <p className="text-white/80">{theme.subhead}</p>
+          {eventName && (
+            <p className="text-sm text-white/70 mt-2 font-medium">{decodeURIComponent(eventName)}</p>
+          )}
         </div>
       </header>
 
@@ -217,7 +296,7 @@ export default function EventBooking() {
                         <div className="font-semibold text-slate-900">{service.name}</div>
                         <div className="text-sm text-slate-500">{service.duration}</div>
                       </div>
-                      <div className="font-bold text-lg text-slate-900">${service.price}</div>
+                      {showPricing && <div className="font-bold text-lg text-slate-900">${service.price}</div>}
                     </button>
                   );
                 })}
@@ -249,8 +328,8 @@ export default function EventBooking() {
                         <div className="text-sm text-slate-500">{service.description}</div>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-lg text-slate-900">${service.price}</div>
-                        <div className="text-xs text-green-600">Save ${service.savings}</div>
+                        {showPricing && <div className="font-bold text-lg text-slate-900">${service.price}</div>}
+                        {showPricing && <div className="text-xs text-green-600">Save ${service.savings}</div>}
                       </div>
                     </button>
                   );
@@ -262,7 +341,7 @@ export default function EventBooking() {
                 <GlassCard className="p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-slate-600">{selectedServices.length} service(s)</span>
-                    <span className="font-bold text-xl">${totalPrice}</span>
+                    {showPricing && <span className="font-bold text-xl">${totalPrice}</span>}
                   </div>
                   <div className="text-sm text-slate-500">Est. time: ~{totalDuration} min</div>
                 </GlassCard>
@@ -516,15 +595,40 @@ export default function EventBooking() {
               </div>
 
               <GlassCard className="p-6">
+                <div className={`text-center p-4 rounded-xl bg-gradient-to-r ${theme.gradient} text-white mb-4`}>
+                  <div className="text-4xl mb-2">{theme.emoji}</div>
+                  <div className="text-xs opacity-80">Show this to Martin</div>
+                </div>
+                
                 <div className="text-sm text-slate-500 mb-1">Confirmation #</div>
                 <div className="text-2xl font-bold font-mono text-slate-900 mb-4">
                   {confirmationData.confirmationNumber}
                 </div>
 
-                <div className="border-t pt-4 text-left space-y-2">
-                  <div className="font-medium text-slate-900">{customerInfo.firstName} {customerInfo.lastName}</div>
-                  <div className="text-slate-600">{selectedServices.map(s => s.name).join(', ')}</div>
-                  <div className="text-lg font-bold text-slate-900">Total: ${totalPrice}</div>
+                <div className="border-t pt-4 text-left space-y-3">
+                  <div>
+                    <div className="text-xs text-slate-500">Customer</div>
+                    <div className="font-semibold text-slate-900">{customerInfo.firstName} {customerInfo.lastName}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500">Services Purchased</div>
+                    <div className="space-y-1 mt-1">
+                      {selectedServices.map(s => (
+                        <div key={s.id} className={`flex items-center justify-between px-3 py-2 rounded-lg ${theme.accentBg}`}>
+                          <span className={`font-medium ${theme.accent}`}>{s.name}</span>
+                          {showPricing && <span className="text-slate-600">${s.price}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {showPricing && (
+                    <div className="pt-2 border-t">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-slate-900">Total Paid</span>
+                        <span className={`text-xl font-bold ${theme.accent}`}>${totalPrice}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </GlassCard>
 

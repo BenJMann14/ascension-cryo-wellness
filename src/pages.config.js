@@ -54,6 +54,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import BookSession from './pages/BookSession';
 import EventBooking from './pages/EventBooking';
+import AdminDashboard from './pages/AdminDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +66,7 @@ export const PAGES = {
     "Contact": Contact,
     "BookSession": BookSession,
     "EventBooking": EventBooking,
+    "AdminDashboard": AdminDashboard,
 }
 
 export const pagesConfig = {
