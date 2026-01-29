@@ -127,7 +127,7 @@ export default function HyroxRecovery() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link to={createPageUrl('BookSession')}>
+              <Link to={createPageUrl('EventBookingFlow')}>
                 <GradientButton size="xl" className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500">
                   Book Recovery Session
                   <ArrowRight className="w-5 h-5" />
@@ -274,7 +274,7 @@ export default function HyroxRecovery() {
                     ))}
                   </ul>
                   
-                  <Link to={createPageUrl('BookSession')} className="block mt-6">
+                  <Link to={createPageUrl('EventBookingFlow')} className="block mt-6">
                     <GradientButton className="w-full bg-gradient-to-r from-red-600 to-orange-600">
                       Get This Package
                     </GradientButton>
@@ -324,7 +324,7 @@ export default function HyroxRecovery() {
           <p className="text-xl text-red-100 mb-8">
             Book your recovery session and unlock your full potential
           </p>
-          <Link to={createPageUrl('BookSession')}>
+          <Link to={createPageUrl('EventBookingFlow')}>
             <GradientButton size="xl" variant="secondary" className="bg-white text-red-600 hover:bg-red-50">
               Book Your Session Now
               <ArrowRight className="w-5 h-5" />

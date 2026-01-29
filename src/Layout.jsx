@@ -56,15 +56,14 @@ export default function Layout({ children, currentPageName }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link to={createPageUrl('Home')} className="flex items-center gap-2">
+            <Link to={createPageUrl('Home')} className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
                 <Snowflake className="w-6 h-6 text-white" />
               </div>
               <div>
-                <span className={`text-xl font-bold ${isScrolled || !isHomePage ? 'text-slate-900' : 'text-slate-900'}`}>
-                  Ascension
+                <span className={`text-xl font-bold tracking-wide ${isScrolled || !isHomePage ? 'text-slate-900' : 'text-slate-900'}`}>
+                  Ascension Cryo & Wellness
                 </span>
-                <span className="hidden sm:inline text-xs text-slate-500 block mt-0.5">Cryo & Wellness</span>
               </div>
             </Link>
 

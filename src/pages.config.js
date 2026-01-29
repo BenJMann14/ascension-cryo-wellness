@@ -55,9 +55,11 @@ import EventBooking from './pages/EventBooking';
 import Home from './pages/Home';
 import Pricing from './pages/Pricing';
 import Services from './pages/Services';
-import VolleyballRecovery from './pages/VolleyballRecovery';
 import HyroxRecovery from './pages/HyroxRecovery';
+import VolleyballRecovery from './pages/VolleyballRecovery';
 import RunningRecovery from './pages/RunningRecovery';
+import BasketballRecovery from './pages/BasketballRecovery';
+import EventBookingFlow from './pages/EventBookingFlow';
 import __Layout from './Layout.jsx';
 
 
@@ -70,9 +72,11 @@ export const PAGES = {
     "Home": Home,
     "Pricing": Pricing,
     "Services": Services,
-    "VolleyballRecovery": VolleyballRecovery,
     "HyroxRecovery": HyroxRecovery,
+    "VolleyballRecovery": VolleyballRecovery,
     "RunningRecovery": RunningRecovery,
+    "BasketballRecovery": BasketballRecovery,
+    "EventBookingFlow": EventBookingFlow,
 }
 
 export const pagesConfig = {
