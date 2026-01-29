@@ -6,7 +6,6 @@ import {
   Truck, 
   Heart, 
   Target, 
-  Award,
   Snowflake,
   ArrowRight,
   Flame,
@@ -39,14 +38,6 @@ const values = [
   }
 ];
 
-const expertise = [
-  "Certified Cryotherapy Specialist",
-  "NormaTec Compression Systems Certified",
-  "Red Light Therapy Practitioner",
-  "Whole Body Vibration Therapy Trained",
-  "Sports Recovery Specialist"
-];
-
 export default function About() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -61,17 +52,18 @@ export default function About() {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Photo */}
+            {/* Photos */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="relative order-2 lg:order-1"
             >
+              {/* Main photo - firefighter */}
               <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl max-w-md mx-auto">
                 <img 
-                  src="https://images.unsplash.com/photo-1584515933487-779824d29309?w=600&q=80" 
-                  alt="Martin Tomlin - Founder"
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/1c83d737d_IMG_8052.jpg" 
+                  alt="Martin Tomlin - Firefighter"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
@@ -88,6 +80,19 @@ export default function About() {
                 </div>
               </div>
               
+              {/* Secondary photo - family */}
+              <motion.div 
+                className="absolute -bottom-8 -left-8 w-32 h-32 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/b2920fb6f_IMG_8051.jpg" 
+                  alt="Martin with family"
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+              
               {/* Floating badge */}
               <motion.div 
                 className="absolute -top-4 -right-4 bg-white/90 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-white/50"
@@ -96,7 +101,7 @@ export default function About() {
               >
                 <div className="flex items-center gap-2">
                   <Snowflake className="w-5 h-5 text-cyan-500" />
-                  <span className="font-semibold text-slate-900">Certified Specialist</span>
+                  <span className="font-semibold text-slate-900">Recovery Specialist</span>
                 </div>
               </motion.div>
             </motion.div>
@@ -142,70 +147,34 @@ export default function About() {
         </div>
       </section>
 
-      {/* Expertise Section */}
+      {/* Mission Section */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
-                <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
-                  Expertise & Credentials
-                </h2>
-                <p className="text-lg text-slate-600 mb-8">
-                  Martin has invested in comprehensive training across all recovery modalities 
-                  offered at Ascension, ensuring you receive expert-level care with every treatment.
-                </p>
-                <ul className="space-y-4">
-                  {expertise.map((item, i) => (
-                    <motion.li 
-                      key={i}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1 }}
-                      className="flex items-center gap-3"
-                    >
-                      <div className="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
-                        <Award className="w-4 h-4 text-cyan-600" />
-                      </div>
-                      <span className="text-slate-700 font-medium">{item}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </motion.div>
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <GlassCard className="p-8 bg-gradient-to-br from-cyan-50 to-blue-50">
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
-                    <Target className="w-5 h-5 text-cyan-600" />
-                    <span className="font-semibold text-slate-900">Our Mission</span>
-                  </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <GlassCard className="p-8 md:p-12 bg-gradient-to-br from-cyan-50 to-blue-50">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
+                  <Target className="w-5 h-5 text-cyan-600" />
+                  <span className="font-semibold text-slate-900">Our Mission</span>
                 </div>
-                <p className="text-lg text-slate-700 text-center leading-relaxed">
-                  To bring elite-level recovery and wellness services directly to athletes, 
-                  high-performers, and anyone seeking to optimize their health—making 
-                  professional-grade treatments accessible, convenient, and personalized.
+              </div>
+              <p className="text-lg md:text-xl text-slate-700 text-center leading-relaxed">
+                To bring elite-level recovery and wellness services directly to athletes, 
+                high-performers, and anyone seeking to optimize their health—making 
+                professional-grade treatments accessible, convenient, and personalized.
+              </p>
+              <div className="mt-8 text-center">
+                <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+                  Train. Recover. Ascend.
                 </p>
-                <div className="mt-8 text-center">
-                  <p className="text-2xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-                    Train. Recover. Ascend.
-                  </p>
-                </div>
-              </GlassCard>
-            </motion.div>
-          </div>
+              </div>
+            </GlassCard>
+          </motion.div>
         </div>
       </section>
 
