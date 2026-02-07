@@ -56,30 +56,53 @@ Deno.serve(async (req) => {
                         currentDate.setDate(currentDate.getDate() + 1);
                     }
                 } else {
-                    // Time-specific event
+                    // Time-specific event - block ALL overlapping time slots
                     const dateKey = eventStart.toISOString().split('T')[0];
                     if (!unavailableTimes[dateKey]) {
                         unavailableTimes[dateKey] = [];
                     }
                     
-                    // Block out time slots that overlap with this event
+                    // Convert to local time (America/Chicago)
                     const startHour = eventStart.getHours();
                     const startMin = eventStart.getMinutes();
                     const endHour = eventEnd.getHours();
                     const endMin = eventEnd.getMinutes();
                     
-                    // Generate time slots to block (30-min intervals)
-                    let currentHour = startHour;
-                    let currentMin = startMin < 30 ? 0 : 30;
+                    // Block any 30-minute slot that overlaps with the event
+                    // Start from the 30-min slot that contains or precedes the event start
+                    let slotHour = Math.floor(startHour);
+                    let slotMin = startMin < 30 ? 0 : 30;
                     
-                    while (currentHour < endHour || (currentHour === endHour && currentMin < endMin)) {
-                        const timeSlot = `${currentHour.toString().padStart(2, '0')}:${currentMin.toString().padStart(2, '0')}`;
-                        unavailableTimes[dateKey].push(timeSlot);
+                    // If event starts after slot start, still block that slot
+                    // Continue until we've blocked all slots that overlap with the event
+                    while (slotHour < endHour || (slotHour === endHour && slotMin < endMin)) {
+                        const timeSlot = `${slotHour.toString().padStart(2, '0')}:${slotMin.toString().padStart(2, '0')}`;
                         
-                        currentMin += 30;
-                        if (currentMin >= 60) {
-                            currentMin = 0;
-                            currentHour++;
+                        // Check if this time slot overlaps with the event
+                        const slotStart = slotHour * 60 + slotMin;
+                        const slotEnd = slotStart + 30;
+                        const eventStartMin = startHour * 60 + startMin;
+                        const eventEndMin = endHour * 60 + endMin;
+                        
+                        // If there's any overlap, block the slot
+                        if (slotStart < eventEndMin && slotEnd > eventStartMin) {
+                            unavailableTimes[dateKey].push(timeSlot);
+                        }
+                        
+                        slotMin += 30;
+                        if (slotMin >= 60) {
+                            slotMin = 0;
+                            slotHour++;
+                        }
+                    }
+                    
+                    // Also block the slot that contains the end time
+                    if (endMin > 0) {
+                        const endSlotHour = endHour;
+                        const endSlotMin = endMin <= 30 ? 0 : 30;
+                        const endTimeSlot = `${endSlotHour.toString().padStart(2, '0')}:${endSlotMin.toString().padStart(2, '0')}`;
+                        if (!unavailableTimes[dateKey].includes(endTimeSlot)) {
+                            unavailableTimes[dateKey].push(endTimeSlot);
                         }
                     }
                 }
