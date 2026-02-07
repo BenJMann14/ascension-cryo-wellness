@@ -204,32 +204,32 @@ export default function Layout({ children, currentPageName }) {
               <h4 className="font-semibold text-lg mb-4">Services</h4>
               <ul className="space-y-3 text-sm text-slate-400">
                 <li>
-                  <Link to={createPageUrl('BookSession') + '?service=cryo'} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
                     Localized Cryotherapy
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('BookSession') + '?service=compression'} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
                     Compression Therapy
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('BookSession') + '?service=redlight'} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
                     Red Light Therapy
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('BookSession') + '?service=vibration'} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
                     Vibration Therapy
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('BookSession') + '?service=facial'} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
                     Cryo Facials
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('BookSession') + '?service=bodysculpt'} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
                     Body Sculpting
                   </Link>
                 </li>
