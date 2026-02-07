@@ -21,27 +21,13 @@ const generateTimeSlots = () => {
 
 const TIME_SLOTS = generateTimeSlots();
 
-// Simulated unavailable times (in production, this would come from calendar integration)
-const UNAVAILABLE_DATES = [
-  // Example: Martin's 48-hour shifts
-  new Date(2025, 0, 15),
-  new Date(2025, 0, 16),
-  new Date(2025, 0, 22),
-  new Date(2025, 0, 23),
-  new Date(2025, 0, 29),
-  new Date(2025, 0, 30),
-];
-
-const UNAVAILABLE_TIMES = {
-  // Example: Some times already booked
-  '2025-01-20': ['09:00', '09:30', '14:00', '14:30'],
-  '2025-01-21': ['10:00', '10:30', '11:00'],
-};
-
 export default function CalendarPicker({ onSelect, onBack }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [unavailableDates, setUnavailableDates] = useState([]);
+  const [unavailableTimes, setUnavailableTimes] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const minDate = addDays(new Date(), 2); // 48 hours minimum notice
   const maxDate = addDays(new Date(), 30); // 30 days in advance
