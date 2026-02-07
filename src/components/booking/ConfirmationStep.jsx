@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { 
   CheckCircle, 
   Calendar, 
-  Clock, 
   MapPin, 
   Download,
   Mail,
@@ -21,62 +20,51 @@ export default function ConfirmationStep({ bookingData, paymentData }) {
   const { addressData, calendarData, customerData, services } = bookingData;
   const totalPrice = services.reduce((sum, s) => sum + s.price, 0);
 
-  const formattedDate = calendarData.formattedDate;
-  const formattedTime = calendarData.time;
-
   const generateICSFile = () => {
-    // Get date parts from the date object
     const date = calendarData.date;
+    const time = calendarData.time;
     
-    // Verify date is valid before proceeding
-    if (!date || isNaN(date.getTime())) {
-      console.error('Invalid date in calendar data:', date);
-      alert('Unable to generate calendar file. Please contact support.');
-      return;
-    }
-    
+    // Parse date components
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     
-    // Get time parts
-    const [hours, minutes] = calendarData.time.split(':');
-    const endHour = String(parseInt(hours) + 1).padStart(2, '0');
+    // Parse time components
+    const [hours, minutes] = time.split(':');
+    const endHour = String((parseInt(hours) + 1) % 24).padStart(2, '0');
     
-    // Format for ICS (local time)
-    const startDateTime = `${year}${month}${day}T${hours}${minutes}00`;
-    const endDateTime = `${year}${month}${day}T${endHour}${minutes}00`;
+    // Build ICS datetime strings (no timezone, local time)
+    const startDT = `${year}${month}${day}T${hours}${minutes}00`;
+    const endDT = `${year}${month}${day}T${endHour}${minutes}00`;
+    
     const now = new Date();
-    const nowDateTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+    const nowDT = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}00`;
 
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Ascension Cryo & Wellness//EN
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
 BEGIN:VEVENT
 UID:${paymentData.confirmationNumber}@ascensioncryo.com
-DTSTAMP:${nowDateTime}
-DTSTART:${startDateTime}
-DTEND:${endDateTime}
+DTSTAMP:${nowDT}
+DTSTART:${startDT}
+DTEND:${endDT}
 SUMMARY:Ascension Cryo & Wellness Appointment
 DESCRIPTION:Confirmation: ${paymentData.confirmationNumber}\\n\\nServices: ${services.map(s => s.service_name || s.name).join(', ')}\\n\\nTotal: $${totalPrice}
 LOCATION:${addressData.fullAddress}
 STATUS:CONFIRMED
-SEQUENCE:0
 BEGIN:VALARM
 TRIGGER:-PT1H
-DESCRIPTION:Appointment Reminder
 ACTION:DISPLAY
+DESCRIPTION:Appointment Reminder
 END:VALARM
 END:VEVENT
 END:VCALENDAR`.replace(/\n/g, '\r\n');
 
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `ascension-booking-${paymentData.confirmationNumber}.ics`;
+    link.download = `booking-${paymentData.confirmationNumber}.ics`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -85,7 +73,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
 
   return (
     <div className="space-y-6">
-      {/* Success Animation */}
       <motion.div 
         className="text-center"
         initial={{ scale: 0.8, opacity: 0 }}
@@ -108,20 +95,17 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
         </p>
       </motion.div>
 
-      {/* Confirmation Details */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
         <GlassCard className="p-6 md:p-8">
-          {/* Confirmation Number */}
           <div className="text-center pb-6 border-b mb-6">
             <p className="text-sm text-slate-500 mb-1">Confirmation Number</p>
             <p className="text-2xl font-bold text-cyan-600 font-mono">{paymentData.confirmationNumber}</p>
           </div>
 
-          {/* Appointment Details */}
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div className="space-y-4">
               <div className="flex items-start gap-3">
@@ -130,8 +114,8 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
                 </div>
                 <div>
                   <div className="text-sm text-slate-500">Date & Time</div>
-                  <div className="font-semibold text-slate-900">{formattedDate}</div>
-                  <div className="text-cyan-600 font-medium">{formattedTime}</div>
+                  <div className="font-semibold text-slate-900">{calendarData.formattedDate}</div>
+                  <div className="text-cyan-600 font-medium">{calendarData.time}</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -149,7 +133,7 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
               <div className="text-sm text-slate-500 mb-2">Services Booked</div>
               <div className="space-y-2">
                 {services.map((service, idx) => (
-                  <div key={service.id || idx} className="flex justify-between items-center py-2 border-b last:border-0">
+                  <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
                     <span className="text-slate-700">{service.service_name || service.name}</span>
                     <span className="font-medium text-slate-900">${service.price}</span>
                   </div>
@@ -162,7 +146,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
             </div>
           </div>
 
-          {/* Add to Calendar */}
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
             <Button
               variant="outline"
@@ -176,7 +159,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
         </GlassCard>
       </motion.div>
 
-      {/* Next Steps */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -208,7 +190,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
         </GlassCard>
       </motion.div>
 
-      {/* Contact Info */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -229,7 +210,6 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
         </GlassCard>
       </motion.div>
 
-      {/* Navigation */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
         <Link to={createPageUrl('Home')}>
           <GradientButton variant="outline" size="lg" className="w-full sm:w-auto">

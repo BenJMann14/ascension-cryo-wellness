@@ -42,14 +42,9 @@ export default function BookSession() {
           if (response.data?.booking) {
             const booking = response.data.booking;
             
-            // Reconstruct booking data from saved booking
+            // Parse date from database (YYYY-MM-DD format)
             const [year, month, day] = booking.appointment_date.split('-').map(Number);
             const appointmentDate = new Date(year, month - 1, day);
-            
-            // Verify date is valid
-            if (isNaN(appointmentDate.getTime())) {
-              console.error('Invalid date created from:', booking.appointment_date);
-            }
 
             setBookingData({
               addressData: {
