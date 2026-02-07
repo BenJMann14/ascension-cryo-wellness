@@ -76,6 +76,7 @@ Deno.serve(async (req) => {
       mode: 'payment',
       success_url: `${origin}/BookSession?session_id={CHECKOUT_SESSION_ID}&success=true`,
       cancel_url: `${origin}/BookSession?canceled=true`,
+      customer_email: bookingData.customerData.email,
       metadata: {
         base44_app_id: Deno.env.get('BASE44_APP_ID'),
         booking_id: booking.id,
