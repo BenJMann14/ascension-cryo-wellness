@@ -55,6 +55,17 @@ Deno.serve(async (req) => {
 
     console.log('Booking updated successfully');
 
+    // Create Google Calendar event
+    try {
+      const calendarResponse = await base44.asServiceRole.functions.invoke('createCalendarEvent', {
+        bookingId: booking.id
+      });
+      console.log('Calendar event created:', calendarResponse.data);
+    } catch (calendarError) {
+      console.error('Failed to create calendar event:', calendarError);
+      // Don't fail the booking if calendar creation fails
+    }
+
     return Response.json({ 
       booking: {
         ...booking,
