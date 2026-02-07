@@ -27,6 +27,14 @@ export default function ConfirmationStep({ bookingData, paymentData }) {
   const generateICSFile = () => {
     // Get date parts from the date object
     const date = calendarData.date;
+    
+    // Verify date is valid before proceeding
+    if (!date || isNaN(date.getTime())) {
+      console.error('Invalid date in calendar data:', date);
+      alert('Unable to generate calendar file. Please contact support.');
+      return;
+    }
+    
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
