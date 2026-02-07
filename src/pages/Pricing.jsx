@@ -427,10 +427,15 @@ export default function Pricing() {
                     {eventPricing.single.map((service, i) => (
                       <GlassCard key={i} className="p-5 text-center">
                         <h3 className="font-semibold text-slate-900 mb-2">{service.name}</h3>
-                        <div className="text-3xl font-bold text-cyan-600">${service.price}</div>
+                        <div className="text-3xl font-bold text-cyan-600 mb-2">${service.price}</div>
                         {service.price < service.regular && (
-                          <div className="text-sm text-slate-400 line-through">${service.regular}</div>
+                          <div className="text-sm text-slate-400 line-through mb-3">${service.regular}</div>
                         )}
+                        <Link to={createPageUrl('EventBooking')}>
+                          <GradientButton className="w-full" size="sm" variant="outline">
+                            Book Event
+                          </GradientButton>
+                        </Link>
                       </GlassCard>
                     ))}
                   </div>
@@ -450,10 +455,15 @@ export default function Pricing() {
                             </span>
                           ))}
                         </div>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-4">
                           <span className="text-2xl font-bold text-cyan-600">${combo.price}</span>
                           <span className="text-sm text-green-600 font-medium">Save ${combo.savings}</span>
                         </div>
+                        <Link to={createPageUrl('EventBooking')}>
+                          <GradientButton className="w-full" size="sm" variant="outline">
+                            Book Event
+                          </GradientButton>
+                        </Link>
                       </GlassCard>
                     ))}
                   </div>
@@ -469,12 +479,17 @@ export default function Pricing() {
                         {pass.description && (
                           <p className="text-sm text-slate-600 mb-4">{pass.description}</p>
                         )}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-4">
                           <span className="text-2xl font-bold text-cyan-600">${pass.price}</span>
                           {pass.savings && (
                             <span className="text-sm text-green-600 font-medium">Save ${pass.savings}</span>
                           )}
                         </div>
+                        <Link to={createPageUrl('EventBooking')}>
+                          <GradientButton className="w-full" size="sm" variant="outline">
+                            Book Event
+                          </GradientButton>
+                        </Link>
                       </GlassCard>
                     ))}
                   </div>
