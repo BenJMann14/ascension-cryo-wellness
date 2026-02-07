@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isAfter, isBefore, addMonths, subMonths, setHours, setMinutes } from 'date-fns';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, ArrowRight, ArrowLeft, Loader2 } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import GradientButton from '@/components/ui/GradientButton';
 import { Button } from "@/components/ui/button";
+import { base44 } from '@/api/base44Client';
 
 // Generate time slots from 8 AM to 6 PM
 const generateTimeSlots = () => {
