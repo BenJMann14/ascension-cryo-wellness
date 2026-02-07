@@ -66,25 +66,13 @@ export default function About() {
                   alt="Martin Tomlin - Firefighter"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
-                      <Flame className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-white font-semibold">First Responder</div>
-                      <div className="text-cyan-200 text-sm">San Antonio Firefighter</div>
-                    </div>
-                  </div>
-                </div>
               </div>
               
-              {/* Secondary photo - family - hidden on mobile */}
+              {/* Secondary photo - family */}
               <motion.div 
-                className="hidden lg:block absolute -bottom-6 left-4 w-32 h-32 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
+                className="absolute -bottom-8 -left-8 w-40 h-40 rounded-2xl overflow-hidden shadow-2xl border-4 border-white hidden lg:block"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/dacbf80ae_IMG_8053.jpg" 
@@ -93,15 +81,15 @@ export default function About() {
                 />
               </motion.div>
               
-              {/* Floating badge - adjusted for mobile */}
+              {/* Floating badge */}
               <motion.div 
-                className="absolute -top-2 -right-2 lg:-top-4 lg:-right-4 bg-white/90 backdrop-blur-xl rounded-2xl p-3 lg:p-4 shadow-xl border border-white/50"
+                className="absolute top-4 right-4 bg-white/95 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-cyan-100"
                 animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
                 <div className="flex items-center gap-2">
-                  <Snowflake className="w-4 h-4 lg:w-5 lg:h-5 text-cyan-500" />
-                  <span className="font-semibold text-slate-900 text-sm lg:text-base">Recovery Specialist</span>
+                  <Snowflake className="w-5 h-5 text-cyan-500" />
+                  <span className="font-semibold text-slate-900">Recovery Specialist</span>
                 </div>
               </motion.div>
             </motion.div>
