@@ -33,6 +33,10 @@ Deno.serve(async (req) => {
     }
 
     // Create booking record first to store all data
+    // Parse the date properly - it comes as a serialized string from frontend
+    const dateObj = new Date(bookingData.calendarData.date);
+    const appointmentDateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+    
     const booking = await base44.asServiceRole.entities.Booking.create({
       customer_first_name: bookingData.customerData.firstName,
       customer_last_name: bookingData.customerData.lastName,
@@ -42,7 +46,7 @@ Deno.serve(async (req) => {
       service_city: bookingData.addressData.city,
       service_zip: bookingData.addressData.zip,
       distance_miles: bookingData.addressData.distance,
-      appointment_date: bookingData.calendarData.date,
+      appointment_date: appointmentDateStr,
       appointment_time: bookingData.calendarData.time,
       services_selected: services.map(s => ({
         service_id: s.id,
