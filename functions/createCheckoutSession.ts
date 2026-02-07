@@ -32,6 +32,32 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No services selected' }, { status: 400 });
     }
 
+    // Create booking record first to store all data
+    const booking = await base44.asServiceRole.entities.Booking.create({
+      customer_first_name: bookingData.customerData.firstName,
+      customer_last_name: bookingData.customerData.lastName,
+      customer_email: bookingData.customerData.email,
+      customer_phone: bookingData.customerData.phone,
+      service_address: bookingData.addressData.address,
+      service_city: bookingData.addressData.city,
+      service_zip: bookingData.addressData.zip,
+      distance_miles: bookingData.addressData.distance,
+      appointment_date: bookingData.calendarData.date,
+      appointment_time: bookingData.calendarData.time,
+      services_selected: services.map(s => ({
+        service_id: s.id,
+        service_name: s.name,
+        price: s.price
+      })),
+      total_amount: services.reduce((sum, s) => sum + s.price, 0),
+      estimated_duration: services.reduce((sum, s) => sum + (parseInt(s.duration) || 15), 0),
+      special_requests: bookingData.customerData.specialRequests || '',
+      marketing_opt_in: bookingData.customerData.marketingOptIn || false,
+      status: 'pending',
+      payment_status: 'pending',
+      booking_type: 'individual'
+    });
+
     // Build line items from services
     const lineItems = services.map(service => {
       const priceId = SERVICE_PRICE_MAP[service.id];
@@ -44,7 +70,7 @@ Deno.serve(async (req) => {
       };
     });
 
-    // Create checkout session
+    // Create checkout session with minimal metadata
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'payment',
@@ -52,8 +78,8 @@ Deno.serve(async (req) => {
       cancel_url: `${origin}/BookSession?canceled=true`,
       metadata: {
         base44_app_id: Deno.env.get('BASE44_APP_ID'),
-        booking_data: JSON.stringify(bookingData),
-        user_email: user?.email || bookingData?.customerData?.email || 'guest'
+        booking_id: booking.id,
+        customer_email: bookingData.customerData.email
       }
     });
 
