@@ -204,32 +204,32 @@ export default function Layout({ children, currentPageName }) {
               <h4 className="font-semibold text-lg mb-4">Services</h4>
               <ul className="space-y-3 text-sm text-slate-400">
                 <li>
-                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services') + '?expand=cryo'} className="hover:text-cyan-400 transition-colors">
                     Localized Cryotherapy
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services') + '?expand=compression'} className="hover:text-cyan-400 transition-colors">
                     Compression Therapy
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services') + '?expand=redlight'} className="hover:text-cyan-400 transition-colors">
                     Red Light Therapy
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services') + '?expand=vibration'} className="hover:text-cyan-400 transition-colors">
                     Vibration Therapy
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services') + '?expand=facial'} className="hover:text-cyan-400 transition-colors">
                     Cryo Facials
                   </Link>
                 </li>
                 <li>
-                  <Link to={createPageUrl('Services')} className="hover:text-cyan-400 transition-colors">
+                  <Link to={createPageUrl('Services') + '?expand=bodysculpt'} className="hover:text-cyan-400 transition-colors">
                     Body Sculpting
                   </Link>
                 </li>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -393,6 +393,27 @@ function ServiceCard({ service, isExpanded, onToggle }) {
 export default function Services() {
   const [activeTab, setActiveTab] = useState('recovery');
   const [expandedService, setExpandedService] = useState(null);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const expandParam = urlParams.get('expand');
+    if (expandParam) {
+      setExpandedService(expandParam);
+      // Set the correct tab based on the service
+      if (['cryo', 'compression', 'redlight', 'vibration'].includes(expandParam)) {
+        setActiveTab('recovery');
+      } else if (['bodysculpt', 'facial', 'scalp'].includes(expandParam)) {
+        setActiveTab('aesthetic');
+      }
+      // Scroll to services section after a brief delay
+      setTimeout(() => {
+        const element = document.getElementById('services-list');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, []);
 
   const toggleService = (id) => {
     setExpandedService(expandedService === id ? null : id);
