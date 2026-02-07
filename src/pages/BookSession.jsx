@@ -149,7 +149,7 @@ export default function BookSession() {
         service_city: bookingData.addressData.city,
         service_zip: bookingData.addressData.zip,
         distance_miles: bookingData.addressData.distance || 0,
-        appointment_date: bookingData.calendarData.date.toISOString().split('T')[0],
+        appointment_date: `${bookingData.calendarData.date.getFullYear()}-${String(bookingData.calendarData.date.getMonth() + 1).padStart(2, '0')}-${String(bookingData.calendarData.date.getDate()).padStart(2, '0')}`,
         appointment_time: bookingData.calendarData.time,
         services_selected: bookingData.services.map(s => ({
           service_id: s.id,
