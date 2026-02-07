@@ -82,7 +82,7 @@ export default function About() {
               
               {/* Secondary photo - family - hidden on mobile */}
               <motion.div 
-                className="hidden lg:block absolute -bottom-8 -left-8 w-32 h-32 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
+                className="hidden lg:block absolute -bottom-6 left-4 w-32 h-32 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
               >
