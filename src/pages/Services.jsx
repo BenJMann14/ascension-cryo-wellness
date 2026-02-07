@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -391,11 +391,12 @@ function ServiceCard({ service, isExpanded, onToggle }) {
 }
 
 export default function Services() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('recovery');
   const [expandedService, setExpandedService] = useState(null);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     const expandParam = urlParams.get('expand');
     if (expandParam) {
       setExpandedService(expandParam);
@@ -413,7 +414,7 @@ export default function Services() {
         }
       }, 100);
     }
-  }, []);
+  }, [location.search]);
 
   const toggleService = (id) => {
     setExpandedService(expandedService === id ? null : id);
