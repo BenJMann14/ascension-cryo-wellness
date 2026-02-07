@@ -34,8 +34,8 @@ export default function CalendarPicker({ onSelect, onBack }) {
 
   // Fetch calendar availability on mount and when month changes
   useEffect(() => {
-    const fetchAvailability = async () => {
-      setIsLoading(true);
+    const fetchAvailability = async (showLoader = true) => {
+      if (showLoader) setIsLoading(true);
       try {
         const startDate = startOfMonth(addMonths(currentMonth, -1));
         const endDate = endOfMonth(addMonths(currentMonth, 1));
@@ -54,11 +54,17 @@ export default function CalendarPicker({ onSelect, onBack }) {
       } catch (error) {
         console.error('Error fetching calendar availability:', error);
       } finally {
-        setIsLoading(false);
+        if (showLoader) setIsLoading(false);
       }
     };
 
-    fetchAvailability();
+    // Initial fetch with loader
+    fetchAvailability(true);
+
+    // Auto-refresh every 15 seconds for 2-way sync with Google Calendar
+    const interval = setInterval(() => fetchAvailability(false), 15000);
+
+    return () => clearInterval(interval);
   }, [currentMonth]);
 
   const monthStart = startOfMonth(currentMonth);
