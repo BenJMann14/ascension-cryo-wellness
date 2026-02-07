@@ -25,31 +25,55 @@ export default function ConfirmationStep({ bookingData, paymentData }) {
     // Generate ICS file content
     const startDate = new Date(calendarData.date);
     const [hours, minutes] = calendarData.time.split(':');
-    startDate.setHours(parseInt(hours), parseInt(minutes));
+    startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     
     const endDate = new Date(startDate);
     endDate.setHours(endDate.getHours() + 1);
 
+    // Format dates for ICS (YYYYMMDDTHHMMSS in local timezone)
+    const formatICSDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hour = String(date.getHours()).padStart(2, '0');
+      const minute = String(date.getMinutes()).padStart(2, '0');
+      const second = String(date.getSeconds()).padStart(2, '0');
+      return `${year}${month}${day}T${hour}${minute}${second}`;
+    };
+
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Ascension Cryo & Wellness//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-TIMEZONE:America/Chicago
 BEGIN:VEVENT
 UID:${paymentData.confirmationNumber}@ascensioncryo.com
-DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-DTSTART:${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-DTEND:${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTAMP:${formatICSDate(new Date())}
+DTSTART;TZID=America/Chicago:${formatICSDate(startDate)}
+DTEND;TZID=America/Chicago:${formatICSDate(endDate)}
 SUMMARY:Ascension Cryo & Wellness Appointment
-DESCRIPTION:Services: ${services.map(s => s.name).join(', ')}
+DESCRIPTION:Confirmation: ${paymentData.confirmationNumber}\\n\\nServices: ${services.map(s => s.name).join(', ')}\\n\\nTotal: $${totalPrice}
 LOCATION:${addressData.fullAddress}
+STATUS:CONFIRMED
+SEQUENCE:0
+BEGIN:VALARM
+TRIGGER:-PT1H
+DESCRIPTION:Appointment Reminder
+ACTION:DISPLAY
+END:VALARM
 END:VEVENT
-END:VCALENDAR`;
+END:VCALENDAR`.replace(/\n/g, '\r\n');
 
-    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `ascension-booking-${paymentData.confirmationNumber}.ics`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
