@@ -114,11 +114,16 @@ export default function AddressValidator({ onValidated }) {
       const distance = calculateDistance(CENTER_LAT, CENTER_LNG, coords.lat, coords.lng);
       
       if (distance <= MAX_DISTANCE_MILES) {
-        setValidationResult({
-          success: true,
-          distance: Math.round(distance),
-          address: fullAddress
+        // Address is valid - proceed directly
+        setIsValidating(false);
+        onValidated({
+          address,
+          city,
+          zip,
+          fullAddress,
+          distance: Math.round(distance)
         });
+        return;
       } else {
         setValidationResult({
           success: false,
@@ -128,12 +133,16 @@ export default function AddressValidator({ onValidated }) {
       }
     } else {
       // If we can't geocode, allow booking but flag for manual review
-      setValidationResult({
-        success: true,
+      setIsValidating(false);
+      onValidated({
+        address,
+        city,
+        zip,
+        fullAddress,
         distance: null,
-        address: fullAddress,
         needsReview: true
       });
+      return;
     }
 
     setIsValidating(false);
@@ -251,35 +260,24 @@ export default function AddressValidator({ onValidated }) {
 
         {/* Action Buttons */}
         <div className="mt-6 flex flex-col sm:flex-row gap-3">
-          {!validationResult?.success ? (
-            <GradientButton
-              onClick={validateAddress}
-              disabled={!address || !city || !zip || isValidating}
-              className="w-full sm:w-auto"
-              size="lg"
-            >
-              {isValidating ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Checking...
-                </>
-              ) : (
-                <>
-                  <MapPin className="w-5 h-5" />
-                  Verify Address
-                </>
-              )}
-            </GradientButton>
-          ) : (
-            <GradientButton
-              onClick={handleContinue}
-              className="w-full sm:w-auto"
-              size="lg"
-            >
-              Continue to Calendar
-              <ArrowRight className="w-5 h-5" />
-            </GradientButton>
-          )}
+          <GradientButton
+            onClick={validateAddress}
+            disabled={!address || !city || !zip || isValidating}
+            className="w-full sm:w-auto"
+            size="lg"
+          >
+            {isValidating ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Checking...
+              </>
+            ) : (
+              <>
+                <MapPin className="w-5 h-5" />
+                Verify Address
+              </>
+            )}
+          </GradientButton>
         </div>
       </GlassCard>
 
