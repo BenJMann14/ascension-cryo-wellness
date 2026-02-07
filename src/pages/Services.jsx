@@ -375,7 +375,7 @@ function ServiceCard({ service, isExpanded, onToggle }) {
                 </div>
                 
                 {/* Book Now Button */}
-                <Link to={createPageUrl('BookSession')}>
+                <Link to={`${createPageUrl('BookSession')}?service=${service.id}`}>
                   <GradientButton className={`w-full bg-gradient-to-r ${colors.gradient}`}>
                     Book This Service
                     <ArrowRight className="w-5 h-5" />
