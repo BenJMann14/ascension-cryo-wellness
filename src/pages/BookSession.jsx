@@ -43,9 +43,8 @@ export default function BookSession() {
             const booking = response.data.booking;
             
             // Reconstruct booking data from saved booking
-            // Parse the appointment date properly
-            const [year, month, day] = booking.appointment_date.split('-').map(Number);
-            const appointmentDate = new Date(year, month - 1, day);
+            // Parse the appointment date properly (YYYY-MM-DD format)
+            const appointmentDate = new Date(booking.appointment_date + 'T00:00:00');
             
             setBookingData({
               addressData: {
