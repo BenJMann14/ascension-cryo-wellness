@@ -21,7 +21,6 @@ export default function ConfirmationStep({ bookingData, paymentData }) {
   const { addressData, calendarData, customerData, services } = bookingData;
   const totalPrice = services.reduce((sum, s) => sum + s.price, 0);
 
-  // Use the already formatted date and time from booking
   const formattedDate = calendarData.formattedDate;
   const formattedTime = calendarData.time;
 
