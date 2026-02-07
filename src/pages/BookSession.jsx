@@ -12,6 +12,7 @@ const STEPS = ['address', 'calendar', 'customer', 'services', 'payment', 'confir
 
 export default function BookSession() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [preselectedServiceId, setPreselectedServiceId] = useState(null);
   const [bookingData, setBookingData] = useState({
     addressData: null,
     calendarData: null,
@@ -20,11 +21,12 @@ export default function BookSession() {
   });
   const [paymentData, setPaymentData] = useState(null);
 
-  // Check for Stripe return
+  // Check for Stripe return and preselected service
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
     const success = urlParams.get('success');
+    const serviceParam = urlParams.get('service');
     
     if (success && sessionId) {
       // Payment successful, show confirmation
@@ -34,6 +36,20 @@ export default function BookSession() {
         sessionId
       });
       setCurrentStep(5); // Jump to confirmation step
+    }
+
+    if (serviceParam) {
+      // Map service IDs from Services page to ServiceSelector IDs
+      const serviceMap = {
+        'cryo': 'cryo-full',
+        'compression': 'compression',
+        'redlight': 'redlight',
+        'vibration': 'vibration',
+        'bodysculpt': 'body-sculpt',
+        'facial': 'facial',
+        'scalp': 'scalp'
+      };
+      setPreselectedServiceId(serviceMap[serviceParam] || null);
     }
   }, []);
 
@@ -162,6 +178,7 @@ export default function BookSession() {
               <ServiceSelector 
                 onSubmit={handleServicesSelect}
                 onBack={goBack}
+                preselectedServiceId={preselectedServiceId}
               />
             )}
             {currentStep === 4 && (
