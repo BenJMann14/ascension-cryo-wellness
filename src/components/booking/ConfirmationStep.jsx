@@ -65,7 +65,7 @@ DTSTAMP:${formatICSDate(new Date())}
 DTSTART;TZID=America/Chicago:${formatICSDate(startDate)}
 DTEND;TZID=America/Chicago:${formatICSDate(endDate)}
 SUMMARY:Ascension Cryo & Wellness Appointment
-DESCRIPTION:Confirmation: ${paymentData.confirmationNumber}\\n\\nServices: ${services.map(s => s.name).join(', ')}\\n\\nTotal: $${totalPrice}
+DESCRIPTION:Confirmation: ${paymentData.confirmationNumber}\\n\\nServices: ${services.map(s => s.service_name || s.name).join(', ')}\\n\\nTotal: $${totalPrice}
 LOCATION:${addressData.fullAddress}
 STATUS:CONFIRMED
 SEQUENCE:0
@@ -153,9 +153,9 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
             <div>
               <div className="text-sm text-slate-500 mb-2">Services Booked</div>
               <div className="space-y-2">
-                {services.map(service => (
-                  <div key={service.id} className="flex justify-between items-center py-2 border-b last:border-0">
-                    <span className="text-slate-700">{service.name}</span>
+                {services.map((service, idx) => (
+                  <div key={service.id || idx} className="flex justify-between items-center py-2 border-b last:border-0">
+                    <span className="text-slate-700">{service.service_name || service.name}</span>
                     <span className="font-medium text-slate-900">${service.price}</span>
                   </div>
                 ))}
