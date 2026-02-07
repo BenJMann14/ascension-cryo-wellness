@@ -29,13 +29,69 @@ export default function BookSession() {
     const serviceParam = urlParams.get('service');
     
     if (success && sessionId) {
-      // Payment successful, show confirmation
-      const confirmationNumber = 'ASC-' + sessionId.slice(-8).toUpperCase();
-      setPaymentData({
-        confirmationNumber,
-        sessionId
-      });
-      setCurrentStep(5); // Jump to confirmation step
+      // Payment successful, fetch booking data and show confirmation
+      const fetchBooking = async () => {
+        try {
+          const stripe = await import('@stripe/stripe-js');
+          const stripeInstance = await stripe.loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+          
+          // Fetch session to get booking ID from metadata
+          const response = await base44.functions.invoke('getBookingFromSession', { sessionId });
+          
+          if (response.data.booking) {
+            const booking = response.data.booking;
+            
+            // Reconstruct booking data from saved booking
+            const appointmentDate = new Date(booking.appointment_date + 'T00:00:00');
+            
+            setBookingData({
+              addressData: {
+                address: booking.service_address,
+                city: booking.service_city,
+                zip: booking.service_zip,
+                distance: booking.distance_miles,
+                fullAddress: `${booking.service_address}, ${booking.service_city}, ${booking.service_zip}`
+              },
+              calendarData: {
+                date: appointmentDate,
+                time: booking.appointment_time,
+                formattedDate: appointmentDate.toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                }),
+                formattedTime: booking.appointment_time
+              },
+              customerData: {
+                firstName: booking.customer_first_name,
+                lastName: booking.customer_last_name,
+                email: booking.customer_email,
+                phone: booking.customer_phone,
+                specialRequests: booking.special_requests
+              },
+              services: booking.services_selected || []
+            });
+            
+            setPaymentData({
+              confirmationNumber: booking.confirmation_number || 'ASC-' + sessionId.slice(-8).toUpperCase(),
+              sessionId
+            });
+            
+            setCurrentStep(5);
+          }
+        } catch (error) {
+          console.error('Error fetching booking:', error);
+          // Fallback
+          setPaymentData({
+            confirmationNumber: 'ASC-' + sessionId.slice(-8).toUpperCase(),
+            sessionId
+          });
+          setCurrentStep(5);
+        }
+      };
+      
+      fetchBooking();
     }
 
     if (serviceParam) {
