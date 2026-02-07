@@ -4,53 +4,71 @@ import Stripe from 'npm:stripe@17.6.0';
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
 Deno.serve(async (req) => {
+  const base44 = createClientFromRequest(req);
+  
   try {
-    const base44 = createClientFromRequest(req);
     const { sessionId } = await req.json();
 
     if (!sessionId) {
+      console.error('No session ID provided');
       return Response.json({ error: 'Session ID required' }, { status: 400 });
     }
+
+    console.log('Fetching Stripe session:', sessionId);
 
     // Retrieve the checkout session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     
+    console.log('Session metadata:', session.metadata);
+
     if (!session.metadata?.booking_id) {
-      return Response.json({ error: 'Booking ID not found' }, { status: 404 });
+      console.error('No booking_id in session metadata');
+      return Response.json({ error: 'Booking ID not found in session' }, { status: 404 });
     }
 
-    // Fetch the booking from database
+    console.log('Fetching booking:', session.metadata.booking_id);
+
+    // Fetch the booking from database using service role
     const bookings = await base44.asServiceRole.entities.Booking.filter({ 
       id: session.metadata.booking_id 
     });
 
+    console.log('Bookings found:', bookings?.length);
+
     if (!bookings || bookings.length === 0) {
+      console.error('Booking not found in database');
       return Response.json({ error: 'Booking not found' }, { status: 404 });
     }
 
     const booking = bookings[0];
+    const confirmationNumber = 'ASC-' + sessionId.slice(-8).toUpperCase();
+
+    console.log('Updating booking status for:', booking.id);
 
     // Update booking status to confirmed and paid
     await base44.asServiceRole.entities.Booking.update(booking.id, {
       status: 'confirmed',
       payment_status: 'paid',
       payment_intent_id: session.payment_intent,
-      confirmation_number: 'ASC-' + sessionId.slice(-8).toUpperCase()
+      confirmation_number: confirmationNumber
     });
+
+    console.log('Booking updated successfully');
 
     return Response.json({ 
       booking: {
         ...booking,
-        confirmation_number: 'ASC-' + sessionId.slice(-8).toUpperCase(),
+        confirmation_number: confirmationNumber,
         status: 'confirmed',
         payment_status: 'paid'
       }
     });
 
   } catch (error) {
-    console.error('Error fetching booking from session:', error);
+    console.error('Error in getBookingFromSession:', error);
     return Response.json({ 
-      error: error.message || 'Failed to fetch booking' 
+      error: error.message || 'Failed to fetch booking',
+      stack: error.stack
     }, { status: 500 });
   }
 });

@@ -32,13 +32,9 @@ export default function BookSession() {
       // Payment successful, fetch booking data and show confirmation
       const fetchBooking = async () => {
         try {
-          const stripe = await import('@stripe/stripe-js');
-          const stripeInstance = await stripe.loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-          
-          // Fetch session to get booking ID from metadata
           const response = await base44.functions.invoke('getBookingFromSession', { sessionId });
           
-          if (response.data.booking) {
+          if (response.data?.booking) {
             const booking = response.data.booking;
             
             // Reconstruct booking data from saved booking
@@ -82,12 +78,6 @@ export default function BookSession() {
           }
         } catch (error) {
           console.error('Error fetching booking:', error);
-          // Fallback
-          setPaymentData({
-            confirmationNumber: 'ASC-' + sessionId.slice(-8).toUpperCase(),
-            sessionId
-          });
-          setCurrentStep(5);
         }
       };
       
