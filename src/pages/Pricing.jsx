@@ -425,13 +425,15 @@ export default function Pricing() {
                   <h2 className="text-2xl font-bold text-slate-900 mb-6">Event Single Services</h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {eventPricing.single.map((service, i) => (
-                      <GlassCard key={i} className="p-5 text-center">
-                        <h3 className="font-semibold text-slate-900 mb-2">{service.name}</h3>
-                        <div className="text-3xl font-bold text-cyan-600 mb-2">${service.price}</div>
-                        {service.price < service.regular && (
-                          <div className="text-sm text-slate-400 line-through mb-3">${service.regular}</div>
-                        )}
-                        <Link to={createPageUrl('EventBooking')}>
+                      <GlassCard key={i} className="p-5 text-center flex flex-col">
+                        <h3 className="font-semibold text-slate-900 mb-3">{service.name}</h3>
+                        <div className="text-3xl font-bold text-cyan-600 mb-1">${service.price}</div>
+                        <div className="h-5 mb-3">
+                          {service.price < service.regular && (
+                            <div className="text-sm text-slate-400 line-through">${service.regular}</div>
+                          )}
+                        </div>
+                        <Link to={createPageUrl('EventBooking')} className="mt-auto">
                           <GradientButton className="w-full" size="sm" variant="outline">
                             Book Event
                           </GradientButton>
