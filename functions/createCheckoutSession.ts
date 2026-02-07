@@ -85,7 +85,8 @@ Deno.serve(async (req) => {
 
     return Response.json({ 
       sessionId: session.id,
-      url: session.url 
+      url: session.url,
+      bookingId: booking.id
     });
 
   } catch (error) {
