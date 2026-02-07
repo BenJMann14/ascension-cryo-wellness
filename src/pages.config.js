@@ -49,34 +49,34 @@
  */
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
+import BasketballRecovery from './pages/BasketballRecovery';
 import BookSession from './pages/BookSession';
 import Contact from './pages/Contact';
 import EventBooking from './pages/EventBooking';
-import Home from './pages/Home';
-import Pricing from './pages/Pricing';
-import Services from './pages/Services';
-import HyroxRecovery from './pages/HyroxRecovery';
-import VolleyballRecovery from './pages/VolleyballRecovery';
-import RunningRecovery from './pages/RunningRecovery';
-import BasketballRecovery from './pages/BasketballRecovery';
 import EventBookingFlow from './pages/EventBookingFlow';
+import Home from './pages/Home';
+import HyroxRecovery from './pages/HyroxRecovery';
+import Pricing from './pages/Pricing';
+import RunningRecovery from './pages/RunningRecovery';
+import Services from './pages/Services';
+import VolleyballRecovery from './pages/VolleyballRecovery';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "About": About,
     "AdminDashboard": AdminDashboard,
+    "BasketballRecovery": BasketballRecovery,
     "BookSession": BookSession,
     "Contact": Contact,
     "EventBooking": EventBooking,
-    "Home": Home,
-    "Pricing": Pricing,
-    "Services": Services,
-    "HyroxRecovery": HyroxRecovery,
-    "VolleyballRecovery": VolleyballRecovery,
-    "RunningRecovery": RunningRecovery,
-    "BasketballRecovery": BasketballRecovery,
     "EventBookingFlow": EventBookingFlow,
+    "Home": Home,
+    "HyroxRecovery": HyroxRecovery,
+    "Pricing": Pricing,
+    "RunningRecovery": RunningRecovery,
+    "Services": Services,
+    "VolleyballRecovery": VolleyballRecovery,
 }
 
 export const pagesConfig = {

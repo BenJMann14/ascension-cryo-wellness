@@ -365,7 +365,7 @@ function ServiceCard({ service, isExpanded, onToggle }) {
               {/* Pricing */}
               <div>
                 <h4 className="font-semibold text-slate-900 mb-3">Pricing</h4>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 mb-6">
                   {service.pricing.map((price, i) => (
                     <div key={i} className={`px-4 py-3 ${colors.bg} rounded-xl`}>
                       <span className="text-sm text-slate-600">{price.name}</span>
@@ -373,6 +373,14 @@ function ServiceCard({ service, isExpanded, onToggle }) {
                     </div>
                   ))}
                 </div>
+                
+                {/* Book Now Button */}
+                <Link to={createPageUrl('BookSession')}>
+                  <GradientButton className={`w-full bg-gradient-to-r ${colors.gradient}`}>
+                    Book This Service
+                    <ArrowRight className="w-5 h-5" />
+                  </GradientButton>
+                </Link>
               </div>
             </div>
           </motion.div>
