@@ -11,14 +11,16 @@ const services = [
     title: "Localized Cryotherapy",
     description: "Targeted cold therapy at -10°F for rapid inflammation reduction and pain relief.",
     color: "from-cyan-400 to-cyan-600",
-    bgColor: "bg-cyan-50"
+    bgColor: "bg-cyan-50",
+    expandId: "cryo"
   },
   {
     icon: Wind,
     title: "Compression Therapy",
     description: "Normatec pneumatic compression for enhanced circulation and faster recovery.",
     color: "from-blue-400 to-blue-600",
-    bgColor: "bg-blue-50"
+    bgColor: "bg-blue-50",
+    expandId: "compression"
   },
   {
     icon: Sun,
@@ -26,14 +28,16 @@ const services = [
     description: "Cellular regeneration and tissue repair through therapeutic light wavelengths.",
     color: "from-red-500 to-rose-600",
     bgColor: "bg-red-50",
-    iconColor: "text-red-500"
+    iconColor: "text-red-500",
+    expandId: "redlight"
   },
   {
     icon: Activity,
     title: "Vibration Therapy",
     description: "Lymphatic drainage and muscle activation through whole-body vibration.",
     color: "from-emerald-400 to-emerald-600",
-    bgColor: "bg-emerald-50"
+    bgColor: "bg-emerald-50",
+    expandId: "vibration"
   }
 ];
 
@@ -81,7 +85,7 @@ export default function ServicesOverview() {
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
                 <p className="text-slate-600 mb-5 leading-relaxed">{service.description}</p>
                 <Link 
-                  to={createPageUrl('Services')} 
+                  to={createPageUrl('Services') + '?expand=' + service.expandId} 
                   className="inline-flex items-center text-cyan-600 font-medium hover:text-cyan-700 transition-colors group/link"
                 >
                   Learn More 
