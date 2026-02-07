@@ -22,8 +22,15 @@ Deno.serve(async (req) => {
     // Get Google Calendar access token
     const accessToken = await base44.asServiceRole.connectors.getAccessToken('googlecalendar');
 
-    // Prepare event details
-    const appointmentDateTime = new Date(booking.appointment_date + 'T' + booking.appointment_time);
+    // Prepare event details - ensure proper date parsing
+    // appointment_date is in YYYY-MM-DD format, appointment_time is in HH:MM format
+    const appointmentDateTime = new Date(booking.appointment_date + 'T' + booking.appointment_time + ':00');
+    
+    if (isNaN(appointmentDateTime.getTime())) {
+      console.error('Invalid date/time:', booking.appointment_date, booking.appointment_time);
+      throw new Error('Invalid appointment date or time');
+    }
+    
     const endDateTime = new Date(appointmentDateTime);
     endDateTime.setMinutes(endDateTime.getMinutes() + (booking.estimated_duration || 60));
 
