@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingCart, 
@@ -72,8 +72,8 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
   const [activeCategory, setActiveCategory] = useState('recovery');
 
   // Pre-select service if provided
-  React.useEffect(() => {
-    if (preselectedServiceId && selectedServices.length === 0) {
+  useEffect(() => {
+    if (preselectedServiceId) {
       // Find the service in all categories
       for (const [categoryKey, category] of Object.entries(services)) {
         const service = category.items.find(s => s.id === preselectedServiceId);
