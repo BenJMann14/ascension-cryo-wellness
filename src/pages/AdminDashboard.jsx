@@ -1,262 +1,418 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { 
-  QrCode, 
   Calendar, 
-  DollarSign, 
-  Users, 
-  Settings,
-  Copy,
-  Check,
-  Download,
-  Eye
+  Search, 
+  Filter, 
+  RefreshCw, 
+  DollarSign,
+  CheckCircle,
+  XCircle,
+  Clock,
+  MapPin,
+  Mail,
+  Phone,
+  Edit,
+  Trash2,
+  Download
 } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import GlassCard from '@/components/ui/GlassCard';
-import GradientButton from '@/components/ui/GradientButton';
-
-const eventThemes = [
-  { id: 'volleyball', name: 'Volleyball Tournament', emoji: '🏐', color: 'from-orange-500 to-amber-600' },
-  { id: 'basketball', name: 'Basketball Tournament', emoji: '🏀', color: 'from-orange-600 to-red-600' },
-  { id: 'marathon', name: 'Marathon / Running', emoji: '🏃', color: 'from-blue-600 to-indigo-700' },
-  { id: 'hyrox', name: 'Hyrox / CrossFit', emoji: '🏋️', color: 'from-red-600 to-slate-800' },
-  { id: 'soccer', name: 'Soccer Tournament', emoji: '⚽', color: 'from-green-600 to-emerald-700' },
-  { id: 'football', name: 'Football Event', emoji: '🏈', color: 'from-amber-700 to-brown-800' },
-  { id: 'tennis', name: 'Tennis Tournament', emoji: '🎾', color: 'from-lime-500 to-green-600' },
-  { id: 'triathlon', name: 'Triathlon', emoji: '🏊', color: 'from-cyan-500 to-blue-600' },
-  { id: 'mma', name: 'MMA / Combat Sports', emoji: '🥊', color: 'from-red-700 to-black' },
-  { id: 'general', name: 'General Sports Event', emoji: '🏆', color: 'from-cyan-500 to-blue-600' }
-];
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 export default function AdminDashboard() {
-  const [selectedTheme, setSelectedTheme] = useState('volleyball');
-  const [eventName, setEventName] = useState('');
-  const [showPricing, setShowPricing] = useState(true);
-  const [copied, setCopied] = useState(false);
-  const [generatedUrl, setGeneratedUrl] = useState('');
+  const queryClient = useQueryClient();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [actionDialog, setActionDialog] = useState({ open: false, type: null });
 
-  const baseUrl = window.location.origin;
-  
-  const generateQRUrl = () => {
-    const params = new URLSearchParams({
-      theme: selectedTheme,
-      ...(eventName && { event: eventName }),
-      pricing: showPricing ? '1' : '0'
+  // Check if user is admin
+  const { data: user, isLoading: userLoading } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const authenticated = await base44.auth.isAuthenticated();
+      if (!authenticated) {
+        window.location.href = '/';
+        return null;
+      }
+      const userData = await base44.auth.me();
+      if (userData.role !== 'admin') {
+        window.location.href = '/';
+        return null;
+      }
+      return userData;
+    }
+  });
+
+  // Fetch all bookings
+  const { data: bookings = [], isLoading: bookingsLoading, refetch } = useQuery({
+    queryKey: ['admin-bookings'],
+    queryFn: () => base44.entities.Booking.list('-created_date'),
+    enabled: !!user,
+  });
+
+  // Cancel booking mutation
+  const cancelMutation = useMutation({
+    mutationFn: async (bookingId) => {
+      await base44.entities.Booking.update(bookingId, { status: 'cancelled' });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-bookings']);
+      toast.success('Booking cancelled successfully');
+      setActionDialog({ open: false, type: null });
+      setSelectedBooking(null);
+    },
+    onError: (error) => {
+      toast.error('Failed to cancel booking: ' + error.message);
+    }
+  });
+
+  // Update booking mutation (for reschedule)
+  const updateMutation = useMutation({
+    mutationFn: async ({ bookingId, data }) => {
+      await base44.entities.Booking.update(bookingId, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-bookings']);
+      toast.success('Booking updated successfully');
+      setActionDialog({ open: false, type: null });
+      setSelectedBooking(null);
+    },
+    onError: (error) => {
+      toast.error('Failed to update booking: ' + error.message);
+    }
+  });
+
+  // Filtered and sorted bookings
+  const filteredBookings = useMemo(() => {
+    return bookings.filter(booking => {
+      // Search filter
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = !searchTerm || 
+        booking.customer_first_name?.toLowerCase().includes(searchLower) ||
+        booking.customer_last_name?.toLowerCase().includes(searchLower) ||
+        booking.customer_email?.toLowerCase().includes(searchLower) ||
+        booking.confirmation_number?.toLowerCase().includes(searchLower);
+
+      // Status filter
+      const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
+
+      // Date filter
+      let matchesDate = true;
+      if (dateFilter !== 'all' && booking.appointment_date) {
+        const appointmentDate = new Date(booking.appointment_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (dateFilter === 'upcoming') {
+          matchesDate = appointmentDate >= today;
+        } else if (dateFilter === 'past') {
+          matchesDate = appointmentDate < today;
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesDate;
     });
-    const url = `${baseUrl}/EventBooking?${params.toString()}`;
-    setGeneratedUrl(url);
-    return url;
+  }, [bookings, searchTerm, statusFilter, dateFilter]);
+
+  // Stats
+  const stats = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return {
+      total: bookings.length,
+      upcoming: bookings.filter(b => b.appointment_date && new Date(b.appointment_date) >= today && b.status === 'confirmed').length,
+      completed: bookings.filter(b => b.status === 'completed').length,
+      revenue: bookings.filter(b => b.payment_status === 'paid').reduce((sum, b) => sum + (b.total_amount || 0), 0)
+    };
+  }, [bookings]);
+
+  const handleCancelBooking = () => {
+    if (selectedBooking) {
+      cancelMutation.mutate(selectedBooking.id);
+    }
   };
 
-  const copyToClipboard = () => {
-    const url = generatedUrl || generateQRUrl();
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleMarkComplete = (booking) => {
+    updateMutation.mutate({
+      bookingId: booking.id,
+      data: { status: 'completed' }
+    });
   };
 
-  const downloadQRCode = () => {
-    const url = generatedUrl || generateQRUrl();
-    // Using QR code API to generate image
-    const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(url)}`;
-    
-    const link = document.createElement('a');
-    link.href = qrImageUrl;
-    link.download = `ascension-qr-${selectedTheme}-${Date.now()}.png`;
-    link.click();
+  const getStatusBadge = (status) => {
+    const variants = {
+      confirmed: { color: 'bg-green-100 text-green-700', label: 'Confirmed' },
+      pending: { color: 'bg-yellow-100 text-yellow-700', label: 'Pending' },
+      completed: { color: 'bg-blue-100 text-blue-700', label: 'Completed' },
+      cancelled: { color: 'bg-red-100 text-red-700', label: 'Cancelled' },
+      no_show: { color: 'bg-slate-100 text-slate-700', label: 'No Show' }
+    };
+    const variant = variants[status] || variants.pending;
+    return <Badge className={variant.color}>{variant.label}</Badge>;
   };
 
-  const previewUrl = () => {
-    const url = generatedUrl || generateQRUrl();
-    window.open(url, '_blank');
-  };
-
-  const selectedThemeData = eventThemes.find(t => t.id === selectedTheme);
-  const qrPreviewUrl = generatedUrl ? 
-    `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(generatedUrl)}` :
-    null;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-200 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
-          <p className="text-slate-600">Manage your events and generate QR codes</p>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* QR Code Generator */}
-          <div className="lg:col-span-2">
-            <GlassCard className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <QrCode className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">Event QR Code Generator</h2>
-                  <p className="text-sm text-slate-500">Create custom QR codes for on-site bookings</p>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                {/* Event Type Selection */}
-                <div className="space-y-2">
-                  <Label>Event Type *</Label>
-                  <Select value={selectedTheme} onValueChange={setSelectedTheme}>
-                    <SelectTrigger className="h-12">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {eventThemes.map(theme => (
-                        <SelectItem key={theme.id} value={theme.id}>
-                          <span className="flex items-center gap-2">
-                            <span>{theme.emoji}</span>
-                            <span>{theme.name}</span>
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Event Name */}
-                <div className="space-y-2">
-                  <Label>Event Name (Optional)</Label>
-                  <Input
-                    value={eventName}
-                    onChange={(e) => setEventName(e.target.value)}
-                    placeholder="e.g., San Antonio Volleyball Championship 2025"
-                    className="h-12"
-                  />
-                </div>
-
-                {/* Options */}
-                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                  <div>
-                    <Label>Show Pricing on Landing Page</Label>
-                    <p className="text-sm text-slate-500">Display prices next to services</p>
-                  </div>
-                  <Switch checked={showPricing} onCheckedChange={setShowPricing} />
-                </div>
-
-                {/* Theme Preview */}
-                <div className={`p-4 rounded-xl bg-gradient-to-r ${selectedThemeData?.color} text-white`}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{selectedThemeData?.emoji}</span>
-                    <div>
-                      <div className="font-bold">{selectedThemeData?.name}</div>
-                      <div className="text-sm opacity-80">Theme Preview</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Generate Button */}
-                <GradientButton 
-                  onClick={generateQRUrl} 
-                  className="w-full" 
-                  size="lg"
-                >
-                  <QrCode className="w-5 h-5" />
-                  Generate QR Code
-                </GradientButton>
-              </div>
-            </GlassCard>
-          </div>
-
-          {/* QR Code Preview */}
-          <div>
-            <GlassCard className="p-6 sticky top-8">
-              <h3 className="font-semibold text-slate-900 mb-4">QR Code Preview</h3>
-              
-              {qrPreviewUrl ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="space-y-4"
-                >
-                  <div className="bg-white p-4 rounded-xl shadow-inner flex items-center justify-center">
-                    <img 
-                      src={qrPreviewUrl} 
-                      alt="QR Code"
-                      className="w-48 h-48"
-                    />
-                  </div>
-                  
-                  <div className="text-center">
-                    <p className="text-sm text-slate-500 mb-1">Scan to test</p>
-                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${selectedThemeData?.color} text-white text-sm`}>
-                      <span>{selectedThemeData?.emoji}</span>
-                      <span>{selectedThemeData?.name}</span>
-                    </div>
-                  </div>
-
-                  {/* URL Display */}
-                  <div className="bg-slate-50 rounded-lg p-3">
-                    <p className="text-xs text-slate-500 mb-1">Landing Page URL:</p>
-                    <p className="text-xs text-slate-700 break-all font-mono">{generatedUrl}</p>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={copyToClipboard}
-                      className="flex-1"
-                    >
-                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={downloadQRCode}
-                      className="flex-1"
-                    >
-                      <Download className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={previewUrl}
-                      className="flex-1"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-xs text-center text-slate-500">
-                    <span>Copy URL</span>
-                    <span>Download</span>
-                    <span>Preview</span>
-                  </div>
-                </motion.div>
-              ) : (
-                <div className="text-center py-12">
-                  <QrCode className="w-16 h-16 mx-auto text-slate-300 mb-3" />
-                  <p className="text-slate-500">Generate a QR code to preview</p>
-                </div>
-              )}
-            </GlassCard>
-
-            {/* Print Instructions */}
-            {qrPreviewUrl && (
-              <GlassCard className="p-4 mt-4">
-                <h4 className="font-medium text-slate-900 mb-2">Print Tips</h4>
-                <ul className="text-sm text-slate-600 space-y-1">
-                  <li>• Download and print at 3"x3" minimum</li>
-                  <li>• Place at eye level on your booth</li>
-                  <li>• Ensure good lighting for scanning</li>
-                  <li>• Test scan before the event</li>
-                </ul>
-              </GlassCard>
-            )}
-          </div>
+  if (userLoading || bookingsLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 text-cyan-600 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600">Loading dashboard...</p>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
+          <p className="text-slate-600">Manage bookings and view analytics</p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Total Bookings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-slate-900">{stats.total}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Upcoming</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-cyan-600">{stats.upcoming}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Completed</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-green-600">{stats.completed}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Total Revenue</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-blue-600">${stats.revenue}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="md:col-span-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input
+                    placeholder="Search by name, email, or confirmation #"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="confirmed">Confirmed</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={dateFilter} onValueChange={setDateFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by date" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Dates</SelectItem>
+                  <SelectItem value="upcoming">Upcoming</SelectItem>
+                  <SelectItem value="past">Past</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Bookings Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Bookings ({filteredBookings.length})</CardTitle>
+              <Button variant="outline" size="sm" onClick={() => refetch()}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {filteredBookings.length === 0 ? (
+                <div className="text-center py-12">
+                  <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                  <p className="text-slate-500">No bookings found</p>
+                </div>
+              ) : (
+                filteredBookings.map((booking) => (
+                  <div key={booking.id} className="border rounded-lg p-4 hover:bg-slate-50 transition-colors">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <span className="font-semibold text-slate-900">
+                            {booking.customer_first_name} {booking.customer_last_name}
+                          </span>
+                          {getStatusBadge(booking.status)}
+                          <Badge variant="outline" className="font-mono text-xs">
+                            {booking.confirmation_number}
+                          </Badge>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-600">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            {booking.appointment_date ? format(new Date(booking.appointment_date), 'MMM dd, yyyy') : 'N/A'} at {booking.appointment_time || 'N/A'}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4" />
+                            {booking.customer_email}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="w-4 h-4" />
+                            {booking.customer_phone}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            {booking.service_address}, {booking.service_city}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="w-4 h-4 text-green-600" />
+                          <span className="font-semibold text-green-600">${booking.total_amount}</span>
+                          <Badge variant="outline" className={booking.payment_status === 'paid' ? 'bg-green-50' : 'bg-yellow-50'}>
+                            {booking.payment_status}
+                          </Badge>
+                        </div>
+
+                        {booking.services_selected && booking.services_selected.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {booking.services_selected.map((service, idx) => (
+                              <Badge key={idx} variant="outline" className="bg-cyan-50">
+                                {service.service_name}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex md:flex-col gap-2">
+                        {booking.status === 'confirmed' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleMarkComplete(booking)}
+                            className="text-green-600"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Complete
+                          </Button>
+                        )}
+                        {booking.status !== 'cancelled' && booking.status !== 'completed' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedBooking(booking);
+                              setActionDialog({ open: true, type: 'cancel' });
+                            }}
+                            className="text-red-600"
+                          >
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Cancel
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Cancel Dialog */}
+      <Dialog open={actionDialog.open && actionDialog.type === 'cancel'} onOpenChange={(open) => {
+        if (!open) {
+          setActionDialog({ open: false, type: null });
+          setSelectedBooking(null);
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Booking</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel this booking for {selectedBooking?.customer_first_name} {selectedBooking?.customer_last_name}?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActionDialog({ open: false, type: null })}>
+              No, Keep Booking
+            </Button>
+            <Button variant="destructive" onClick={handleCancelBooking} disabled={cancelMutation.isPending}>
+              {cancelMutation.isPending ? 'Cancelling...' : 'Yes, Cancel Booking'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
