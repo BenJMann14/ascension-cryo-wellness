@@ -21,49 +21,37 @@ export default function ConfirmationStep({ bookingData, paymentData }) {
   const { addressData, calendarData, customerData, services } = bookingData;
   const totalPrice = services.reduce((sum, s) => sum + s.price, 0);
 
-  // Format the date properly
-  const formattedDate = calendarData.date instanceof Date 
-    ? calendarData.date.toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      })
-    : calendarData.formattedDate || 'Date not available';
-
-  const formattedTime = calendarData.formattedTime || calendarData.time || 'Time not available';
+  // Use the already formatted date and time from booking
+  const formattedDate = calendarData.formattedDate;
+  const formattedTime = calendarData.time;
 
   const generateICSFile = () => {
-    // Generate ICS file content
-    const startDate = new Date(calendarData.date);
-    const [hours, minutes] = calendarData.time.split(':');
-    startDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    // Get date parts from the date object
+    const date = calendarData.date;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     
-    const endDate = new Date(startDate);
-    endDate.setHours(endDate.getHours() + 1);
-
-    // Format dates for ICS (YYYYMMDDTHHMMSS in local timezone)
-    const formatICSDate = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const hour = String(date.getHours()).padStart(2, '0');
-      const minute = String(date.getMinutes()).padStart(2, '0');
-      const second = String(date.getSeconds()).padStart(2, '0');
-      return `${year}${month}${day}T${hour}${minute}${second}`;
-    };
+    // Get time parts
+    const [hours, minutes] = calendarData.time.split(':');
+    const endHour = String(parseInt(hours) + 1).padStart(2, '0');
+    
+    // Format for ICS (local time)
+    const startDateTime = `${year}${month}${day}T${hours}${minutes}00`;
+    const endDateTime = `${year}${month}${day}T${endHour}${minutes}00`;
+    const now = new Date();
+    const nowDateTime = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
 
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Ascension Cryo & Wellness//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-TIMEZONE:America/Chicago
 BEGIN:VEVENT
 UID:${paymentData.confirmationNumber}@ascensioncryo.com
-DTSTAMP:${formatICSDate(new Date())}
-DTSTART;TZID=America/Chicago:${formatICSDate(startDate)}
-DTEND;TZID=America/Chicago:${formatICSDate(endDate)}
+DTSTAMP:${nowDateTime}
+DTSTART:${startDateTime}
+DTEND:${endDateTime}
 SUMMARY:Ascension Cryo & Wellness Appointment
 DESCRIPTION:Confirmation: ${paymentData.confirmationNumber}\\n\\nServices: ${services.map(s => s.service_name || s.name).join(', ')}\\n\\nTotal: $${totalPrice}
 LOCATION:${addressData.fullAddress}
