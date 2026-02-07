@@ -11,7 +11,11 @@ import ConfirmationStep from '@/components/booking/ConfirmationStep';
 const STEPS = ['address', 'calendar', 'customer', 'services', 'payment', 'confirmation'];
 
 export default function BookSession() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const urlParams = new URLSearchParams(window.location.search);
+  const isReturningFromPayment = urlParams.get('success') && urlParams.get('session_id');
+  
+  const [currentStep, setCurrentStep] = useState(isReturningFromPayment ? 5 : 0);
+  const [isLoading, setIsLoading] = useState(isReturningFromPayment);
   const [preselectedServiceId, setPreselectedServiceId] = useState(null);
   const [bookingData, setBookingData] = useState({
     addressData: null,
@@ -31,6 +35,7 @@ export default function BookSession() {
     if (success && sessionId) {
       // Payment successful, fetch booking data and show confirmation
       const fetchBooking = async () => {
+        setIsLoading(true);
         try {
           const response = await base44.functions.invoke('getBookingFromSession', { sessionId });
           
@@ -75,13 +80,15 @@ export default function BookSession() {
             });
             
             setCurrentStep(5);
-          }
-        } catch (error) {
-          console.error('Error fetching booking:', error);
-        }
-      };
-      
-      fetchBooking();
+            }
+            } catch (error) {
+            console.error('Error fetching booking:', error);
+            } finally {
+            setIsLoading(false);
+            }
+            };
+
+            fetchBooking();
     }
 
     if (serviceParam) {
@@ -190,6 +197,17 @@ export default function BookSession() {
       </div>
     </div>
   );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading your booking confirmation...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
