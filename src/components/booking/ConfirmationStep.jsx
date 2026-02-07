@@ -21,6 +21,18 @@ export default function ConfirmationStep({ bookingData, paymentData }) {
   const { addressData, calendarData, customerData, services } = bookingData;
   const totalPrice = services.reduce((sum, s) => sum + s.price, 0);
 
+  // Format the date properly
+  const formattedDate = calendarData.date instanceof Date 
+    ? calendarData.date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })
+    : calendarData.formattedDate || 'Date not available';
+
+  const formattedTime = calendarData.formattedTime || calendarData.time || 'Time not available';
+
   const generateICSFile = () => {
     // Generate ICS file content
     const startDate = new Date(calendarData.date);
@@ -123,8 +135,8 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
                 </div>
                 <div>
                   <div className="text-sm text-slate-500">Date & Time</div>
-                  <div className="font-semibold text-slate-900">{calendarData.formattedDate}</div>
-                  <div className="text-cyan-600 font-medium">{calendarData.formattedTime}</div>
+                  <div className="font-semibold text-slate-900">{formattedDate}</div>
+                  <div className="text-cyan-600 font-medium">{formattedTime}</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">
