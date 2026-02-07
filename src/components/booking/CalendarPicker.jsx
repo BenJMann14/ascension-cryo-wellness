@@ -32,6 +32,35 @@ export default function CalendarPicker({ onSelect, onBack }) {
   const minDate = addDays(new Date(), 2); // 48 hours minimum notice
   const maxDate = addDays(new Date(), 30); // 30 days in advance
 
+  // Fetch calendar availability on mount and when month changes
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      setIsLoading(true);
+      try {
+        const startDate = startOfMonth(addMonths(currentMonth, -1));
+        const endDate = endOfMonth(addMonths(currentMonth, 1));
+        
+        const response = await base44.functions.invoke('getCalendarAvailability', {
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString()
+        });
+        
+        if (response.data && !response.data.error) {
+          // Convert date strings to Date objects
+          const dates = response.data.unavailableDates.map(dateStr => new Date(dateStr + 'T00:00:00'));
+          setUnavailableDates(dates);
+          setUnavailableTimes(response.data.unavailableTimes || {});
+        }
+      } catch (error) {
+        console.error('Error fetching calendar availability:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAvailability();
+  }, [currentMonth]);
+
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -44,14 +73,14 @@ export default function CalendarPicker({ onSelect, onBack }) {
     // Check if before min date or after max date
     if (isBefore(date, minDate) || isAfter(date, maxDate)) return true;
     // Check if in unavailable dates list
-    return UNAVAILABLE_DATES.some(d => isSameDay(d, date));
+    return unavailableDates.some(d => isSameDay(d, date));
   };
 
   const getAvailableTimesForDate = (date) => {
     if (!date) return [];
     const dateKey = format(date, 'yyyy-MM-dd');
-    const unavailableTimes = UNAVAILABLE_TIMES[dateKey] || [];
-    return TIME_SLOTS.filter(time => !unavailableTimes.includes(time));
+    const blocked = unavailableTimes[dateKey] || [];
+    return TIME_SLOTS.filter(time => !blocked.includes(time));
   };
 
   const availableTimes = selectedDate ? getAvailableTimesForDate(selectedDate) : [];
