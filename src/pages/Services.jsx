@@ -294,7 +294,7 @@ function ServiceCard({ service, isExpanded, onToggle }) {
                 {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
               </button>
             </div>
-            <p className="text-slate-600 mt-2 line-clamp-2">{service.description}</p>
+            <p className={`text-slate-600 mt-2 ${isExpanded ? '' : 'line-clamp-2'}`}>{service.description}</p>
             
             {/* Quick info */}
             <div className="flex flex-wrap gap-4 mt-4">
