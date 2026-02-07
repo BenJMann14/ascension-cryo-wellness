@@ -17,14 +17,14 @@ const SERVICE_PRICE_MAP = {
   'body-sculpt': 'price_1SukSWCoYuwTgPPSiPALX3UJ',
   'facial': 'price_1SukSWCoYuwTgPPSQfK3DTQZ',
   'scalp': 'price_1SukSWCoYuwTgPPSxkQ1S97I',
-  'pkg-rapid': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
-  'pkg-injury': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
-  'pkg-elite': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
-  'combo-express': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
-  'combo-reset': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
-  'combo-boost': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
-  'combo-full': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
-  'combo-lymph': 'price_1SukSWCoYuwTgPPSCOUg8KOe'
+  'pkg-rapid': 'price_1SyFKaCoYuwTgPPSaDSR5GJL',
+  'pkg-injury': 'price_1SyFKaCoYuwTgPPSyEHSjsiF',
+  'pkg-elite': 'price_1SyFKaCoYuwTgPPS4EyewJPw',
+  'combo-express': 'price_1SyFKaCoYuwTgPPS4PBImpQv',
+  'combo-reset': 'price_1SyFKaCoYuwTgPPS7nMCTZej',
+  'combo-boost': 'price_1SyFKaCoYuwTgPPSCyxA9Enp',
+  'combo-full': 'price_1SyFKaCoYuwTgPPS96fzhsLM',
+  'combo-lymph': 'price_1SyFKaCoYuwTgPPSlApGbpB5'
 };
 
 Deno.serve(async (req) => {
