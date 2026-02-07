@@ -14,9 +14,17 @@ const SERVICE_PRICE_MAP = {
   'redlight-addon': 'price_1SukSWCoYuwTgPPSAZ1f9MG6',
   'vibration': 'price_1SukSWCoYuwTgPPStMMD4Ome',
   'vibration-addon': 'price_1SukSWCoYuwTgPPSdRZg8PXF',
-  'bodysculpt': 'price_1SukSWCoYuwTgPPSiPALX3UJ',
+  'body-sculpt': 'price_1SukSWCoYuwTgPPSiPALX3UJ',
   'facial': 'price_1SukSWCoYuwTgPPSQfK3DTQZ',
-  'scalp': 'price_1SukSWCoYuwTgPPSxkQ1S97I'
+  'scalp': 'price_1SukSWCoYuwTgPPSxkQ1S97I',
+  'pkg-rapid': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
+  'pkg-injury': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
+  'pkg-elite': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
+  'combo-express': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
+  'combo-reset': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
+  'combo-boost': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
+  'combo-full': 'price_1SukSWCoYuwTgPPSCOUg8KOe',
+  'combo-lymph': 'price_1SukSWCoYuwTgPPSCOUg8KOe'
 };
 
 Deno.serve(async (req) => {
