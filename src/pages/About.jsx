@@ -60,47 +60,49 @@ export default function About() {
               className="relative order-2 lg:order-1"
             >
               {/* Main photo - firefighter */}
-              <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl max-w-md mx-auto">
+              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl max-w-md mx-auto">
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/1c83d737d_IMG_8052.jpg" 
                   alt="Martin Tomlin - Firefighter"
                   className="w-full h-full object-cover"
                 />
-                
-                {/* First Responder Badge - inside image at bottom */}
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="flex items-center gap-3 bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-lg">
-                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
                       <Flame className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <div className="text-slate-900 font-semibold">First Responder</div>
-                      <div className="text-slate-600 text-sm">San Antonio Firefighter</div>
+                      <div className="text-white font-semibold">First Responder</div>
+                      <div className="text-cyan-200 text-sm">San Antonio Firefighter</div>
                     </div>
-                  </div>
-                </div>
-                
-                {/* Recovery Specialist Badge - top right */}
-                <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-lg">
-                  <div className="flex items-center gap-2">
-                    <Snowflake className="w-5 h-5 text-cyan-500" />
-                    <span className="font-semibold text-slate-900 text-sm">Recovery Specialist</span>
                   </div>
                 </div>
               </div>
               
-              {/* Secondary photo - family */}
+              {/* Secondary photo - family - hidden on mobile */}
               <motion.div 
-                className="hidden lg:block absolute -bottom-8 -left-6 w-40 h-40 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 }}
+                className="hidden lg:block absolute -bottom-6 left-4 w-32 h-32 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
               >
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/dacbf80ae_IMG_8053.jpg" 
                   alt="Martin with family"
                   className="w-full h-full object-cover"
                 />
+              </motion.div>
+              
+              {/* Floating badge - adjusted for mobile */}
+              <motion.div 
+                className="absolute -top-2 -right-2 lg:-top-4 lg:-right-4 bg-white/90 backdrop-blur-xl rounded-2xl p-3 lg:p-4 shadow-xl border border-white/50"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <div className="flex items-center gap-2">
+                  <Snowflake className="w-4 h-4 lg:w-5 lg:h-5 text-cyan-500" />
+                  <span className="font-semibold text-slate-900 text-sm lg:text-base">Recovery Specialist</span>
+                </div>
               </motion.div>
             </motion.div>
 
