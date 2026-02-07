@@ -118,7 +118,15 @@ export default function CalendarPicker({ onSelect, onBack }) {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Calendar */}
-        <GlassCard className="p-6">
+        <GlassCard className="p-6 relative">
+          {isLoading && (
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 text-cyan-600 animate-spin mx-auto mb-2" />
+                <p className="text-sm text-slate-600">Loading availability...</p>
+              </div>
+            </div>
+          )}
           {/* Month Navigation */}
           <div className="flex items-center justify-between mb-6">
             <button
