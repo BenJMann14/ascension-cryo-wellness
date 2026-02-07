@@ -42,7 +42,6 @@ const individualServices = {
   aesthetic: [
     { name: 'Cryo Body Sculpting', duration: '30-60 min/area', price: 300, addon: null },
     { name: 'Cryo Facial (Frotox)', duration: '20-30 min', price: 125, addon: null },
-    { name: 'Scalp & Hair Therapy', duration: '20-30 min', price: 125, addon: null },
     { name: 'Scalp & Hair Therapy', duration: '20-30 min', price: 125, addon: null }
   ]
 };
@@ -346,7 +345,11 @@ export default function Pricing() {
                             {pkg.duration}
                           </li>
                         </ul>
-                        <Link to={createPageUrl('BookSession')}>
+                        <Link to={createPageUrl('BookSession') + '?service=' + (
+                          pkg.name === 'Rapid Relief Package' ? 'pkg-rapid' :
+                          pkg.name === 'Injury Recovery Package' ? 'pkg-injury' :
+                          'pkg-elite'
+                        )}>
                           <GradientButton className="w-full" variant={pkg.featured ? 'primary' : 'outline'}>
                             Select Package
                           </GradientButton>
@@ -384,7 +387,18 @@ export default function Pricing() {
                           </div>
                           <span className="text-xs text-green-600 font-medium">Save ${combo.savings}</span>
                         </div>
-                        <div className="text-sm text-slate-500 mt-2">{combo.duration}</div>
+                        <div className="text-sm text-slate-500 mt-2 mb-4">{combo.duration}</div>
+                        <Link to={createPageUrl('BookSession') + '?service=' + (
+                          combo.name === 'Recovery Express' ? 'combo-express' :
+                          combo.name === 'Athlete Reset' ? 'combo-reset' :
+                          combo.name === 'Performance Boost' ? 'combo-boost' :
+                          combo.name === 'Full Recovery Stack' ? 'combo-full' :
+                          'combo-lymph'
+                        )}>
+                          <GradientButton className="w-full" variant={combo.featured ? 'primary' : 'outline'} size="sm">
+                            Book Now
+                          </GradientButton>
+                        </Link>
                       </GlassCard>
                     ))}
                   </div>
