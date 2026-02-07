@@ -80,9 +80,9 @@ export default function About() {
                 </div>
               </div>
               
-              {/* Secondary photo - family */}
+              {/* Secondary photo - family - hidden on mobile */}
               <motion.div 
-                className="absolute -bottom-8 -left-8 w-32 h-32 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
+                className="hidden lg:block absolute -bottom-8 -left-8 w-32 h-32 rounded-2xl overflow-hidden shadow-xl border-4 border-white"
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
               >
@@ -93,15 +93,15 @@ export default function About() {
                 />
               </motion.div>
               
-              {/* Floating badge */}
+              {/* Floating badge - adjusted for mobile */}
               <motion.div 
-                className="absolute -top-4 -right-4 bg-white/90 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-white/50"
+                className="absolute -top-2 -right-2 lg:-top-4 lg:-right-4 bg-white/90 backdrop-blur-xl rounded-2xl p-3 lg:p-4 shadow-xl border border-white/50"
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
               >
                 <div className="flex items-center gap-2">
-                  <Snowflake className="w-5 h-5 text-cyan-500" />
-                  <span className="font-semibold text-slate-900">Recovery Specialist</span>
+                  <Snowflake className="w-4 h-4 lg:w-5 lg:h-5 text-cyan-500" />
+                  <span className="font-semibold text-slate-900 text-sm lg:text-base">Recovery Specialist</span>
                 </div>
               </motion.div>
             </motion.div>
