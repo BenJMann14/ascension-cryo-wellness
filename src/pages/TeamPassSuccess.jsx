@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Ticket, Copy, Check, Share2, Download } from 'lucide-react';
+import { CheckCircle2, Ticket, Copy, Check, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import confetti from 'canvas-confetti';
@@ -118,7 +118,7 @@ export default function TeamPassSuccess() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-500 via-fuchsia-600 to-pink-600 py-12">
-      <div className="max-w-2xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -133,118 +133,113 @@ export default function TeamPassSuccess() {
             <CheckCircle2 className="w-12 h-12 text-white" />
           </motion.div>
           <h1 className="text-5xl font-black text-white mb-3">PASSES SECURED! 🎉</h1>
-          <p className="text-2xl text-white/90 font-bold">Your team is ready to recover</p>
+          <p className="text-2xl text-white/90 font-bold">
+            {teamPass.total_passes} Recovery Passes for Your Team
+          </p>
         </motion.div>
 
-        {/* Main Pass Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white rounded-3xl p-8 shadow-2xl border-8 border-slate-900 mb-6"
-        >
-          <div className="text-center mb-8">
-            <Ticket className="w-16 h-16 text-pink-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-black text-slate-900 mb-6">Your Redemption Code</h2>
-            
-            <div className="bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-2xl p-8 mb-6 border-4 border-yellow-500 shadow-lg">
-              <div className="text-6xl font-black text-slate-900 mb-2 tracking-wider">
-                {teamPass.redemption_code}
-              </div>
-              <Button
-                onClick={copyCode}
-                variant="outline"
-                className="mt-4 font-bold border-2 border-slate-900"
-              >
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4 mr-2" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 mr-2" />
-                    Copy Code
-                  </>
-                )}
-              </Button>
-            </div>
-
-            <div className={`rounded-2xl p-6 border-4 ${
-              teamPass.remaining_passes > 0 ? 'bg-green-100 border-green-500' : 'bg-slate-100 border-slate-400'
-            }`}>
-              <div className={`text-6xl font-black mb-2 ${
-                teamPass.remaining_passes > 0 ? 'text-green-600' : 'text-slate-400'
-              }`}>
-                {teamPass.remaining_passes}
-              </div>
-              <div className="text-xl font-bold text-slate-700">
-                of {teamPass.total_passes} Passes Left
-              </div>
-            </div>
-
-            {teamPass.remaining_passes > 0 && (
-              <div className="grid grid-cols-2 gap-3 mt-6">
-                <Button
-                  onClick={sharePass}
-                  variant="outline"
-                  className="font-bold border-2 border-slate-900"
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share
-                </Button>
-                <Button
-                  onClick={() => setShowRedeemDialog(true)}
-                  className="bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black"
-                >
-                  Use Pass
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200 mb-6">
-            <h3 className="font-black text-slate-900 mb-3 text-lg">📧 Check Your Email!</h3>
-            <p className="text-slate-700 font-medium">
-              We've sent a confirmation email to <strong>{teamPass.customer_email}</strong> with all the details and a screenshot-friendly version of your code.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-black text-slate-900 text-lg">How to Use:</h3>
-            <div className="bg-yellow-50 rounded-xl p-4 border-2 border-yellow-300">
-              <p className="font-bold text-slate-900 mb-2">✨ Two Easy Ways:</p>
-              <ol className="space-y-2 text-sm">
-                <li className="flex gap-2">
-                  <span className="font-black text-pink-600">1.</span>
-                  <span className="text-slate-700"><strong>Self-Redeem:</strong> Click "Use Pass" button above</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-black text-pink-600">2.</span>
-                  <span className="text-slate-700"><strong>At Booth:</strong> Show code to staff</span>
-                </li>
-              </ol>
-            </div>
-          </div>
-
-          <div className="mt-6 p-4 bg-purple-50 rounded-xl border-2 border-purple-200">
-            <p className="text-sm font-bold text-purple-900">
-              💡 <strong>Pro Tip:</strong> Screenshot this page or save the code in your phone for quick access at the tournament!
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Additional Info */}
+        {/* Instructions */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white rounded-3xl p-6 shadow-2xl border-4 border-slate-900 mb-8"
+        >
+          <div className="text-center mb-4">
+            <h2 className="text-2xl font-black text-slate-900 mb-4">📲 Share With Your Team</h2>
+            <p className="text-slate-700 font-medium mb-2">
+              Each teammate can screenshot their individual ticket below
+            </p>
+            <div className="bg-yellow-50 rounded-xl p-4 border-2 border-yellow-300 inline-block">
+              <p className="font-bold text-slate-900">
+                Your Code: <span className="text-3xl font-black text-pink-600">{teamPass.redemption_code}</span>
+              </p>
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-4 mt-6">
+            <div className="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
+              <p className="text-sm font-bold text-slate-900 mb-1">✅ To Use a Pass:</p>
+              <p className="text-xs text-slate-700">Tap "Use Pass" button on any ticket below</p>
+            </div>
+            <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200">
+              <p className="text-sm font-bold text-slate-900 mb-1">📧 Email Sent!</p>
+              <p className="text-xs text-slate-700">Check {teamPass.customer_email}</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Individual Tickets */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {Array.from({ length: teamPass.total_passes }).map((_, index) => {
+            const passNumber = index + 1;
+            const isUsed = passNumber > teamPass.remaining_passes;
+            
+            return (
+              <motion.div
+                key={passNumber}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 + index * 0.05 }}
+                className={`bg-white rounded-2xl p-6 shadow-xl border-4 ${
+                  isUsed ? 'border-slate-300 opacity-60' : 'border-slate-900'
+                }`}
+              >
+                {isUsed && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-red-500 text-white font-black text-4xl px-8 py-4 rotate-12 rounded-xl shadow-2xl">
+                      USED ✓
+                    </div>
+                  </div>
+                )}
+                
+                <div className={isUsed ? 'blur-sm' : ''}>
+                  <div className="text-center mb-4">
+                    <div className="bg-gradient-to-br from-pink-500 to-fuchsia-600 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <Ticket className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-900">
+                      Pass #{passNumber}
+                    </h3>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-xl p-4 mb-4 border-2 border-yellow-500">
+                    <p className="text-xs font-bold text-slate-700 mb-1">Redemption Code</p>
+                    <p className="text-2xl font-black text-slate-900 tracking-wider">
+                      {teamPass.redemption_code}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2 text-xs text-slate-600 mb-4">
+                    <p>✓ Cryo Therapy</p>
+                    <p>✓ Compression Boots</p>
+                  </div>
+
+                  {!isUsed && (
+                    <Button
+                      onClick={() => setShowRedeemDialog(true)}
+                      className="w-full bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black text-sm py-3"
+                    >
+                      Use This Pass
+                    </Button>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Footer Info */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
           className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 text-center"
         >
           <p className="text-white font-bold mb-4">
-            ✓ Passes can be shared among teammates<br/>
-            ✓ Valid for tournament weekend<br/>
-            ✓ Any service combination allowed
+            ✓ Each teammate gets their own ticket<br/>
+            ✓ Screenshot and share the tickets above<br/>
+            ✓ Valid for tournament weekend
           </p>
           <Link to={createPageUrl('VolleyballRecovery')}>
             <Button variant="outline" className="bg-white hover:bg-slate-100 text-slate-900 font-black border-4 border-slate-900">
