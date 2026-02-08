@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import TeamPassPurchase from '@/components/volleyball/TeamPassPurchase';
 import IndividualServicePurchase from '@/components/volleyball/IndividualServicePurchase';
+import BookingOptionsModal from '@/components/volleyball/BookingOptionsModal';
 
 const services = [
   {
@@ -68,6 +69,7 @@ const teamPasses = [
 ];
 
 export default function VolleyballRecovery() {
+  const [showBookingOptions, setShowBookingOptions] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -116,7 +118,7 @@ export default function VolleyballRecovery() {
             </p>
             <Button 
               size="lg" 
-              onClick={() => setShowPurchaseModal(true)}
+              onClick={() => setShowBookingOptions(true)}
               className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black text-lg px-8 py-6 rounded-2xl shadow-2xl"
             >
               BOOK NOW
@@ -357,7 +359,19 @@ export default function VolleyballRecovery() {
       {/* Footer Bar */}
       <div className="h-3 bg-gradient-to-r from-pink-500 via-blue-500 to-yellow-400" />
 
-      {/* Purchase Modals */}
+      {/* Booking Modals */}
+      <BookingOptionsModal
+        isOpen={showBookingOptions}
+        onClose={() => setShowBookingOptions(false)}
+        onSelectTeamPass={() => {
+          setShowBookingOptions(false);
+          setShowPurchaseModal(true);
+        }}
+        onSelectIndividual={() => {
+          setShowBookingOptions(false);
+          setShowServiceModal(true);
+        }}
+      />
       <TeamPassPurchase 
         isOpen={showPurchaseModal} 
         onClose={() => {
