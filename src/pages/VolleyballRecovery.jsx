@@ -285,7 +285,7 @@ export default function VolleyballRecovery() {
             {[
               { num: '1', title: 'Find Our Booth', desc: 'Look for our bright booth at the tournament venue' },
               { num: '2', title: 'Pick Your Service', desc: 'Choose individual treatment or use your team pass' },
-              { num: '3', title: 'Quick Recovery', desc: '15-20 min sessions between your matches' }
+              { num: '3', title: 'Quick Recovery', desc: '15 min sessions between your matches' }
             ].map((step, idx) => (
               <motion.div
                 key={step.num}
