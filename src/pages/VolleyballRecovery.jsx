@@ -29,14 +29,6 @@ const services = [
     duration: '15 min',
     price: 40,
     featured: true
-  },
-  {
-    icon: Sun,
-    name: 'Red Light',
-    description: 'Enhanced muscle repair',
-    duration: '20 min',
-    price: 30,
-    featured: false
   }
 ];
 
@@ -46,33 +38,36 @@ const teamPasses = [
     price: 135,
     perPass: 45,
     savings: 15,
-    popular: false
+    popular: false,
+    description: '3 × 15-min compression sessions'
   },
   {
     passes: 6,
     price: 240,
     perPass: 40,
     savings: 60,
-    popular: true
+    popular: true,
+    description: '6 × 15-min compression sessions'
   },
   {
     passes: 9,
     price: 315,
     perPass: 35,
     savings: 135,
-    popular: false
+    popular: false,
+    description: '9 × 15-min compression sessions'
   },
   {
     passes: 12,
     price: 360,
     perPass: 30,
     savings: 240,
-    popular: false
+    popular: false,
+    description: '12 × 15-min compression sessions'
   }
 ];
 
 export default function VolleyballRecovery() {
-  const [hoveredPass, setHoveredPass] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   return (
@@ -103,14 +98,11 @@ export default function VolleyballRecovery() {
               <br />
               <span className="text-yellow-300">RECOVERY</span>
             </h1>
-            <p className="text-2xl md:text-3xl text-white/90 font-bold mb-4">
+            <p className="text-2xl md:text-3xl text-white/90 font-bold mb-8">
               Quick Recovery Between Matches
             </p>
-            <p className="text-xl text-white/80 max-w-2xl mx-auto mb-8">
-              Scan • Purchase • Recover at our booth
-            </p>
             <Button size="lg" className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black text-lg px-8 py-6 rounded-2xl shadow-2xl">
-              BOOK YOUR SPOT
+              BOOK NOW
             </Button>
           </motion.div>
         </div>
@@ -131,7 +123,7 @@ export default function VolleyballRecovery() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {services.map((service, idx) => (
               <motion.div
                 key={service.name}
@@ -201,7 +193,7 @@ export default function VolleyballRecovery() {
               Share With Your Team!
             </h2>
             <p className="text-2xl font-bold text-slate-800">
-              Parents: Buy passes for multiple players and SAVE BIG
+              Buy passes for multiple players and SAVE BIG
             </p>
           </div>
 
@@ -213,8 +205,6 @@ export default function VolleyballRecovery() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ scale: 1.05, rotate: pass.popular ? 0 : 2 }}
-                onHoverStart={() => setHoveredPass(idx)}
-                onHoverEnd={() => setHoveredPass(null)}
                 className={`relative rounded-3xl p-8 ${
                   pass.popular 
                     ? 'bg-gradient-to-br from-pink-600 to-fuchsia-700 shadow-2xl ring-8 ring-white transform scale-105' 
@@ -235,6 +225,9 @@ export default function VolleyballRecovery() {
                   </div>
                   <div className={`text-xl font-black ${pass.popular ? 'text-white' : 'text-slate-900'}`}>
                     PASSES
+                  </div>
+                  <div className={`text-sm font-medium mt-2 ${pass.popular ? 'text-white/80' : 'text-slate-600'}`}>
+                    {pass.description}
                   </div>
                 </div>
 
@@ -264,18 +257,6 @@ export default function VolleyballRecovery() {
                 >
                   GET {pass.passes} PASSES
                 </Button>
-
-                {hoveredPass === idx && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`mt-4 text-center text-sm font-bold ${pass.popular ? 'text-white' : 'text-slate-600'}`}
-                  >
-                    ✓ Share with teammates<br/>
-                    ✓ Valid tournament weekend<br/>
-                    ✓ Any service combo
-                  </motion.div>
-                )}
               </motion.div>
             ))}
           </div>
