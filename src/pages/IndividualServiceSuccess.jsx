@@ -4,6 +4,16 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Ticket, Calendar, User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import confetti from 'canvas-confetti';
 
 export default function IndividualServiceSuccess() {
@@ -11,6 +21,7 @@ export default function IndividualServiceSuccess() {
   const [bookingData, setBookingData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isRedeemed, setIsRedeemed] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
@@ -58,6 +69,7 @@ export default function IndividualServiceSuccess() {
   };
 
   const handleMarkAsUsed = () => {
+    setShowConfirmDialog(false);
     setIsRedeemed(true);
     confetti({
       particleCount: 150,
@@ -210,7 +222,7 @@ export default function IndividualServiceSuccess() {
           </Link>
           {!isRedeemed ? (
             <Button 
-              onClick={handleMarkAsUsed}
+              onClick={() => setShowConfirmDialog(true)}
               className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 font-black"
             >
               Mark as Used ✓
@@ -225,6 +237,27 @@ export default function IndividualServiceSuccess() {
           )}
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mark Session as Used?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to mark this session as used? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleMarkAsUsed}
+              className="bg-pink-600 hover:bg-pink-700"
+            >
+              Yes, Mark as Used
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
