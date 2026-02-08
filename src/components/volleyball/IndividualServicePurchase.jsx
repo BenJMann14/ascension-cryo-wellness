@@ -20,8 +20,7 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
       icon: Snowflake,
       name: 'Cryo Therapy',
       description: 'Rapid inflammation reduction',
-      price: 50,
-      duration: '10-15 min'
+      price: 50
     },
     {
       icon: Wind,
@@ -126,7 +125,9 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
                           <p className="text-slate-600 font-medium mb-2">{svc.description}</p>
                           <div className="flex items-center justify-between">
                             <span className="text-3xl font-black text-pink-600">${svc.price}</span>
-                            <span className="text-sm font-bold text-slate-500">{svc.duration}</span>
+                            {svc.duration && (
+                              <span className="text-sm font-bold text-slate-500">{svc.duration}</span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -158,7 +159,9 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
                     </div>
                     <div className="text-right">
                       <p className="text-4xl font-black text-slate-900">${selectedService.price}</p>
-                      <p className="text-sm font-bold text-slate-600">{selectedService.duration}</p>
+                      {selectedService.duration && (
+                        <p className="text-sm font-bold text-slate-600">{selectedService.duration}</p>
+                      )}
                     </div>
                   </div>
                 </div>
