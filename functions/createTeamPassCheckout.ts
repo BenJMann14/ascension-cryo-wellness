@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: `${baseUrl}/team-pass-success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/TeamPassSuccess?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/volleyball-recovery`,
       customer_email: customerInfo.email,
       metadata: {
