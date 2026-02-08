@@ -213,7 +213,7 @@ export default function VolleyballRecovery() {
               >
                 {pass.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-green-400 text-slate-900 font-black text-sm px-4 py-1 shadow-lg">
+                    <Badge className="bg-green-400 hover:bg-green-400 text-slate-900 font-black text-sm px-4 py-1 shadow-lg">
                       🔥 MOST POPULAR
                     </Badge>
                   </div>
