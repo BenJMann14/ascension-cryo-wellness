@@ -112,7 +112,7 @@ export default function VolleyballRecovery() {
       <section className="py-20 bg-gradient-to-b from-white to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <Badge className="bg-green-400 text-slate-900 text-lg px-6 py-2 font-black mb-4">
+            <Badge className="bg-green-400 hover:bg-green-400 text-slate-900 text-lg px-6 py-2 font-black mb-4">
               RECOVERY SERVICES
             </Badge>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
@@ -137,7 +137,7 @@ export default function VolleyballRecovery() {
               >
                 {service.featured && (
                   <div className="absolute -top-3 -right-3">
-                    <Badge className="bg-yellow-400 text-slate-900 font-black text-xs px-3 py-1">
+                    <Badge className="bg-yellow-400 hover:bg-yellow-400 text-slate-900 font-black text-xs px-3 py-1">
                       ⭐ TOP PICK
                     </Badge>
                   </div>
