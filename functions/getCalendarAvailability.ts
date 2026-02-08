@@ -65,29 +65,54 @@ Deno.serve(async (req) => {
                         currentDate.setDate(currentDate.getDate() + 1);
                     }
                 } else {
-                    // Time-specific event - convert to America/Chicago timezone
-                    const chicagoTimeStart = eventStart.toLocaleString('en-US', { timeZone: 'America/Chicago' });
-                    const chicagoTimeEnd = eventEnd.toLocaleString('en-US', { timeZone: 'America/Chicago' });
+                    // Time-specific event - properly convert to America/Chicago timezone
+                    // Use Intl.DateTimeFormat to get the correct Chicago time components
+                    const formatter = new Intl.DateTimeFormat('en-US', {
+                        timeZone: 'America/Chicago',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
                     
-                    const localStart = new Date(chicagoTimeStart);
-                    const localEnd = new Date(chicagoTimeEnd);
+                    const startParts = formatter.formatToParts(eventStart);
+                    const endParts = formatter.formatToParts(eventEnd);
                     
-                    const dateKey = localStart.toLocaleDateString('en-CA'); // YYYY-MM-DD format
+                    const getComponents = (parts) => {
+                        const obj = {};
+                        parts.forEach(({ type, value }) => {
+                            obj[type] = value;
+                        });
+                        return {
+                            year: parseInt(obj.year),
+                            month: parseInt(obj.month),
+                            day: parseInt(obj.day),
+                            hour: parseInt(obj.hour),
+                            minute: parseInt(obj.minute)
+                        };
+                    };
+                    
+                    const startComponents = getComponents(startParts);
+                    const endComponents = getComponents(endParts);
+                    
+                    const dateKey = `${startComponents.year}-${startComponents.month.toString().padStart(2, '0')}-${startComponents.day.toString().padStart(2, '0')}`;
+                    
                     if (!unavailableTimes[dateKey]) {
                         unavailableTimes[dateKey] = [];
                     }
                     
-                    const startHour = localStart.getHours();
-                    const startMin = localStart.getMinutes();
-                    const endHour = localEnd.getHours();
-                    const endMin = localEnd.getMinutes();
+                    const startHour = startComponents.hour;
+                    const startMin = startComponents.minute;
+                    const endHour = endComponents.hour;
+                    const endMin = endComponents.minute;
                     
                     console.log('Event time in Chicago:', {
+                        event: event.summary,
                         dateKey,
-                        startHour,
-                        startMin,
-                        endHour,
-                        endMin
+                        startTime: `${startHour}:${startMin}`,
+                        endTime: `${endHour}:${endMin}`
                     });
                     
                     // Block all 30-minute slots that overlap with the event
