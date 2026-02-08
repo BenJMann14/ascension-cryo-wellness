@@ -18,28 +18,24 @@ const services = [
     name: 'Cryo Therapy',
     description: 'Rapid inflammation reduction',
     duration: '15 min',
-    price: 50
+    price: 50,
+    featured: true
   },
   {
     icon: Wind,
     name: 'Compression Boots',
     description: 'Leg recovery between matches',
     duration: '15 min',
-    price: 40
+    price: 40,
+    featured: true
   },
   {
     icon: Sun,
     name: 'Red Light',
-    description: 'Muscle repair & healing',
+    description: 'Enhanced muscle repair',
     duration: '20 min',
-    price: 30
-  },
-  {
-    icon: Zap,
-    name: 'Vibration Plate',
-    description: 'Quick warm-up & recovery',
-    duration: '10 min',
-    price: 20
+    price: 30,
+    featured: false
   }
 ];
 
@@ -133,7 +129,7 @@ export default function VolleyballRecovery() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {services.map((service, idx) => (
               <motion.div
                 key={service.name}
@@ -141,20 +137,33 @@ export default function VolleyballRecovery() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="relative bg-white rounded-3xl p-8 shadow-xl border-4 border-slate-900"
+                className={`relative bg-white rounded-3xl p-8 shadow-xl border-4 ${
+                  service.featured ? 'border-pink-500' : 'border-slate-300'
+                } ${service.featured ? 'md:col-span-1' : 'md:col-span-1'}`}
               >
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-pink-500 to-fuchsia-600 rounded-2xl rotate-12 flex items-center justify-center shadow-lg">
+                {service.featured && (
+                  <div className="absolute -top-3 -right-3">
+                    <Badge className="bg-yellow-400 text-slate-900 font-black text-xs px-3 py-1">
+                      ⭐ TOP PICK
+                    </Badge>
+                  </div>
+                )}
+                <div className={`absolute -top-4 -left-4 w-16 h-16 bg-gradient-to-br ${
+                  service.featured ? 'from-pink-500 to-fuchsia-600' : 'from-blue-400 to-cyan-500'
+                } rounded-2xl rotate-12 flex items-center justify-center shadow-lg`}>
                   <service.icon className="w-8 h-8 text-white" />
                 </div>
                 
-                <div className="mb-6">
+                <div className="mb-6 mt-4">
                   <h3 className="text-2xl font-black text-slate-900 mb-2">{service.name}</h3>
                   <p className="text-slate-600 font-medium">{service.description}</p>
                 </div>
                 
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="text-4xl font-black text-pink-600">${service.price}</span>
+                    <span className={`text-4xl font-black ${service.featured ? 'text-pink-600' : 'text-slate-700'}`}>
+                      ${service.price}
+                    </span>
                   </div>
                   <span className="text-sm font-bold text-slate-500">{service.duration}</span>
                 </div>
