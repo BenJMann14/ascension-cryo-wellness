@@ -40,23 +40,33 @@ Deno.serve(async (req) => {
       .join('\n') || '';
     
     const description = `
-Customer: ${booking.customer_first_name} ${booking.customer_last_name}
-Email: ${booking.customer_email}
-Phone: ${booking.customer_phone}
+📍 SERVICE ADDRESS:
+${booking.service_address}
+${booking.service_city}, ${booking.service_zip}
 
-Services:
+👤 CUSTOMER:
+${booking.customer_first_name} ${booking.customer_last_name}
+📧 ${booking.customer_email}
+📱 ${booking.customer_phone}
+
+💆 SERVICES:
 ${servicesList}
 
-Total: $${booking.total_amount}
+💵 TOTAL: $${booking.total_amount}
+⏱️ DURATION: ${booking.estimated_duration || 60} minutes
 
-${booking.special_requests ? `Special Requests:\n${booking.special_requests}` : ''}
-
-Confirmation: ${booking.confirmation_number}
+${booking.special_requests ? `📝 SPECIAL REQUESTS:\n${booking.special_requests}\n` : ''}
+✅ CONFIRMATION: ${booking.confirmation_number}
     `.trim();
+
+    // Build service names for summary
+    const serviceNames = booking.services_selected
+      ?.map(s => s.service_name)
+      .join(', ') || 'Mobile Recovery';
 
     // Create calendar event
     const event = {
-      summary: `Ascension Cryo - ${booking.customer_first_name} ${booking.customer_last_name}`,
+      summary: `${booking.customer_first_name} ${booking.customer_last_name} - ${serviceNames}`,
       location: `${booking.service_address}, ${booking.service_city}, ${booking.service_zip}`,
       description: description,
       start: {
@@ -73,7 +83,8 @@ Confirmation: ${booking.confirmation_number}
           { method: 'popup', minutes: 60 },
           { method: 'popup', minutes: 30 }
         ]
-      }
+      },
+      colorId: '9' // Set color to blue for easy visibility
     };
 
     const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
