@@ -14,8 +14,8 @@ const TEAM_PASSES = [
 ];
 
 export default function TeamPassPurchase({ isOpen, onClose, preselectedPass }) {
-  const [step, setStep] = useState(preselectedPass ? 2 : 1);
-  const [selectedPasses, setSelectedPasses] = useState(preselectedPass || null);
+  const [step, setStep] = useState(1);
+  const [selectedPasses, setSelectedPasses] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
     lastName: '',
@@ -23,6 +23,19 @@ export default function TeamPassPurchase({ isOpen, onClose, preselectedPass }) {
     phone: ''
   });
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Handle preselected pass or reset when modal opens
+  React.useEffect(() => {
+    if (isOpen) {
+      if (preselectedPass) {
+        setSelectedPasses(preselectedPass);
+        setStep(2);
+      } else {
+        setSelectedPasses(null);
+        setStep(1);
+      }
+    }
+  }, [isOpen, preselectedPass]);
 
   const handlePassSelect = (passOption) => {
     setSelectedPasses(passOption);
@@ -57,19 +70,11 @@ export default function TeamPassPurchase({ isOpen, onClose, preselectedPass }) {
   };
 
   const resetAndClose = () => {
-    setStep(preselectedPass ? 2 : 1);
-    setSelectedPasses(preselectedPass || null);
+    setStep(1);
+    setSelectedPasses(null);
     setCustomerInfo({ firstName: '', lastName: '', email: '', phone: '' });
     onClose();
   };
-
-  // Update step and selection when preselected pass changes
-  React.useEffect(() => {
-    if (preselectedPass) {
-      setSelectedPasses(preselectedPass);
-      setStep(2);
-    }
-  }, [preselectedPass]);
 
   if (!isOpen) return null;
 
