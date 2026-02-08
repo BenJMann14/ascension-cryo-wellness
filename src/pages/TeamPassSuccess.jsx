@@ -54,7 +54,7 @@ export default function TeamPassSuccess() {
   const handleSelfRedeem = async () => {
     setIsRedeeming(true);
     try {
-      const response = await base44.functions.invoke('redeemTeamPass', {
+      const response = await base44.functions.invoke('selfRedeemTeamPass', {
         passId: teamPass.id,
         serviceType
       });
