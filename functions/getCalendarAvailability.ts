@@ -48,61 +48,68 @@ Deno.serve(async (req) => {
                 const eventStart = event.start.dateTime ? new Date(event.start.dateTime) : new Date(event.start.date);
                 const eventEnd = event.end.dateTime ? new Date(event.end.dateTime) : new Date(event.end.date);
                 
+                console.log('Processing event:', event.summary, {
+                    start: eventStart.toISOString(),
+                    end: eventEnd.toISOString(),
+                    rawStart: event.start,
+                    rawEnd: event.end
+                });
+                
                 // If all-day event or multi-day event
                 if (!event.start.dateTime || (eventEnd - eventStart) >= 86400000) {
                     const currentDate = new Date(eventStart);
                     while (currentDate <= eventEnd) {
-                        unavailableDates.add(currentDate.toISOString().split('T')[0]);
+                        const dateKey = currentDate.toISOString().split('T')[0];
+                        unavailableDates.add(dateKey);
+                        console.log('Blocked all-day:', dateKey);
                         currentDate.setDate(currentDate.getDate() + 1);
                     }
                 } else {
-                    // Time-specific event - block ALL overlapping time slots
-                    const dateKey = eventStart.toISOString().split('T')[0];
+                    // Time-specific event - convert to America/Chicago timezone
+                    const chicagoTimeStart = eventStart.toLocaleString('en-US', { timeZone: 'America/Chicago' });
+                    const chicagoTimeEnd = eventEnd.toLocaleString('en-US', { timeZone: 'America/Chicago' });
+                    
+                    const localStart = new Date(chicagoTimeStart);
+                    const localEnd = new Date(chicagoTimeEnd);
+                    
+                    const dateKey = localStart.toLocaleDateString('en-CA'); // YYYY-MM-DD format
                     if (!unavailableTimes[dateKey]) {
                         unavailableTimes[dateKey] = [];
                     }
                     
-                    // Convert to local time (America/Chicago)
-                    const startHour = eventStart.getHours();
-                    const startMin = eventStart.getMinutes();
-                    const endHour = eventEnd.getHours();
-                    const endMin = eventEnd.getMinutes();
+                    const startHour = localStart.getHours();
+                    const startMin = localStart.getMinutes();
+                    const endHour = localEnd.getHours();
+                    const endMin = localEnd.getMinutes();
                     
-                    // Block any 30-minute slot that overlaps with the event
-                    // Start from the 30-min slot that contains or precedes the event start
-                    let slotHour = Math.floor(startHour);
-                    let slotMin = startMin < 30 ? 0 : 30;
+                    console.log('Event time in Chicago:', {
+                        dateKey,
+                        startHour,
+                        startMin,
+                        endHour,
+                        endMin
+                    });
                     
-                    // If event starts after slot start, still block that slot
-                    // Continue until we've blocked all slots that overlap with the event
-                    while (slotHour < endHour || (slotHour === endHour && slotMin < endMin)) {
-                        const timeSlot = `${slotHour.toString().padStart(2, '0')}:${slotMin.toString().padStart(2, '0')}`;
-                        
-                        // Check if this time slot overlaps with the event
-                        const slotStart = slotHour * 60 + slotMin;
-                        const slotEnd = slotStart + 30;
-                        const eventStartMin = startHour * 60 + startMin;
-                        const eventEndMin = endHour * 60 + endMin;
-                        
-                        // If there's any overlap, block the slot
-                        if (slotStart < eventEndMin && slotEnd > eventStartMin) {
-                            unavailableTimes[dateKey].push(timeSlot);
-                        }
-                        
-                        slotMin += 30;
-                        if (slotMin >= 60) {
-                            slotMin = 0;
-                            slotHour++;
-                        }
-                    }
+                    // Block all 30-minute slots that overlap with the event
+                    const eventStartMin = startHour * 60 + startMin;
+                    const eventEndMin = endHour * 60 + endMin;
                     
-                    // Also block the slot that contains the end time
-                    if (endMin > 0) {
-                        const endSlotHour = endHour;
-                        const endSlotMin = endMin <= 30 ? 0 : 30;
-                        const endTimeSlot = `${endSlotHour.toString().padStart(2, '0')}:${endSlotMin.toString().padStart(2, '0')}`;
-                        if (!unavailableTimes[dateKey].includes(endTimeSlot)) {
-                            unavailableTimes[dateKey].push(endTimeSlot);
+                    // Start from 8:00 AM and check each 30-min slot until 6:00 PM
+                    for (let slotHour = 8; slotHour <= 18; slotHour++) {
+                        for (let slotMin = 0; slotMin < 60; slotMin += 30) {
+                            if (slotHour === 18 && slotMin > 0) break; // Stop at 6:00 PM
+                            
+                            const slotStartMin = slotHour * 60 + slotMin;
+                            const slotEndMin = slotStartMin + 30;
+                            
+                            // Check if this slot overlaps with the event
+                            if (slotStartMin < eventEndMin && slotEndMin > eventStartMin) {
+                                const timeSlot = `${slotHour.toString().padStart(2, '0')}:${slotMin.toString().padStart(2, '0')}`;
+                                if (!unavailableTimes[dateKey].includes(timeSlot)) {
+                                    unavailableTimes[dateKey].push(timeSlot);
+                                    console.log('Blocked time slot:', dateKey, timeSlot);
+                                }
+                            }
                         }
                     }
                 }
@@ -141,6 +148,9 @@ Deno.serve(async (req) => {
                 }
             }
         }
+
+        console.log('Final blocked dates:', Array.from(unavailableDates));
+        console.log('Final blocked times:', unavailableTimes);
 
         return Response.json({
             unavailableDates: Array.from(unavailableDates),
