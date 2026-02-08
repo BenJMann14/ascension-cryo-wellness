@@ -90,14 +90,16 @@ export default function Layout({ children, currentPageName }) {
             </nav>
 
             {/* CTA Button */}
-            <div className="hidden lg:flex items-center gap-4">
-              <Link to={createPageUrl('BookSession')}>
-                <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold px-6 rounded-xl shadow-lg shadow-cyan-500/25">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Book Now
-                </Button>
-              </Link>
-            </div>
+            {!['VolleyballRecovery', 'BasketballRecovery', 'RunningRecovery', 'HyroxRecovery'].includes(currentPageName) && (
+              <div className="hidden lg:flex items-center gap-4">
+                <Link to={createPageUrl('BookSession')}>
+                  <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold px-6 rounded-xl shadow-lg shadow-cyan-500/25">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Book Now
+                  </Button>
+                </Link>
+              </div>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -136,12 +138,14 @@ export default function Layout({ children, currentPageName }) {
                     {link.name}
                   </Link>
                 ))}
-                <Link to={createPageUrl('BookSession')} className="block pt-4">
-                  <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold py-6 rounded-xl">
-                    <Calendar className="w-5 h-5 mr-2" />
-                    Book Your Session
-                  </Button>
-                </Link>
+                {!['VolleyballRecovery', 'BasketballRecovery', 'RunningRecovery', 'HyroxRecovery'].includes(currentPageName) && (
+                  <Link to={createPageUrl('BookSession')} className="block pt-4">
+                    <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold py-6 rounded-xl">
+                      <Calendar className="w-5 h-5 mr-2" />
+                      Book Your Session
+                    </Button>
+                  </Link>
+                )}
               </div>
             </motion.div>
           )}
