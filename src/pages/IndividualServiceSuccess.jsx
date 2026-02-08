@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Ticket, Calendar, User, Mail, Phone } from 'lucide-react';
+import { CheckCircle2, Ticket, Calendar, User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
 
@@ -10,6 +10,7 @@ export default function IndividualServiceSuccess() {
   const [searchParams] = useSearchParams();
   const [bookingData, setBookingData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isRedeemed, setIsRedeemed] = useState(false);
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
@@ -54,6 +55,15 @@ export default function IndividualServiceSuccess() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleMarkAsUsed = () => {
+    setIsRedeemed(true);
+    confetti({
+      particleCount: 150,
+      spread: 100,
+      origin: { y: 0.6 }
+    });
   };
 
   if (loading) {
@@ -198,12 +208,21 @@ export default function IndividualServiceSuccess() {
               Back to Tournament Page
             </Button>
           </Link>
-          <Button 
-            onClick={() => window.print()}
-            className="w-full sm:w-auto bg-pink-600 hover:bg-pink-700 font-bold"
-          >
-            Print Ticket
-          </Button>
+          {!isRedeemed ? (
+            <Button 
+              onClick={handleMarkAsUsed}
+              className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 font-black"
+            >
+              Mark as Used ✓
+            </Button>
+          ) : (
+            <Button 
+              disabled
+              className="w-full sm:w-auto bg-green-600 font-black"
+            >
+              ✓ Session Redeemed
+            </Button>
+          )}
         </div>
       </div>
     </div>
