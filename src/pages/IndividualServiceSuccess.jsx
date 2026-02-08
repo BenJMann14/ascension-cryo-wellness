@@ -128,15 +128,32 @@ export default function IndividualServiceSuccess() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-3xl shadow-2xl overflow-hidden border-8 border-slate-900"
+          className={`bg-white rounded-3xl shadow-2xl overflow-hidden border-8 ${
+            isRedeemed ? 'border-slate-400 opacity-75' : 'border-slate-900'
+          } relative`}
         >
+          {/* USED Badge */}
+          {isRedeemed && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+              <div className="bg-red-600 text-white px-16 py-8 rounded-3xl transform -rotate-12 shadow-2xl border-8 border-red-700">
+                <p className="text-6xl font-black tracking-wider">USED</p>
+              </div>
+            </div>
+          )}
+
           {/* Ticket Header */}
-          <div className="bg-gradient-to-r from-pink-500 to-fuchsia-600 p-6 relative">
+          <div className={`${
+            isRedeemed 
+              ? 'bg-gradient-to-r from-slate-400 to-slate-500' 
+              : 'bg-gradient-to-r from-pink-500 to-fuchsia-600'
+          } p-6 relative`}>
             <div className="flex items-center gap-3 mb-2">
               <Ticket className="w-8 h-8 text-white" />
               <h2 className="text-2xl font-black text-white">YOUR TICKET</h2>
             </div>
-            <p className="text-white/90 font-medium">Show this at our booth</p>
+            <p className="text-white/90 font-medium">
+              {isRedeemed ? 'Session has been redeemed' : 'Show this at our booth'}
+            </p>
             
             {/* Decorative notches */}
             <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full" />
