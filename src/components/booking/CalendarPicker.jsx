@@ -79,7 +79,10 @@ export default function CalendarPicker({ onSelect, onBack }) {
     // Check if before min date or after max date
     if (isBefore(date, minDate) || isAfter(date, maxDate)) return true;
     // Check if in unavailable dates list
-    return unavailableDates.some(d => isSameDay(d, date));
+    if (unavailableDates.some(d => isSameDay(d, date))) return true;
+    // Check if all time slots are blocked
+    const availableTimes = getAvailableTimesForDate(date);
+    return availableTimes.length === 0;
   };
 
   const getAvailableTimesForDate = (date) => {
