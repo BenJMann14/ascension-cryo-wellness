@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import TeamPassPurchase from '@/components/volleyball/TeamPassPurchase';
 
 const services = [
   {
@@ -72,6 +73,7 @@ const teamPasses = [
 
 export default function VolleyballRecovery() {
   const [hoveredPass, setHoveredPass] = useState(null);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   return (
     <div className="min-h-screen bg-white">
@@ -253,6 +255,7 @@ export default function VolleyballRecovery() {
                 </div>
 
                 <Button 
+                  onClick={() => setShowPurchaseModal(true)}
                   className={`w-full font-black text-lg py-6 rounded-2xl ${
                     pass.popular 
                       ? 'bg-yellow-400 hover:bg-yellow-300 text-slate-900' 
@@ -355,6 +358,12 @@ export default function VolleyballRecovery() {
 
       {/* Footer Bar */}
       <div className="h-3 bg-gradient-to-r from-pink-500 via-blue-500 to-yellow-400" />
+
+      {/* Purchase Modal */}
+      <TeamPassPurchase 
+        isOpen={showPurchaseModal} 
+        onClose={() => setShowPurchaseModal(false)} 
+      />
     </div>
   );
 }
