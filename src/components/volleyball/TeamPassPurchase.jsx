@@ -13,9 +13,9 @@ const TEAM_PASSES = [
   { passes: 12, price: 360, perPass: 30, savings: 240 }
 ];
 
-export default function TeamPassPurchase({ isOpen, onClose }) {
-  const [step, setStep] = useState(1);
-  const [selectedPasses, setSelectedPasses] = useState(null);
+export default function TeamPassPurchase({ isOpen, onClose, preselectedPass }) {
+  const [step, setStep] = useState(preselectedPass ? 2 : 1);
+  const [selectedPasses, setSelectedPasses] = useState(preselectedPass || null);
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
     lastName: '',
@@ -57,11 +57,19 @@ export default function TeamPassPurchase({ isOpen, onClose }) {
   };
 
   const resetAndClose = () => {
-    setStep(1);
-    setSelectedPasses(null);
+    setStep(preselectedPass ? 2 : 1);
+    setSelectedPasses(preselectedPass || null);
     setCustomerInfo({ firstName: '', lastName: '', email: '', phone: '' });
     onClose();
   };
+
+  // Update step and selection when preselected pass changes
+  React.useEffect(() => {
+    if (preselectedPass) {
+      setSelectedPasses(preselectedPass);
+      setStep(2);
+    }
+  }, [preselectedPass]);
 
   if (!isOpen) return null;
 
@@ -145,12 +153,14 @@ export default function TeamPassPurchase({ isOpen, onClose }) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
               >
-                <button
-                  onClick={() => setStep(1)}
-                  className="text-pink-600 font-bold mb-4 hover:underline"
-                >
-                  ← Back to packages
-                </button>
+                {!preselectedPass && (
+                  <button
+                    onClick={() => setStep(1)}
+                    className="text-pink-600 font-bold mb-4 hover:underline"
+                  >
+                    ← Back to packages
+                  </button>
+                )}
 
                 {selectedPasses && (
                   <div className="bg-pink-50 rounded-2xl p-6 border-4 border-pink-200 mb-6">

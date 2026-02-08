@@ -71,10 +71,16 @@ export default function VolleyballRecovery() {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [preselectedPass, setPreselectedPass] = useState(null);
 
   const handleServiceClick = (service) => {
     setSelectedService(service);
     setShowServiceModal(true);
+  };
+
+  const handlePassClick = (pass) => {
+    setPreselectedPass(pass);
+    setShowPurchaseModal(true);
   };
 
   return (
@@ -108,7 +114,11 @@ export default function VolleyballRecovery() {
             <p className="text-2xl md:text-3xl text-white/90 font-bold mb-8">
               Quick Recovery Between Matches
             </p>
-            <Button size="lg" className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black text-lg px-8 py-6 rounded-2xl shadow-2xl">
+            <Button 
+              size="lg" 
+              onClick={() => setShowPurchaseModal(true)}
+              className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black text-lg px-8 py-6 rounded-2xl shadow-2xl"
+            >
               BOOK NOW
             </Button>
           </motion.div>
@@ -258,7 +268,7 @@ export default function VolleyballRecovery() {
                 </div>
 
                 <Button 
-                  onClick={() => setShowPurchaseModal(true)}
+                  onClick={() => handlePassClick(pass)}
                   className={`w-full font-black text-lg py-6 rounded-2xl ${
                     pass.popular 
                       ? 'bg-yellow-400 hover:bg-yellow-300 text-slate-900' 
@@ -350,7 +360,11 @@ export default function VolleyballRecovery() {
       {/* Purchase Modals */}
       <TeamPassPurchase 
         isOpen={showPurchaseModal} 
-        onClose={() => setShowPurchaseModal(false)} 
+        onClose={() => {
+          setShowPurchaseModal(false);
+          setPreselectedPass(null);
+        }}
+        preselectedPass={preselectedPass}
       />
       <IndividualServicePurchase
         isOpen={showServiceModal}
