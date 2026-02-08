@@ -66,13 +66,32 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const { sessionId } = await req.json();
     
+    console.log('Processing team pass purchase for session:', sessionId);
+    
+    // Check if we already processed this session
+    const existingPass = await base44.asServiceRole.entities.TeamPass.filter({ 
+      stripe_session_id: sessionId 
+    });
+    
+    if (existingPass.length > 0) {
+      console.log('Team pass already exists for this session');
+      return Response.json({ 
+        success: true, 
+        teamPass: existingPass[0] 
+      });
+    }
+    
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    console.log('Stripe session retrieved:', session.payment_status);
     
     if (session.payment_status !== 'paid') {
+      console.error('Payment not completed:', session.payment_status);
       return Response.json({ error: 'Payment not completed' }, { status: 400 });
     }
 
     const metadata = session.metadata;
+    console.log('Metadata:', metadata);
+    
     const lastName = metadata.customer_last_name;
     
     // Generate unique redemption code
@@ -94,6 +113,7 @@ Deno.serve(async (req) => {
     }
 
     const totalPasses = parseInt(metadata.total_passes);
+    console.log('Creating team pass with', totalPasses, 'passes');
     
     const teamPass = await base44.asServiceRole.entities.TeamPass.create({
       redemption_code: redemptionCode,
@@ -110,8 +130,16 @@ Deno.serve(async (req) => {
       redemption_history: []
     });
 
+    console.log('Team pass created successfully:', teamPass.id);
+
     // Send confirmation email
-    await sendConfirmationEmail(base44, teamPass);
+    try {
+      await sendConfirmationEmail(base44, teamPass);
+      console.log('Confirmation email sent');
+    } catch (emailError) {
+      console.error('Error sending confirmation email:', emailError);
+      // Don't fail the whole transaction if email fails
+    }
 
     return Response.json({ 
       success: true, 
@@ -119,6 +147,7 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     console.error('Error completing team pass purchase:', error);
+    console.error('Error stack:', error.stack);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
