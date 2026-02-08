@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Ticket, Calendar, User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -38,23 +39,17 @@ export default function IndividualServiceSuccess() {
 
   const fetchBookingDetails = async (sessionId) => {
     try {
-      const response = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}`
-        }
-      });
+      const { data } = await base44.functions.invoke('completeIndividualServicePurchase', { sessionId });
       
-      // For now, we'll use the metadata from URL params or local storage
-      // In production, you'd fetch this from your backend
-      const data = {
-        serviceName: localStorage.getItem('booking_service_name') || 'Recovery Service',
-        price: localStorage.getItem('booking_price') || '50',
-        customerName: localStorage.getItem('booking_customer_name') || 'Guest',
-        customerEmail: localStorage.getItem('booking_customer_email') || '',
-        confirmationNumber: `VB-${Date.now().toString().slice(-6)}`
-      };
-      
-      setBookingData(data);
+      if (data?.service) {
+        setBookingData({
+          serviceName: data.service.service_name,
+          price: data.service.price,
+          customerName: `${data.service.customer_first_name} ${data.service.customer_last_name}`,
+          customerEmail: data.service.customer_email,
+          confirmationNumber: data.service.confirmation_number
+        });
+      }
       
       // Clear local storage
       localStorage.removeItem('booking_service_name');

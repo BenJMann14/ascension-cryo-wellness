@@ -78,6 +78,20 @@ export default function AdminDashboard() {
     enabled: !!user,
   });
 
+  // Fetch team passes
+  const { data: teamPasses = [], isLoading: teamPassesLoading } = useQuery({
+    queryKey: ['admin-team-passes'],
+    queryFn: () => base44.entities.TeamPass.list('-created_date'),
+    enabled: !!user,
+  });
+
+  // Fetch individual services
+  const { data: individualServices = [], isLoading: servicesLoading } = useQuery({
+    queryKey: ['admin-individual-services'],
+    queryFn: () => base44.entities.IndividualService.list('-created_date'),
+    enabled: !!user,
+  });
+
   // Cancel booking mutation
   const cancelMutation = useMutation({
     mutationFn: async (bookingId) => {
@@ -147,13 +161,19 @@ export default function AdminDashboard() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const bookingRevenue = bookings.filter(b => b.payment_status === 'paid').reduce((sum, b) => sum + (b.total_amount || 0), 0);
+    const teamPassRevenue = teamPasses.filter(tp => tp.payment_status === 'paid').reduce((sum, tp) => sum + (tp.purchase_amount || 0), 0);
+    const individualServiceRevenue = individualServices.filter(s => s.payment_status === 'paid').reduce((sum, s) => sum + (s.price || 0), 0);
+
     return {
       total: bookings.length,
       upcoming: bookings.filter(b => b.appointment_date && new Date(b.appointment_date) >= today && b.status === 'confirmed').length,
       completed: bookings.filter(b => b.status === 'completed').length,
-      revenue: bookings.filter(b => b.payment_status === 'paid').reduce((sum, b) => sum + (b.total_amount || 0), 0)
+      revenue: bookingRevenue + teamPassRevenue + individualServiceRevenue,
+      teamPassCount: teamPasses.length,
+      individualServiceCount: individualServices.length
     };
-  }, [bookings]);
+  }, [bookings, teamPasses, individualServices]);
 
   const handleCancelBooking = () => {
     if (selectedBooking) {
@@ -180,7 +200,7 @@ export default function AdminDashboard() {
     return <Badge className={variant.color}>{variant.label}</Badge>;
   };
 
-  if (userLoading || bookingsLoading) {
+  if (userLoading || bookingsLoading || teamPassesLoading || servicesLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
@@ -201,13 +221,31 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Total Bookings</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-600">Mobile Bookings</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900">{stats.total}</div>
+              <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Team Passes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-pink-600">{stats.teamPassCount}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Event Services</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">{stats.individualServiceCount}</div>
             </CardContent>
           </Card>
 
@@ -216,7 +254,7 @@ export default function AdminDashboard() {
               <CardTitle className="text-sm font-medium text-slate-600">Upcoming</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-cyan-600">{stats.upcoming}</div>
+              <div className="text-2xl font-bold text-cyan-600">{stats.upcoming}</div>
             </CardContent>
           </Card>
 
@@ -225,7 +263,7 @@ export default function AdminDashboard() {
               <CardTitle className="text-sm font-medium text-slate-600">Completed</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-600">{stats.completed}</div>
+              <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
             </CardContent>
           </Card>
 
@@ -234,7 +272,7 @@ export default function AdminDashboard() {
               <CardTitle className="text-sm font-medium text-slate-600">Total Revenue</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-blue-600">${stats.revenue}</div>
+              <div className="text-2xl font-bold text-blue-600">${stats.revenue}</div>
             </CardContent>
           </Card>
         </div>
@@ -282,11 +320,115 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Bookings Table */}
+        {/* Team Passes Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Team Passes ({teamPasses.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {teamPasses.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-500">No team passes yet</p>
+                </div>
+              ) : (
+                teamPasses.map((pass) => (
+                  <div key={pass.id} className="border rounded-lg p-4 bg-pink-50">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="font-semibold text-slate-900">
+                            {pass.customer_first_name} {pass.customer_last_name}
+                          </span>
+                          <Badge className="bg-pink-600 text-white font-mono">
+                            {pass.redemption_code}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm text-slate-600">
+                          <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4" />
+                            {pass.customer_email}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="w-4 h-4" />
+                            {pass.customer_phone}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-sm font-medium text-slate-700">
+                            {pass.total_passes} passes • {pass.remaining_passes} remaining
+                          </span>
+                          <Badge className="bg-green-600 text-white">${pass.purchase_amount}</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Individual Event Services Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Individual Event Services ({individualServices.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {individualServices.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-500">No individual services yet</p>
+                </div>
+              ) : (
+                individualServices.map((service) => (
+                  <div key={service.id} className={`border rounded-lg p-4 ${service.is_redeemed ? 'bg-slate-100' : 'bg-purple-50'}`}>
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="font-semibold text-slate-900">
+                            {service.customer_first_name} {service.customer_last_name}
+                          </span>
+                          <Badge className={service.is_redeemed ? 'bg-slate-600' : 'bg-purple-600'}>
+                            {service.confirmation_number}
+                          </Badge>
+                          {service.is_redeemed && (
+                            <Badge className="bg-red-600 text-white">USED</Badge>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mb-2">
+                          <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4" />
+                            {service.customer_email}
+                          </div>
+                          {service.customer_phone && (
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-4 h-4" />
+                              {service.customer_phone}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm font-medium text-slate-700">
+                            {service.service_name}
+                          </span>
+                          <Badge className="bg-green-600 text-white">${service.price}</Badge>
+                          <Badge variant="outline">{service.event_type}</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Mobile Bookings Table */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Bookings ({filteredBookings.length})</CardTitle>
+              <CardTitle>Mobile Recovery Bookings ({filteredBookings.length})</CardTitle>
               <Button variant="outline" size="sm" onClick={() => refetch()}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
