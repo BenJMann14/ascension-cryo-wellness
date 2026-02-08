@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Snowflake, 
@@ -12,7 +11,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { createPageUrl } from '@/utils';
 import TeamPassPurchase from '@/components/volleyball/TeamPassPurchase';
 import IndividualServicePurchase from '@/components/volleyball/IndividualServicePurchase';
 import BookingOptionsModal from '@/components/volleyball/BookingOptionsModal';
