@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Snowflake, 
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { createPageUrl } from '@/utils';
 import TeamPassPurchase from '@/components/volleyball/TeamPassPurchase';
 import IndividualServicePurchase from '@/components/volleyball/IndividualServicePurchase';
 import BookingOptionsModal from '@/components/volleyball/BookingOptionsModal';
@@ -69,6 +71,7 @@ const teamPasses = [
 ];
 
 export default function VolleyballRecovery() {
+  const navigate = useNavigate();
   const [showBookingOptions, setShowBookingOptions] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -83,6 +86,11 @@ export default function VolleyballRecovery() {
   const handlePassClick = (pass) => {
     setPreselectedPass(pass);
     setShowPurchaseModal(true);
+  };
+
+  const handleIndividualBooking = () => {
+    setShowBookingOptions(false);
+    navigate(createPageUrl('BookSession'));
   };
 
   return (
@@ -367,10 +375,7 @@ export default function VolleyballRecovery() {
           setShowBookingOptions(false);
           setShowPurchaseModal(true);
         }}
-        onSelectIndividual={() => {
-          setShowBookingOptions(false);
-          setShowServiceModal(true);
-        }}
+        onSelectIndividual={handleIndividualBooking}
       />
       <TeamPassPurchase 
         isOpen={showPurchaseModal} 
