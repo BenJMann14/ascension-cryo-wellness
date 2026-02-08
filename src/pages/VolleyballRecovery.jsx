@@ -71,7 +71,6 @@ const teamPasses = [
 ];
 
 export default function VolleyballRecovery() {
-  const navigate = useNavigate();
   const [showBookingOptions, setShowBookingOptions] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
@@ -90,7 +89,8 @@ export default function VolleyballRecovery() {
 
   const handleIndividualBooking = () => {
     setShowBookingOptions(false);
-    navigate(createPageUrl('BookSession'));
+    setSelectedService(null);
+    setShowServiceModal(true);
   };
 
   return (
