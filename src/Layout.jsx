@@ -182,7 +182,7 @@ export default function Layout({ children, currentPageName }) {
             <div>
               <h4 className="font-semibold text-lg mb-4">Quick Links</h4>
               <ul className="space-y-3">
-                {navLinks.map((link) => (
+                {navLinks.filter(link => !link.adminOnly).map((link) => (
                   <li key={link.page}>
                     <Link 
                       to={createPageUrl(link.page)}
