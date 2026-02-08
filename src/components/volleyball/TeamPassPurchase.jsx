@@ -34,7 +34,7 @@ export default function TeamPassPurchase({ isOpen, onClose }) {
   };
 
   const handleCheckout = async () => {
-    if (!selectedPasses || !customerInfo.firstName || !customerInfo.lastName || !customerInfo.email) {
+    if (!selectedPasses || !customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone) {
       alert('Please fill in all required fields');
       return;
     }
@@ -210,7 +210,7 @@ export default function TeamPassPurchase({ isOpen, onClose }) {
 
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">
-                      Phone Number (Optional)
+                      Phone Number *
                     </label>
                     <Input
                       type="tel"
@@ -228,8 +228,7 @@ export default function TeamPassPurchase({ isOpen, onClose }) {
                     What happens next:
                   </h4>
                   <ul className="space-y-1 text-sm text-slate-700">
-                    <li>• You'll complete payment securely through Stripe</li>
-                    <li>• Get instant redemption code (format: {customerInfo.lastName.toUpperCase() || 'LASTNAME'}-####)</li>
+                    <li>• Get instant redemption code</li>
                     <li>• Receive confirmation email with all details</li>
                     <li>• Show code at booth to redeem passes</li>
                   </ul>
@@ -237,7 +236,7 @@ export default function TeamPassPurchase({ isOpen, onClose }) {
 
                 <Button
                   onClick={handleCheckout}
-                  disabled={isProcessing || !customerInfo.firstName || !customerInfo.lastName || !customerInfo.email}
+                  disabled={isProcessing || !customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone}
                   className="w-full bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black text-xl py-6 rounded-2xl"
                 >
                   {isProcessing ? 'Processing...' : `Checkout - $${selectedPasses?.price}`}
