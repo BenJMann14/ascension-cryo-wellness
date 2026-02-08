@@ -104,10 +104,10 @@ export default function VolleyballRecovery() {
               <span className="text-yellow-300">RECOVERY</span>
             </h1>
             <p className="text-2xl md:text-3xl text-white/90 font-bold mb-4">
-              Booth-Side • Quick • Effective
+              Quick Recovery Between Matches
             </p>
             <p className="text-xl text-white/80 max-w-2xl mx-auto mb-8">
-              Professional recovery services at your volleyball tournament
+              Scan • Purchase • Recover at our booth
             </p>
             <Button size="lg" className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black text-lg px-8 py-6 rounded-2xl shadow-2xl">
               BOOK YOUR SPOT
@@ -282,7 +282,7 @@ export default function VolleyballRecovery() {
 
           <div className="mt-12 text-center">
             <p className="text-lg font-bold text-slate-900 bg-white/80 inline-block px-8 py-4 rounded-2xl shadow-lg">
-              💡 Pro Tip: Team passes can be shared among any players! Parents often split larger packs.
+              Team passes can be shared among any players
             </p>
           </div>
         </div>
@@ -346,12 +346,9 @@ export default function VolleyballRecovery() {
             <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
               Ready to Recover<br />Like a Pro?
             </h2>
-            <p className="text-2xl text-white/90 font-bold mb-12">
+            <p className="text-2xl text-white/90 font-bold">
               Visit our booth at your next tournament
             </p>
-            <Button size="lg" className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black text-2xl px-12 py-8 rounded-3xl shadow-2xl">
-              FIND A TOURNAMENT
-            </Button>
           </motion.div>
         </div>
       </section>
