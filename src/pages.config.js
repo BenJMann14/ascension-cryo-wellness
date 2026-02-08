@@ -56,13 +56,13 @@ import EventBooking from './pages/EventBooking';
 import EventBookingFlow from './pages/EventBookingFlow';
 import Home from './pages/Home';
 import HyroxRecovery from './pages/HyroxRecovery';
+import IndividualServiceSuccess from './pages/IndividualServiceSuccess';
 import Pricing from './pages/Pricing';
 import RunningRecovery from './pages/RunningRecovery';
 import Services from './pages/Services';
-import VolleyballRecovery from './pages/VolleyballRecovery';
 import TeamPassAdmin from './pages/TeamPassAdmin';
 import TeamPassSuccess from './pages/TeamPassSuccess';
-import IndividualServiceSuccess from './pages/IndividualServiceSuccess';
+import VolleyballRecovery from './pages/VolleyballRecovery';
 import __Layout from './Layout.jsx';
 
 
@@ -76,13 +76,13 @@ export const PAGES = {
     "EventBookingFlow": EventBookingFlow,
     "Home": Home,
     "HyroxRecovery": HyroxRecovery,
+    "IndividualServiceSuccess": IndividualServiceSuccess,
     "Pricing": Pricing,
     "RunningRecovery": RunningRecovery,
     "Services": Services,
-    "VolleyballRecovery": VolleyballRecovery,
     "TeamPassAdmin": TeamPassAdmin,
     "TeamPassSuccess": TeamPassSuccess,
-    "IndividualServiceSuccess": IndividualServiceSuccess,
+    "VolleyballRecovery": VolleyballRecovery,
 }
 
 export const pagesConfig = {

@@ -3,14 +3,18 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Ticket, Copy, Check } from 'lucide-react';
+import { CheckCircle2, Ticket, Copy, Check, Share2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import confetti from 'canvas-confetti';
 
 export default function TeamPassSuccess() {
   const [teamPass, setTeamPass] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [showRedeemDialog, setShowRedeemDialog] = useState(false);
+  const [serviceType, setServiceType] = useState('Cryo Therapy');
+  const [isRedeeming, setIsRedeeming] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -44,6 +48,47 @@ export default function TeamPassSuccess() {
       navigator.clipboard.writeText(teamPass.redemption_code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleSelfRedeem = async () => {
+    setIsRedeeming(true);
+    try {
+      const response = await base44.functions.invoke('redeemTeamPass', {
+        passId: teamPass.id,
+        serviceType
+      });
+
+      if (response.data.success) {
+        setTeamPass(response.data.teamPass);
+        setShowRedeemDialog(false);
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 }
+        });
+      }
+    } catch (error) {
+      console.error('Redemption error:', error);
+      alert('Failed to redeem pass. Please try again.');
+    } finally {
+      setIsRedeeming(false);
+    }
+  };
+
+  const sharePass = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Team Recovery Pass',
+          text: `Redemption Code: ${teamPass.redemption_code}\n${teamPass.remaining_passes} passes remaining`,
+          url: window.location.href
+        });
+      } catch (error) {
+        console.log('Share cancelled');
+      }
+    } else {
+      copyCode();
     }
   };
 
@@ -125,12 +170,37 @@ export default function TeamPassSuccess() {
               </Button>
             </div>
 
-            <div className="bg-green-100 rounded-2xl p-6 border-4 border-green-500">
-              <div className="text-6xl font-black text-green-600 mb-2">
-                {teamPass.total_passes}
+            <div className={`rounded-2xl p-6 border-4 ${
+              teamPass.remaining_passes > 0 ? 'bg-green-100 border-green-500' : 'bg-slate-100 border-slate-400'
+            }`}>
+              <div className={`text-6xl font-black mb-2 ${
+                teamPass.remaining_passes > 0 ? 'text-green-600' : 'text-slate-400'
+              }`}>
+                {teamPass.remaining_passes}
               </div>
-              <div className="text-xl font-bold text-slate-700">Passes Available</div>
+              <div className="text-xl font-bold text-slate-700">
+                of {teamPass.total_passes} Passes Left
+              </div>
             </div>
+
+            {teamPass.remaining_passes > 0 && (
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <Button
+                  onClick={sharePass}
+                  variant="outline"
+                  className="font-bold border-2 border-slate-900"
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
+                <Button
+                  onClick={() => setShowRedeemDialog(true)}
+                  className="bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black"
+                >
+                  Use Pass
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-200 mb-6">
@@ -141,21 +211,20 @@ export default function TeamPassSuccess() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-black text-slate-900 text-lg">How to Use Your Passes:</h3>
-            <ol className="space-y-3">
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center font-black">1</span>
-                <span className="text-slate-700 font-medium pt-1">Find our booth at the volleyball tournament</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center font-black">2</span>
-                <span className="text-slate-700 font-medium pt-1">Show your code or just say your last name</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="flex-shrink-0 w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center font-black">3</span>
-                <span className="text-slate-700 font-medium pt-1">We'll redeem a pass and get you recovering quickly!</span>
-              </li>
-            </ol>
+            <h3 className="font-black text-slate-900 text-lg">How to Use:</h3>
+            <div className="bg-yellow-50 rounded-xl p-4 border-2 border-yellow-300">
+              <p className="font-bold text-slate-900 mb-2">✨ Two Easy Ways:</p>
+              <ol className="space-y-2 text-sm">
+                <li className="flex gap-2">
+                  <span className="font-black text-pink-600">1.</span>
+                  <span className="text-slate-700"><strong>Self-Redeem:</strong> Click "Use Pass" button above</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="font-black text-pink-600">2.</span>
+                  <span className="text-slate-700"><strong>At Booth:</strong> Show code to staff</span>
+                </li>
+              </ol>
+            </div>
           </div>
 
           <div className="mt-6 p-4 bg-purple-50 rounded-xl border-2 border-purple-200">
@@ -184,6 +253,66 @@ export default function TeamPassSuccess() {
           </Link>
         </motion.div>
       </div>
+
+      {/* Self-Redeem Dialog */}
+      <Dialog open={showRedeemDialog} onOpenChange={setShowRedeemDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black">Use a Pass</DialogTitle>
+            <DialogDescription>
+              Mark one pass as used. This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div className="bg-yellow-50 rounded-xl p-4 border-2 border-yellow-300">
+              <p className="text-sm font-bold text-slate-900 mb-2">⚠️ Confirm Your Service</p>
+              <p className="text-xs text-slate-600">
+                Make sure you're about to receive the service before confirming
+              </p>
+            </div>
+
+            <div className="bg-green-50 rounded-xl p-4 border-2 border-green-200">
+              <p className="text-sm text-slate-600 mb-1">Passes Remaining</p>
+              <p className="text-4xl font-black text-green-600">
+                {teamPass?.remaining_passes} → {teamPass?.remaining_passes - 1}
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-2">
+                Service Type
+              </label>
+              <select
+                value={serviceType}
+                onChange={(e) => setServiceType(e.target.value)}
+                className="w-full p-3 border-2 border-slate-300 rounded-xl font-bold"
+              >
+                <option value="Cryo Therapy">Cryo Therapy</option>
+                <option value="Compression Boots">Compression Boots</option>
+              </select>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowRedeemDialog(false)}
+                className="flex-1 font-bold"
+                disabled={isRedeeming}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSelfRedeem}
+                disabled={isRedeeming}
+                className="flex-1 bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black"
+              >
+                {isRedeeming ? 'Using...' : 'Confirm Use'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
