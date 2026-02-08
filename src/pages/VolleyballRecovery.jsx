@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import TeamPassPurchase from '@/components/volleyball/TeamPassPurchase';
+import IndividualServicePurchase from '@/components/volleyball/IndividualServicePurchase';
 
 const services = [
   {
@@ -69,6 +70,13 @@ const teamPasses = [
 
 export default function VolleyballRecovery() {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+
+  const handleServiceClick = (service) => {
+    setSelectedService(service);
+    setShowServiceModal(true);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -131,7 +139,8 @@ export default function VolleyballRecovery() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className={`relative bg-white rounded-3xl p-8 shadow-xl border-4 ${
+                onClick={() => handleServiceClick(service)}
+                className={`relative bg-white rounded-3xl p-8 shadow-xl border-4 cursor-pointer ${
                   service.featured ? 'border-pink-500' : 'border-slate-300'
                 } ${service.featured ? 'md:col-span-1' : 'md:col-span-1'}`}
               >
@@ -337,10 +346,15 @@ export default function VolleyballRecovery() {
       {/* Footer Bar */}
       <div className="h-3 bg-gradient-to-r from-pink-500 via-blue-500 to-yellow-400" />
 
-      {/* Purchase Modal */}
+      {/* Purchase Modals */}
       <TeamPassPurchase 
         isOpen={showPurchaseModal} 
         onClose={() => setShowPurchaseModal(false)} 
+      />
+      <IndividualServicePurchase
+        isOpen={showServiceModal}
+        onClose={() => setShowServiceModal(false)}
+        service={selectedService}
       />
     </div>
   );
