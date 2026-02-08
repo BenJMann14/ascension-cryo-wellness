@@ -19,7 +19,6 @@ const services = [
     icon: Snowflake,
     name: 'Cryo Therapy',
     description: 'Rapid inflammation reduction',
-    duration: '15 min',
     price: 50,
     featured: true
   },
@@ -168,7 +167,9 @@ export default function VolleyballRecovery() {
                       ${service.price}
                     </span>
                   </div>
-                  <span className="text-sm font-bold text-slate-500">{service.duration}</span>
+                  {service.duration && (
+                    <span className="text-sm font-bold text-slate-500">{service.duration}</span>
+                  )}
                 </div>
               </motion.div>
             ))}
