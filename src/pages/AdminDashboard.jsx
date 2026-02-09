@@ -49,6 +49,10 @@ import { motion } from 'framer-motion';
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
@@ -56,43 +60,35 @@ export default function AdminDashboard() {
   const [actionDialog, setActionDialog] = useState({ open: false, type: null });
   const [activeView, setActiveView] = useState('all'); // 'all', 'mobile', 'teampass', 'individual', 'upcoming', 'completed', 'revenue'
 
-  // Check if user is admin
-  const { data: user, isLoading: userLoading } = useQuery({
-    queryKey: ['user'],
-    queryFn: async () => {
-      const authenticated = await base44.auth.isAuthenticated();
-      if (!authenticated) {
-        window.location.href = '/';
-        return null;
-      }
-      const userData = await base44.auth.me();
-      if (userData.role !== 'admin') {
-        window.location.href = '/';
-        return null;
-      }
-      return userData;
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (loginEmail === 'admin' && loginPassword === 'admin') {
+      setIsAdminLoggedIn(true);
+      setLoginError('');
+    } else {
+      setLoginError('Invalid credentials');
     }
-  });
+  };
 
   // Fetch all bookings
   const { data: bookings = [], isLoading: bookingsLoading, refetch } = useQuery({
     queryKey: ['admin-bookings'],
     queryFn: () => base44.entities.Booking.list('-created_date'),
-    enabled: !!user,
+    enabled: isAdminLoggedIn,
   });
 
   // Fetch team passes
   const { data: teamPasses = [], isLoading: teamPassesLoading } = useQuery({
     queryKey: ['admin-team-passes'],
     queryFn: () => base44.entities.TeamPass.list('-created_date'),
-    enabled: !!user,
+    enabled: isAdminLoggedIn,
   });
 
   // Fetch individual services
   const { data: individualServices = [], isLoading: servicesLoading } = useQuery({
     queryKey: ['admin-individual-services'],
     queryFn: () => base44.entities.IndividualService.list('-created_date'),
-    enabled: !!user,
+    enabled: isAdminLoggedIn,
   });
 
   // Refund mutation
@@ -261,7 +257,52 @@ export default function AdminDashboard() {
     return <Badge className={variant.color}>{variant.label}</Badge>;
   };
 
-  if (userLoading || bookingsLoading || teamPassesLoading || servicesLoading) {
+  if (!isAdminLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center py-12 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-slate-900">Admin Login</CardTitle>
+            <CardDescription>Enter your credentials to access the dashboard</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAdminLogin} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Email</label>
+                <Input
+                  type="text"
+                  placeholder="admin"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Password</label>
+                <Input
+                  type="password"
+                  placeholder="Enter password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  required
+                />
+              </div>
+              {loginError && (
+                <div className="text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3">
+                  {loginError}
+                </div>
+              )}
+              <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700">
+                Login
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (bookingsLoading || teamPassesLoading || servicesLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
