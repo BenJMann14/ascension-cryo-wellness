@@ -46,6 +46,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import RevenueChart from '@/components/admin/RevenueChart';
 import { motion } from 'framer-motion';
+import TeamPassDetailsModal from '@/components/admin/TeamPassDetailsModal';
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
@@ -59,6 +60,8 @@ export default function AdminDashboard() {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [actionDialog, setActionDialog] = useState({ open: false, type: null });
   const [activeView, setActiveView] = useState('all'); // 'all', 'mobile', 'teampass', 'individual', 'upcoming', 'completed', 'revenue'
+  const [selectedTeamPass, setSelectedTeamPass] = useState(null);
+  const [teamPassModalOpen, setTeamPassModalOpen] = useState(false);
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -242,6 +245,43 @@ export default function AdminDashboard() {
     },
     onError: (error) => {
       toast.error('Failed to update service: ' + error.message);
+    }
+  });
+
+  // Mark team pass ticket as used
+  const markTeamPassTicketUsedMutation = useMutation({
+    mutationFn: async ({ passId, ticketId }) => {
+      const pass = teamPasses.find(p => p.id === passId);
+      if (!pass) throw new Error('Team pass not found');
+
+      const updatedTickets = pass.individual_tickets.map(ticket => 
+        ticket.ticket_id === ticketId 
+          ? { ...ticket, is_used: true, used_at: new Date().toISOString(), used_by: 'admin' }
+          : ticket
+      );
+
+      const usedCount = updatedTickets.filter(t => t.is_used).length;
+      const remainingPasses = pass.total_passes - usedCount;
+
+      await base44.entities.TeamPass.update(passId, {
+        individual_tickets: updatedTickets,
+        remaining_passes: remainingPasses,
+        redemption_history: [
+          ...(pass.redemption_history || []),
+          {
+            redeemed_at: new Date().toISOString(),
+            redeemed_by: 'admin',
+            service_type: 'Manual redemption'
+          }
+        ]
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-team-passes']);
+      toast.success('Ticket marked as used');
+    },
+    onError: (error) => {
+      toast.error('Failed to mark ticket as used: ' + error.message);
     }
   });
 
@@ -532,20 +572,34 @@ export default function AdminDashboard() {
                           <Badge className="bg-green-600 text-white">${pass.purchase_amount}</Badge>
                         </div>
                       </div>
-                      {pass.payment_status === 'paid' && pass.remaining_passes === pass.total_passes && (
+                      <div className="flex flex-col gap-2">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            setSelectedBooking({ ...pass, entityType: 'TeamPass' });
-                            setActionDialog({ open: true, type: 'refund' });
+                            setSelectedTeamPass(pass);
+                            setTeamPassModalOpen(true);
                           }}
-                          className="text-red-600"
+                          className="text-cyan-600"
                         >
-                          <XCircle className="w-4 h-4 mr-1" />
-                          Refund
+                          <Edit className="w-4 h-4 mr-1" />
+                          View Tickets
                         </Button>
-                      )}
+                        {pass.payment_status === 'paid' && pass.remaining_passes === pass.total_passes && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedBooking({ ...pass, entityType: 'TeamPass' });
+                              setActionDialog({ open: true, type: 'refund' });
+                            }}
+                            className="text-red-600"
+                          >
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Refund
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))
@@ -741,6 +795,19 @@ export default function AdminDashboard() {
         </Card>
         )}
       </div>
+
+      {/* Team Pass Details Modal */}
+      <TeamPassDetailsModal
+        pass={selectedTeamPass}
+        open={teamPassModalOpen}
+        onClose={() => {
+          setTeamPassModalOpen(false);
+          setSelectedTeamPass(null);
+        }}
+        onMarkTicketUsed={(passId, ticketId) => {
+          markTeamPassTicketUsedMutation.mutate({ passId, ticketId });
+        }}
+      />
 
       {/* Refund Dialog */}
       <Dialog open={actionDialog.open && actionDialog.type === 'refund'} onOpenChange={(open) => {
