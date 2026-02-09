@@ -93,10 +93,10 @@ function approximateGeocode(address) {
   return null;
 }
 
-export default function AddressValidator({ onValidated }) {
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [zip, setZip] = useState('');
+export default function AddressValidator({ onValidated, initialData }) {
+  const [address, setAddress] = useState(initialData?.address || '');
+  const [city, setCity] = useState(initialData?.city || '');
+  const [zip, setZip] = useState(initialData?.zip || '');
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState(null);
 
