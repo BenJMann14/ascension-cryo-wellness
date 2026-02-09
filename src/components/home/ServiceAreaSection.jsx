@@ -23,41 +23,61 @@ export default function ServiceAreaSection() {
             className="relative"
           >
             <div className="relative max-w-lg mx-auto">
-              {/* Central location card */}
-              <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl p-8 shadow-2xl text-white">
-                <div className="flex items-center gap-3 mb-6">
-                  <MapPin className="w-8 h-8" />
-                  <div>
-                    <div className="text-sm opacity-90">Based in</div>
-                    <div className="text-2xl font-bold">Leon Valley</div>
+              {/* Service area grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Main location - larger card */}
+                <div className="col-span-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl p-8 shadow-xl text-white">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <MapPin className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <div className="text-sm opacity-90">Based in</div>
+                        <div className="text-2xl font-bold">Leon Valley</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold">60</div>
+                      <div className="text-xs opacity-90">Mile Radius</div>
+                    </div>
                   </div>
+                  <p className="text-sm opacity-90">
+                    Serving San Antonio & all surrounding areas
+                  </p>
                 </div>
-                
-                {/* Radius visualization */}
-                <div className="relative h-48 flex items-center justify-center my-8">
-                  <motion.div 
-                    className="absolute inset-0 border-4 border-white/30 rounded-full"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  />
-                  <motion.div 
-                    className="absolute inset-8 border-4 border-white/40 rounded-full"
-                    animate={{ scale: [1, 1.15, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                  />
-                  <motion.div 
-                    className="absolute inset-16 border-4 border-white/50 rounded-full"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                  />
-                  <div className="relative z-10 text-center">
-                    <div className="text-5xl font-bold">60</div>
-                    <div className="text-sm opacity-90">Mile Radius</div>
+
+                {/* Coverage area cards */}
+                <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100">
+                  <div className="w-10 h-10 bg-cyan-50 rounded-xl flex items-center justify-center mb-3">
+                    <MapPin className="w-5 h-5 text-cyan-600" />
                   </div>
+                  <div className="font-bold text-slate-900 mb-1">Central SA</div>
+                  <div className="text-sm text-slate-600">Downtown, Alamo Heights, Terrell Hills</div>
                 </div>
-                
-                <div className="text-center text-sm opacity-90">
-                  Serving all of San Antonio & surrounding areas
+
+                <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100">
+                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-3">
+                    <MapPin className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="font-bold text-slate-900 mb-1">North SA</div>
+                  <div className="text-sm text-slate-600">Stone Oak, Hollywood Park</div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100">
+                  <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mb-3">
+                    <MapPin className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div className="font-bold text-slate-900 mb-1">West SA</div>
+                  <div className="text-sm text-slate-600">Helotes, Boerne, Fair Oaks</div>
+                </div>
+
+                <div className="bg-white rounded-2xl p-5 shadow-lg border border-slate-100">
+                  <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center mb-3">
+                    <MapPin className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div className="font-bold text-slate-900 mb-1">Beyond</div>
+                  <div className="text-sm text-slate-600">New Braunfels, Bulverde</div>
                 </div>
               </div>
             </div>
