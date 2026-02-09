@@ -7,10 +7,14 @@ import GradientButton from '../ui/GradientButton';
 
 export default function ServiceAreaSection() {
   return (
-    <section className="py-24 bg-white relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-gradient-to-br from-slate-50 to-white relative overflow-hidden">
+      {/* Decorative background */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-100 rounded-full blur-3xl opacity-30" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100 rounded-full blur-3xl opacity-20" />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Map Visual */}
+          {/* Service Area Visual */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -18,46 +22,42 @@ export default function ServiceAreaSection() {
             transition={{ duration: 0.6 }}
             className="relative"
           >
-            <div className="relative aspect-square max-w-lg mx-auto">
-              {/* Clean map image */}
-              <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-xl">
-                <img 
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/1233e6a73_Screenshot2026-01-28at193550.png"
-                  alt="San Antonio Service Area Map"
-                  className="w-full h-full object-cover"
-                />
-                
-                {/* Leon Valley marker */}
-                <div className="absolute" style={{ top: '38%', left: '23%' }}>
-                  <motion.div 
-                    className="relative"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full shadow-lg shadow-cyan-400/60 flex items-center justify-center">
-                      <div className="w-3 h-3 bg-white rounded-full" />
-                    </div>
-                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-blue-500" />
-                  </motion.div>
-                  <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                    <span className="px-3 py-1.5 bg-white text-slate-900 text-xs rounded-full font-semibold shadow-lg">
-                      Leon Valley
-                    </span>
+            <div className="relative max-w-lg mx-auto">
+              {/* Central location card */}
+              <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-3xl p-8 shadow-2xl text-white">
+                <div className="flex items-center gap-3 mb-6">
+                  <MapPin className="w-8 h-8" />
+                  <div>
+                    <div className="text-sm opacity-90">Based in</div>
+                    <div className="text-2xl font-bold">Leon Valley</div>
                   </div>
                 </div>
-              </div>
-
-              {/* 60 mile label */}
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2 shadow-lg border border-slate-200">
-                <span className="text-2xl font-bold text-cyan-600">60</span>
-                <span className="text-sm text-slate-600 ml-1">mile radius</span>
-              </div>
-              
-              {/* Map legend */}
-              <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg border border-slate-200">
-                <div className="flex items-center gap-2 text-xs text-slate-600">
-                  <div className="w-3 h-3 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full" />
-                  <span>Service Area</span>
+                
+                {/* Radius visualization */}
+                <div className="relative h-48 flex items-center justify-center my-8">
+                  <motion.div 
+                    className="absolute inset-0 border-4 border-white/30 rounded-full"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  />
+                  <motion.div 
+                    className="absolute inset-8 border-4 border-white/40 rounded-full"
+                    animate={{ scale: [1, 1.15, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+                  />
+                  <motion.div 
+                    className="absolute inset-16 border-4 border-white/50 rounded-full"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                  />
+                  <div className="relative z-10 text-center">
+                    <div className="text-5xl font-bold">60</div>
+                    <div className="text-sm opacity-90">Mile Radius</div>
+                  </div>
+                </div>
+                
+                <div className="text-center text-sm opacity-90">
+                  Serving all of San Antonio & surrounding areas
                 </div>
               </div>
             </div>
