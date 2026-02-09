@@ -172,7 +172,7 @@ export default function BookSession() {
         });
         
         if (response.data.success) {
-          window.location.href = '/pages/MyAccount?rescheduled=success';
+          window.location.href = createPageUrl('MyAccount') + '?rescheduled=success';
         }
       } catch (error) {
         console.error('Error rescheduling:', error);
