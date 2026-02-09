@@ -3,20 +3,14 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 403 });
-    }
-
     const { bookingId, newDate, newTime } = await req.json();
 
     // Fetch the booking
     const booking = await base44.entities.Booking.get(bookingId);
 
-    // Verify ownership
-    if (booking.customer_email !== user.email && user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized' }, { status: 403 });
+    // Verify booking exists
+    if (!booking) {
+      return Response.json({ error: 'Booking not found' }, { status: 404 });
     }
 
     // Check if booking is cancelled or completed
