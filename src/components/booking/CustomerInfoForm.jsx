@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, ArrowRight, ArrowLeft } from 'lucide-react';
+import { User, ArrowRight, ArrowLeft, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Input } from "@/components/ui/input";
@@ -10,8 +10,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import GlassCard from '@/components/ui/GlassCard';
 import GradientButton from '@/components/ui/GradientButton';
 import { Button } from "@/components/ui/button";
+import { base44 } from '@/api/base44Client';
+import LoginModal from '@/components/auth/LoginModal';
+import { toast } from 'sonner';
 
 export default function CustomerInfoForm({ addressData, onSubmit, onBack, initialData }) {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [formData, setFormData] = useState({
     firstName: initialData?.firstName || '',
     lastName: initialData?.lastName || '',
@@ -24,6 +29,45 @@ export default function CustomerInfoForm({ addressData, onSubmit, onBack, initia
     marketingOptIn: initialData?.marketingOptIn || false,
     termsAccepted: initialData?.termsAccepted || false
   });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const user = await base44.auth.me();
+        setCurrentUser(user);
+        const nameParts = user.full_name?.split(' ') || [];
+        setFormData(prev => ({
+          ...prev,
+          firstName: nameParts[0] || prev.firstName,
+          lastName: nameParts.slice(1).join(' ') || prev.lastName,
+          email: user.email || prev.email,
+          phone: user.phone || prev.phone,
+          address: user.default_address || prev.address,
+          city: user.default_city || prev.city,
+          zip: user.default_zip || prev.zip
+        }));
+      } catch {
+        setCurrentUser(null);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  const handleLoginSuccess = async (user) => {
+    setCurrentUser(user);
+    const nameParts = user.full_name?.split(' ') || [];
+    setFormData(prev => ({
+      ...prev,
+      firstName: nameParts[0] || '',
+      lastName: nameParts.slice(1).join(' ') || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      address: user.default_address || prev.address,
+      city: user.default_city || prev.city,
+      zip: user.default_zip || prev.zip
+    }));
+    toast.success('Information loaded from your account');
+  };
 
   const [errors, setErrors] = useState({});
 
@@ -65,19 +109,41 @@ export default function CustomerInfoForm({ addressData, onSubmit, onBack, initia
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 rounded-full mb-4">
-          <User className="w-5 h-5 text-cyan-600" />
-          <span className="font-medium text-cyan-700">Step 3 of 5</span>
+    <>
+      <LoginModal 
+        open={showLoginModal} 
+        onClose={() => setShowLoginModal(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+      
+      <div className="space-y-6">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 rounded-full mb-4">
+            <User className="w-5 h-5 text-cyan-600" />
+            <span className="font-medium text-cyan-700">Step 3 of 5</span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+            Your Information
+          </h2>
+          <p className="text-slate-600">
+            Please provide your contact details for the appointment
+          </p>
+          {!currentUser && (
+            <div className="mt-4">
+              <Button 
+                variant="outline"
+                onClick={() => setShowLoginModal(true)}
+                className="gap-2"
+              >
+                <LogIn className="w-4 h-4" />
+                Sign In to Auto-Fill
+              </Button>
+            </div>
+          )}
+          {currentUser && (
+            <p className="text-sm text-green-600 mt-3">✓ Signed in as {currentUser.email}</p>
+          )}
         </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
-          Your Information
-        </h2>
-        <p className="text-slate-600">
-          Please provide your contact details for the appointment
-        </p>
-      </div>
 
       <GlassCard className="p-6 md:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -248,5 +314,6 @@ export default function CustomerInfoForm({ addressData, onSubmit, onBack, initia
         </form>
       </GlassCard>
     </div>
+    </>
   );
 }
