@@ -84,7 +84,7 @@ export default function HeroSection() {
             </div>
 
             {/* Trust indicators */}
-            <div className="mt-12 flex items-center gap-4 sm:gap-8">
+            <div className="mt-12 flex items-center justify-center sm:justify-start gap-4 sm:gap-8">
               <div className="text-center">
                 <div className="text-xl sm:text-3xl font-bold text-slate-900">5-60 min</div>
                 <div className="text-xs sm:text-sm text-slate-500">Sessions</div>
