@@ -386,7 +386,11 @@ export default function MyAccount() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => setRescheduleModal({ open: true, booking })}
+                                  onClick={() => {
+                                    if (modifyStatus.canModify) {
+                                      navigate(createPageUrl('BookSession') + `?reschedule=${booking.id}`);
+                                    }
+                                  }}
                                   disabled={!modifyStatus.canModify}
                                   className="gap-2 flex-1"
                                 >
