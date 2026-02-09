@@ -14,7 +14,10 @@ import {
   DollarSign,
   ArrowRight,
   Check,
-  Scan
+  Scan,
+  Zap,
+  Star,
+  Waves
 } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import GradientButton from '@/components/ui/GradientButton';
@@ -144,42 +147,12 @@ const recoveryServices = [
   }
 ];
 
-// Custom icon components for aesthetic services
-const JawlineIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2C8 2 5 5 5 9c0 3 1 5 2 7 1 2 2 4 5 6 3-2 4-4 5-6 1-2 2-4 2-7 0-4-3-7-7-7z" />
-    <path d="M9 11c1 1 2 1.5 3 1.5s2-.5 3-1.5" />
-  </svg>
-);
 
-const WrinklesIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="10" r="7" />
-    <path d="M8 8.5c0 0 1-0.5 2 0" />
-    <path d="M14 8.5c0 0 1-0.5 2 0" />
-    <path d="M9 13c1.5 1 3.5 1 5 0" />
-    <path d="M7 6c-0.5-1.5-1-3-1-3" />
-    <path d="M17 6c0.5-1.5 1-3 1-3" />
-    <path d="M5 10c-1.5 0-3-0.5-3-0.5" />
-    <path d="M19 10c1.5 0 3-0.5 3-0.5" />
-  </svg>
-);
-
-const HairIcon = ({ className }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2c-3 0-6 2-6 6 0 2 0 4 1 6 0.5 1 1 2 1.5 3" />
-    <path d="M12 2c3 0 6 2 6 6 0 2 0 4-1 6-0.5 1-1 2-1.5 3" />
-    <path d="M8.5 17c-0.5 1-1 2.5-1 4h9c0-1.5-0.5-3-1-4" />
-    <path d="M9 7c0 0 1-1 3-1s3 1 3 1" />
-    <path d="M9 10c0 0 1.5 1 3 1s3-1 3-1" />
-    <path d="M10 13c0 0 1 0.5 2 0.5s2-0.5 2-0.5" />
-  </svg>
-);
 
 const aestheticServices = [
   {
     id: 'bodysculpt',
-    icon: JawlineIcon,
+    icon: Zap,
     title: "Cryo Body Sculpting",
     description: "Cryo body sculpting targets stubborn fat cells through controlled cold exposure, causing fat cell destruction (cryolipolysis) while simultaneously tightening the skin—without surgery, needles, or downtime.",
     howItWorks: "Targeted cryotherapy is applied to specific body areas (abdomen, thighs, arms, flanks). The extreme cold freezes fat cells beneath the skin without damaging surrounding tissue. Your body naturally processes and eliminates these dead fat cells over the following weeks.",
@@ -207,7 +180,7 @@ const aestheticServices = [
   },
   {
     id: 'facial',
-    icon: WrinklesIcon,
+    icon: Star,
     title: "Cryo Facial (Frotox)",
     description: "A non-invasive facial cryotherapy treatment designed to tighten skin, reduce wrinkles and fine lines, improve circulation, and redefine facial contours. This \"frozen Botox\" treatment stimulates collagen production without needles or toxins.",
     howItWorks: "Concentrated cold therapy is applied to your face, causing blood vessels to constrict and then rapidly dilate. This increases circulation, tightens pores, stimulates collagen production, and creates an immediate tightening and lifting effect.",
@@ -236,7 +209,7 @@ const aestheticServices = [
   },
   {
     id: 'scalp',
-    icon: HairIcon,
+    icon: Waves,
     title: "Scalp & Hair Cryotherapy",
     description: "Scalp cryotherapy stimulates blood flow and activates hair follicles to support hair growth, reduce hair loss, and improve overall scalp health.",
     howItWorks: "Targeted cold therapy is applied to your scalp, increasing blood flow and oxygen delivery to hair follicles. This stimulates dormant follicles, strengthens existing hair, and creates optimal conditions for hair growth.",
