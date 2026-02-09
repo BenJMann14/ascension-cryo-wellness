@@ -70,10 +70,17 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
   };
 
   const resetAndClose = () => {
-    setSelectedService(service || null);
+    setSelectedService(null);
     setCustomerInfo({ firstName: '', lastName: '', email: '', phone: '' });
     onClose();
   };
+
+  // Set selected service when modal opens with a preselected service
+  React.useEffect(() => {
+    if (isOpen && service) {
+      setSelectedService(service);
+    }
+  }, [isOpen, service]);
 
   if (!isOpen) return null;
 
