@@ -215,9 +215,24 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-slate-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
-          <p className="text-slate-600">Manage bookings and view analytics</p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
+            <p className="text-slate-600">Manage bookings and view analytics</p>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              queryClient.invalidateQueries(['admin-bookings']);
+              queryClient.invalidateQueries(['admin-team-passes']);
+              queryClient.invalidateQueries(['admin-individual-services']);
+              toast.success('Dashboard refreshed');
+            }}
+            className="gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh All
+          </Button>
         </div>
 
         {/* Stats Cards */}
