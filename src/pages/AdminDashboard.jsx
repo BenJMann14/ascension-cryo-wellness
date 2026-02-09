@@ -15,7 +15,8 @@ import {
   Phone,
   Edit,
   Trash2,
-  Download
+  Download,
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -364,19 +365,29 @@ export default function AdminDashboard() {
             <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
             <p className="text-slate-600">Manage bookings and view analytics</p>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={() => {
-              queryClient.invalidateQueries(['admin-bookings']);
-              queryClient.invalidateQueries(['admin-team-passes']);
-              queryClient.invalidateQueries(['admin-individual-services']);
-              toast.success('Dashboard refreshed');
-            }}
-            className="gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh All
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setSettingsModalOpen(true)}
+              className="gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              Settings
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                queryClient.invalidateQueries(['admin-bookings']);
+                queryClient.invalidateQueries(['admin-team-passes']);
+                queryClient.invalidateQueries(['admin-individual-services']);
+                toast.success('Dashboard refreshed');
+              }}
+              className="gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh All
+            </Button>
+          </div>
         </div>
 
         {/* Active Filter Indicator */}
