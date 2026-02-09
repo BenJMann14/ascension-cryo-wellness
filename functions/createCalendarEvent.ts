@@ -24,7 +24,8 @@ Deno.serve(async (req) => {
 
     // Prepare event details - ensure proper date parsing
     // appointment_date is in YYYY-MM-DD format, appointment_time is in HH:MM format
-    const appointmentDateTime = new Date(booking.appointment_date + 'T' + booking.appointment_time + ':00');
+    // Parse as local Chicago time, not UTC
+    const appointmentDateTime = new Date(booking.appointment_date + 'T' + booking.appointment_time + ':00-06:00');
     
     if (isNaN(appointmentDateTime.getTime())) {
       console.error('Invalid date/time:', booking.appointment_date, booking.appointment_time);
