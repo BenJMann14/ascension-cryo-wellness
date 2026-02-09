@@ -37,9 +37,9 @@ const services = [
     icon: Activity,
     title: "Vibration Therapy",
     description: "Lymphatic drainage and muscle activation through whole-body vibration.",
-    color: "from-emerald-500 to-emerald-600",
-    bgColor: "bg-emerald-50",
-    iconColor: "text-emerald-600",
+    color: "from-purple-500 to-violet-600",
+    bgColor: "bg-purple-50",
+    iconColor: "text-purple-600",
     expandId: "vibration"
   }
 ];
