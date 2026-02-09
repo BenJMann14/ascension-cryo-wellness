@@ -92,19 +92,22 @@ export default function AdminDashboard() {
     enabled: !!user,
   });
 
-  // Cancel booking mutation
-  const cancelMutation = useMutation({
-    mutationFn: async (bookingId) => {
-      await base44.entities.Booking.update(bookingId, { status: 'cancelled' });
+  // Refund mutation
+  const refundMutation = useMutation({
+    mutationFn: async ({ entityType, entityId }) => {
+      const response = await base44.functions.invoke('processRefund', { entityType, entityId });
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['admin-bookings']);
-      toast.success('Booking cancelled successfully');
+      queryClient.invalidateQueries(['admin-team-passes']);
+      queryClient.invalidateQueries(['admin-individual-services']);
+      toast.success('Refund processed successfully');
       setActionDialog({ open: false, type: null });
       setSelectedBooking(null);
     },
     onError: (error) => {
-      toast.error('Failed to cancel booking: ' + error.message);
+      toast.error('Failed to process refund: ' + error.message);
     }
   });
 
@@ -175,9 +178,12 @@ export default function AdminDashboard() {
     };
   }, [bookings, teamPasses, individualServices]);
 
-  const handleCancelBooking = () => {
+  const handleRefund = () => {
     if (selectedBooking) {
-      cancelMutation.mutate(selectedBooking.id);
+      refundMutation.mutate({
+        entityType: selectedBooking.entityType,
+        entityId: selectedBooking.id
+      });
     }
   };
 
@@ -187,6 +193,23 @@ export default function AdminDashboard() {
       data: { status: 'completed' }
     });
   };
+
+  // Mark individual service as used
+  const markServiceUsedMutation = useMutation({
+    mutationFn: async (serviceId) => {
+      await base44.entities.IndividualService.update(serviceId, {
+        is_redeemed: true,
+        redeemed_at: new Date().toISOString()
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['admin-individual-services']);
+      toast.success('Service marked as used');
+    },
+    onError: (error) => {
+      toast.error('Failed to update service: ' + error.message);
+    }
+  });
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -376,6 +399,20 @@ export default function AdminDashboard() {
                           <Badge className="bg-green-600 text-white">${pass.purchase_amount}</Badge>
                         </div>
                       </div>
+                      {pass.payment_status === 'paid' && pass.remaining_passes === pass.total_passes && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedBooking({ ...pass, entityType: 'TeamPass' });
+                            setActionDialog({ open: true, type: 'refund' });
+                          }}
+                          className="text-red-600"
+                        >
+                          <XCircle className="w-4 h-4 mr-1" />
+                          Refund
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))
@@ -430,6 +467,33 @@ export default function AdminDashboard() {
                           <Badge className="bg-green-600 text-white">${service.price}</Badge>
                           <Badge variant="outline">{service.event_type}</Badge>
                         </div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {!service.is_redeemed && service.payment_status === 'paid' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => markServiceUsedMutation.mutate(service.id)}
+                            className="text-green-600"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Mark Used
+                          </Button>
+                        )}
+                        {service.payment_status === 'paid' && !service.is_redeemed && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedBooking({ ...service, entityType: 'IndividualService' });
+                              setActionDialog({ open: true, type: 'refund' });
+                            }}
+                            className="text-red-600"
+                          >
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Refund
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -516,18 +580,18 @@ export default function AdminDashboard() {
                             Complete
                           </Button>
                         )}
-                        {booking.status !== 'cancelled' && booking.status !== 'completed' && (
+                        {booking.status !== 'cancelled' && booking.status !== 'completed' && booking.payment_status === 'paid' && (
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              setSelectedBooking(booking);
-                              setActionDialog({ open: true, type: 'cancel' });
+                              setSelectedBooking({ ...booking, entityType: 'Booking' });
+                              setActionDialog({ open: true, type: 'refund' });
                             }}
                             className="text-red-600"
                           >
                             <XCircle className="w-4 h-4 mr-1" />
-                            Cancel
+                            Refund & Cancel
                           </Button>
                         )}
                       </div>
@@ -540,8 +604,8 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Cancel Dialog */}
-      <Dialog open={actionDialog.open && actionDialog.type === 'cancel'} onOpenChange={(open) => {
+      {/* Refund Dialog */}
+      <Dialog open={actionDialog.open && actionDialog.type === 'refund'} onOpenChange={(open) => {
         if (!open) {
           setActionDialog({ open: false, type: null });
           setSelectedBooking(null);
@@ -549,17 +613,17 @@ export default function AdminDashboard() {
       }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel Booking</DialogTitle>
+            <DialogTitle>Refund and Cancel</DialogTitle>
             <DialogDescription>
-              Are you sure you want to cancel this booking for {selectedBooking?.customer_first_name} {selectedBooking?.customer_last_name}?
+              Are you sure you want to process a refund and cancel for {selectedBooking?.customer_first_name} {selectedBooking?.customer_last_name}? This will refund their payment through Stripe.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setActionDialog({ open: false, type: null })}>
-              No, Keep Booking
+              No, Keep It
             </Button>
-            <Button variant="destructive" onClick={handleCancelBooking} disabled={cancelMutation.isPending}>
-              {cancelMutation.isPending ? 'Cancelling...' : 'Yes, Cancel Booking'}
+            <Button variant="destructive" onClick={handleRefund} disabled={refundMutation.isPending}>
+              {refundMutation.isPending ? 'Processing...' : 'Yes, Refund & Cancel'}
             </Button>
           </DialogFooter>
         </DialogContent>
