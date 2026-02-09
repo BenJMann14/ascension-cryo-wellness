@@ -114,7 +114,7 @@ export default function VolleyballRecovery() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-8xl font-black text-white mb-6 tracking-tight px-4">
               TOURNAMENT
               <br />
               <span className="text-yellow-300">RECOVERY</span>
