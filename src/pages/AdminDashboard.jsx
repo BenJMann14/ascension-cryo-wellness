@@ -362,19 +362,37 @@ export default function AdminDashboard() {
             <h1 className="text-3xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
             <p className="text-slate-600">Manage bookings and view analytics</p>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={() => {
-              queryClient.invalidateQueries(['admin-bookings']);
-              queryClient.invalidateQueries(['admin-team-passes']);
-              queryClient.invalidateQueries(['admin-individual-services']);
-              toast.success('Dashboard refreshed');
-            }}
-            className="gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh All
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={async () => {
+                try {
+                  await base44.functions.invoke('migrateTeamPassTickets', {});
+                  queryClient.invalidateQueries(['admin-team-passes']);
+                  toast.success('Team passes migrated successfully');
+                } catch (error) {
+                  toast.error('Migration failed: ' + error.message);
+                }
+              }}
+              className="gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Fix Team Passes
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                queryClient.invalidateQueries(['admin-bookings']);
+                queryClient.invalidateQueries(['admin-team-passes']);
+                queryClient.invalidateQueries(['admin-individual-services']);
+                toast.success('Dashboard refreshed');
+              }}
+              className="gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh All
+            </Button>
+          </div>
         </div>
 
         {/* Active Filter Indicator */}
