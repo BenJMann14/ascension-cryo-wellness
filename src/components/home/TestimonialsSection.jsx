@@ -47,10 +47,10 @@ export default function TestimonialsSection() {
             Testimonials
           </span>
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            What Athletes Are Saying
+            Client Feedback
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Real results from real clients who've elevated their recovery game.
+            See what our clients have to say about their experience.
           </p>
         </motion.div>
 
