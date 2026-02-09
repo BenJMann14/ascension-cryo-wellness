@@ -11,7 +11,6 @@ import { User, Mail, Phone, MapPin, Calendar, DollarSign, Edit2, Save, LogOut, X
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import RescheduleModal from '@/components/booking/RescheduleModal';
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -34,8 +33,17 @@ export default function MyAccount() {
     default_city: '',
     default_zip: ''
   });
-  const [rescheduleModal, setRescheduleModal] = useState({ open: false, booking: null });
   const [cancelDialog, setCancelDialog] = useState({ open: false, booking: null });
+
+  // Check for reschedule success
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('rescheduled') === 'success') {
+      toast.success('Booking rescheduled successfully');
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   // Check if user is logged in
   const { data: user, isLoading: userLoading } = useQuery({
@@ -111,19 +119,7 @@ export default function MyAccount() {
     }
   });
 
-  const rescheduleBookingMutation = useMutation({
-    mutationFn: ({ bookingId, newDate, newTime }) => 
-      base44.functions.invoke('rescheduleBooking', { bookingId, newDate, newTime }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['my-bookings']);
-      toast.success('Booking rescheduled successfully');
-      setRescheduleModal({ open: false, booking: null });
-    },
-    onError: (error) => {
-      const errorMsg = error.response?.data?.error || 'Failed to reschedule booking';
-      toast.error(errorMsg);
-    }
-  });
+
 
   const canModifyBooking = (booking) => {
     if (booking.status === 'cancelled' || booking.status === 'completed') {
@@ -171,19 +167,6 @@ export default function MyAccount() {
 
   return (
     <div className="min-h-screen bg-slate-50 py-12">
-      <RescheduleModal
-        open={rescheduleModal.open}
-        onClose={() => setRescheduleModal({ open: false, booking: null })}
-        booking={rescheduleModal.booking}
-        onReschedule={async (newDate, newTime) => {
-          await rescheduleBookingMutation.mutateAsync({
-            bookingId: rescheduleModal.booking.id,
-            newDate,
-            newTime
-          });
-        }}
-      />
-
       <AlertDialog open={cancelDialog.open} onOpenChange={(open) => !open && setCancelDialog({ open: false, booking: null })}>
         <AlertDialogContent>
           <AlertDialogHeader>

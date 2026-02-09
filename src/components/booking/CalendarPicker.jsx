@@ -113,16 +113,37 @@ export default function CalendarPicker({ onSelect, onBack, initialDate, initialT
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 rounded-full mb-4">
-          <CalendarIcon className="w-5 h-5 text-cyan-600" />
-          <span className="font-medium text-cyan-700">Step 2 of 5</span>
-        </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
-          Select Date & Time
-        </h2>
-        <p className="text-slate-600">
-          Choose your preferred appointment date and time
-        </p>
+        {isRescheduling ? (
+          <>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 rounded-full mb-4">
+              <CalendarIcon className="w-5 h-5 text-blue-600" />
+              <span className="font-medium text-blue-700">Reschedule Appointment</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+              Choose New Date & Time
+            </h2>
+            {originalBooking && (
+              <div className="bg-slate-100 border border-slate-200 rounded-lg p-3 inline-block mt-2">
+                <p className="text-sm text-slate-600">
+                  <strong>Current appointment:</strong> {originalBooking.appointment_date} at {originalBooking.appointment_time}
+                </p>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 rounded-full mb-4">
+              <CalendarIcon className="w-5 h-5 text-cyan-600" />
+              <span className="font-medium text-cyan-700">Step 2 of 5</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+              Select Date & Time
+            </h2>
+            <p className="text-slate-600">
+              Choose your preferred appointment date and time
+            </p>
+          </>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
@@ -286,21 +307,23 @@ export default function CalendarPicker({ onSelect, onBack, initialDate, initialT
 
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row gap-3 justify-between">
-        <Button
-          variant="outline"
-          onClick={onBack}
-          className="order-2 sm:order-1"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
+        {onBack && (
+          <Button
+            variant="outline"
+            onClick={onBack}
+            className="order-2 sm:order-1"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
+        )}
         <GradientButton
           onClick={handleContinue}
           disabled={!selectedDate || !selectedTime}
-          className="order-1 sm:order-2"
+          className={`order-1 sm:order-2 ${!onBack ? 'w-full' : ''}`}
           size="lg"
         >
-          Continue
+          {isRescheduling ? 'Confirm Reschedule' : 'Continue'}
           <ArrowRight className="w-5 h-5" />
         </GradientButton>
       </div>
