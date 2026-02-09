@@ -60,7 +60,7 @@ export default function About() {
               className="relative order-1 lg:order-1"
             >
               {/* Main photo - firefighter */}
-              <div className="relative aspect-[3/4] lg:aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl max-w-sm lg:max-w-md mx-auto">
+              <div className="relative h-64 sm:h-80 lg:aspect-[4/5] lg:h-auto rounded-3xl overflow-hidden shadow-2xl max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/1c83d737d_IMG_8052.jpg" 
                   alt="Martin Tomlin - Firefighter"
