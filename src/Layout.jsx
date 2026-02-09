@@ -24,7 +24,6 @@ const navLinks = [
   { name: 'Pricing', page: 'Pricing' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
-  { name: 'My Account', page: 'MyAccount', requireAuth: true },
   { name: 'Admin', page: 'AdminDashboard', adminOnly: true },
 ];
 
