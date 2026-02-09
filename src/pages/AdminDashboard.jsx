@@ -442,13 +442,7 @@ export default function AdminDashboard() {
         {/* Mobile Bookings Table */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Mobile Recovery Bookings ({filteredBookings.length})</CardTitle>
-              <Button variant="outline" size="sm" onClick={() => refetch()}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
-            </div>
+            <CardTitle>Mobile Recovery Bookings ({filteredBookings.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
