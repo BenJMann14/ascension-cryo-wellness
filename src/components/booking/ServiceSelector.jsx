@@ -66,13 +66,13 @@ const services = {
   }
 };
 
-export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, totalSteps = 5, preselectedServiceId = null }) {
-  const [selectedServices, setSelectedServices] = useState([]);
+export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, totalSteps = 5, preselectedServiceId = null, initialServices = [] }) {
+  const [selectedServices, setSelectedServices] = useState(initialServices);
   const [activeCategory, setActiveCategory] = useState('recovery');
 
-  // Pre-select service if provided
+  // Pre-select service if provided (only if no initial services)
   useEffect(() => {
-    if (preselectedServiceId) {
+    if (preselectedServiceId && initialServices.length === 0) {
       // Find the service in all categories
       for (const [categoryKey, category] of Object.entries(services)) {
         const service = category.items.find(s => s.id === preselectedServiceId);
@@ -83,7 +83,7 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
         }
       }
     }
-  }, [preselectedServiceId]);
+  }, [preselectedServiceId, initialServices]);
 
   const toggleService = (service) => {
     const exists = selectedServices.find(s => s.id === service.id);
