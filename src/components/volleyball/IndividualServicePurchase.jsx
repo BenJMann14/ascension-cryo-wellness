@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function IndividualServicePurchase({ isOpen, onClose, service }) {
-  const [selectedService, setSelectedService] = useState(service || null);
+  const [selectedService, setSelectedService] = useState(null);
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
     lastName: '',
