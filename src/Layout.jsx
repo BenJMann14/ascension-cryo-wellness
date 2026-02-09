@@ -10,9 +10,13 @@ import {
   Instagram, 
   Facebook,
   Snowflake,
-  Calendar
+  Calendar,
+  User,
+  LogIn
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { base44 } from '@/api/base44Client';
+import LoginModal from '@/components/auth/LoginModal';
 
 const navLinks = [
   { name: 'Home', page: 'Home' },
@@ -28,6 +32,7 @@ export default function Layout({ children, currentPageName }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -50,6 +55,10 @@ export default function Layout({ children, currentPageName }) {
     checkAuth();
   }, [location]);
 
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+  };
+
   useEffect(() => {
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -59,6 +68,12 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-white">
+      <LoginModal 
+        open={showLoginModal} 
+        onClose={() => setShowLoginModal(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
+      
       {/* Header */}
       <header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -106,12 +121,21 @@ export default function Layout({ children, currentPageName }) {
             {/* CTA Button */}
             {!['VolleyballRecovery', 'BasketballRecovery', 'RunningRecovery', 'HyroxRecovery'].includes(currentPageName) && (
               <div className="hidden lg:flex items-center gap-3">
-                {currentUser && (
+                {currentUser ? (
                   <Link to={createPageUrl('MyAccount')}>
                     <Button variant="outline" size="icon" className="rounded-full w-10 h-10">
                       <User className="w-5 h-5" />
                     </Button>
                   </Link>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowLoginModal(true)}
+                    className="gap-2"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Sign In
+                  </Button>
                 )}
                 <Link to={createPageUrl('BookSession')}>
                   <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold px-6 rounded-xl shadow-lg shadow-cyan-500/25">
@@ -159,13 +183,22 @@ export default function Layout({ children, currentPageName }) {
                     {link.name}
                   </Link>
                 ))}
-                {currentUser && (
+                {currentUser ? (
                   <Link to={createPageUrl('MyAccount')} className="block pt-4">
                     <Button variant="outline" className="w-full py-6 rounded-xl gap-2">
                       <User className="w-5 h-5" />
                       My Account
                     </Button>
                   </Link>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowLoginModal(true)}
+                    className="w-full py-6 rounded-xl gap-2 mt-4"
+                  >
+                    <LogIn className="w-5 h-5" />
+                    Sign In
+                  </Button>
                 )}
                 {!['VolleyballRecovery', 'BasketballRecovery', 'RunningRecovery', 'HyroxRecovery'].includes(currentPageName) && (
                   <Link to={createPageUrl('BookSession')} className="block pt-4">
