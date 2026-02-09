@@ -57,7 +57,7 @@ export default function About() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="relative order-2 lg:order-1"
+              className="relative order-1 lg:order-1"
             >
               {/* Main photo - firefighter */}
               <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl max-w-md mx-auto">
