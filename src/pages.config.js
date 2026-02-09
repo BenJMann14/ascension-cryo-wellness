@@ -63,6 +63,8 @@ import Services from './pages/Services';
 import TeamPassAdmin from './pages/TeamPassAdmin';
 import TeamPassSuccess from './pages/TeamPassSuccess';
 import VolleyballRecovery from './pages/VolleyballRecovery';
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import __Layout from './Layout.jsx';
 
 
@@ -83,6 +85,8 @@ export const PAGES = {
     "TeamPassAdmin": TeamPassAdmin,
     "TeamPassSuccess": TeamPassSuccess,
     "VolleyballRecovery": VolleyballRecovery,
+    "TermsOfService": TermsOfService,
+    "PrivacyPolicy": PrivacyPolicy,
 }
 
 export const pagesConfig = {

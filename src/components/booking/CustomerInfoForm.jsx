@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { User, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -208,13 +210,13 @@ export default function CustomerInfoForm({ addressData, onSubmit, onBack }) {
               />
               <span className="text-sm text-slate-600">
                 I agree to the{' '}
-                <a href="#" className="text-cyan-600 underline hover:text-cyan-700">
+                <Link to={createPageUrl('TermsOfService')} target="_blank" className="text-cyan-600 underline hover:text-cyan-700">
                   Terms of Service
-                </a>{' '}
+                </Link>{' '}
                 and{' '}
-                <a href="#" className="text-cyan-600 underline hover:text-cyan-700">
+                <Link to={createPageUrl('PrivacyPolicy')} target="_blank" className="text-cyan-600 underline hover:text-cyan-700">
                   Privacy Policy
-                </a>{' '}
+                </Link>{' '}
                 *
               </span>
             </label>
