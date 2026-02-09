@@ -47,6 +47,7 @@ import { format } from 'date-fns';
 import RevenueChart from '@/components/admin/RevenueChart';
 import { motion } from 'framer-motion';
 import TeamPassDetailsModal from '@/components/admin/TeamPassDetailsModal';
+import SettingsModal from '@/components/admin/SettingsModal';
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
@@ -62,6 +63,7 @@ export default function AdminDashboard() {
   const [activeView, setActiveView] = useState('all'); // 'all', 'mobile', 'teampass', 'individual', 'upcoming', 'completed', 'revenue'
   const [selectedTeamPass, setSelectedTeamPass] = useState(null);
   const [teamPassModalOpen, setTeamPassModalOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
@@ -807,6 +809,12 @@ export default function AdminDashboard() {
         onMarkTicketUsed={async (passId, ticketId) => {
           await markTeamPassTicketUsedMutation.mutateAsync({ passId, ticketId });
         }}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        open={settingsModalOpen}
+        onClose={() => setSettingsModalOpen(false)}
       />
 
       {/* Refund Dialog */}
