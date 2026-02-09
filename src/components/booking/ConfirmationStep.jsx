@@ -211,13 +211,13 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
       </motion.div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-        <Link to={createPageUrl('Home')}>
-          <GradientButton variant="outline" size="lg" className="w-full sm:w-auto">
+        <Link to={createPageUrl('Home')} className="w-full sm:w-auto">
+          <GradientButton variant="outline" size="lg" className="w-full">
             Return Home
           </GradientButton>
         </Link>
-        <Link to={createPageUrl('BookSession')}>
-          <GradientButton size="lg" className="w-full sm:w-auto">
+        <Link to={createPageUrl('BookSession')} className="w-full sm:w-auto">
+          <GradientButton size="lg" className="w-full">
             Book Another Session
             <ArrowRight className="w-5 h-5" />
           </GradientButton>
