@@ -11,18 +11,18 @@ import GlassCard from '@/components/ui/GlassCard';
 import GradientButton from '@/components/ui/GradientButton';
 import { Button } from "@/components/ui/button";
 
-export default function CustomerInfoForm({ addressData, onSubmit, onBack }) {
+export default function CustomerInfoForm({ addressData, onSubmit, onBack, initialData }) {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
+    firstName: initialData?.firstName || '',
+    lastName: initialData?.lastName || '',
+    email: initialData?.email || '',
+    phone: initialData?.phone || '',
     address: addressData?.address || '',
     city: addressData?.city || '',
     zip: addressData?.zip || '',
-    specialRequests: '',
-    marketingOptIn: false,
-    termsAccepted: false
+    specialRequests: initialData?.specialRequests || '',
+    marketingOptIn: initialData?.marketingOptIn || false,
+    termsAccepted: initialData?.termsAccepted || false
   });
 
   const [errors, setErrors] = useState({});

@@ -21,10 +21,10 @@ const generateTimeSlots = () => {
 
 const TIME_SLOTS = generateTimeSlots();
 
-export default function CalendarPicker({ onSelect, onBack }) {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
+export default function CalendarPicker({ onSelect, onBack, initialDate, initialTime }) {
+  const [currentMonth, setCurrentMonth] = useState(initialDate || new Date());
+  const [selectedDate, setSelectedDate] = useState(initialDate || null);
+  const [selectedTime, setSelectedTime] = useState(initialTime || null);
   const [unavailableDates, setUnavailableDates] = useState([]);
   const [unavailableTimes, setUnavailableTimes] = useState({});
   const [isLoading, setIsLoading] = useState(true);

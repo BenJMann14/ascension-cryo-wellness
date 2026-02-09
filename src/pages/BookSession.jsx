@@ -223,12 +223,17 @@ export default function BookSession() {
             transition={{ duration: 0.3 }}
           >
             {currentStep === 0 && (
-              <AddressValidator onValidated={handleAddressValidated} />
+              <AddressValidator 
+                onValidated={handleAddressValidated}
+                initialData={bookingData.addressData}
+              />
             )}
             {currentStep === 1 && (
               <CalendarPicker 
                 onSelect={handleCalendarSelect}
                 onBack={goBack}
+                initialDate={bookingData.calendarData?.date}
+                initialTime={bookingData.calendarData?.time}
               />
             )}
             {currentStep === 2 && (
@@ -236,6 +241,7 @@ export default function BookSession() {
                 addressData={bookingData.addressData}
                 onSubmit={handleCustomerInfo}
                 onBack={goBack}
+                initialData={bookingData.customerData}
               />
             )}
             {currentStep === 3 && (
@@ -243,6 +249,7 @@ export default function BookSession() {
                 onSubmit={handleServicesSelect}
                 onBack={goBack}
                 preselectedServiceId={preselectedServiceId}
+                initialServices={bookingData.services}
               />
             )}
             {currentStep === 4 && (
