@@ -7,10 +7,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { User, Mail, Phone, MapPin, Calendar, DollarSign, Edit2, Save, LogOut } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, DollarSign, Edit2, Save, LogOut, XCircle, CalendarClock, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import RescheduleModal from '@/components/booking/RescheduleModal';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function MyAccount() {
   const navigate = useNavigate();
@@ -23,6 +34,8 @@ export default function MyAccount() {
     default_city: '',
     default_zip: ''
   });
+  const [rescheduleModal, setRescheduleModal] = useState({ open: false, booking: null });
+  const [cancelDialog, setCancelDialog] = useState({ open: false, booking: null });
 
   // Check if user is logged in
   const { data: user, isLoading: userLoading } = useQuery({
@@ -81,6 +94,53 @@ export default function MyAccount() {
     }
   });
 
+  const cancelBookingMutation = useMutation({
+    mutationFn: (bookingId) => base44.functions.invoke('cancelBooking', { bookingId }),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries(['my-bookings']);
+      if (response.data.refunded) {
+        toast.success(`Booking cancelled and $${response.data.refundAmount} refunded`);
+      } else {
+        toast.success('Booking cancelled successfully');
+      }
+      setCancelDialog({ open: false, booking: null });
+    },
+    onError: (error) => {
+      const errorMsg = error.response?.data?.error || 'Failed to cancel booking';
+      toast.error(errorMsg);
+    }
+  });
+
+  const rescheduleBookingMutation = useMutation({
+    mutationFn: ({ bookingId, newDate, newTime }) => 
+      base44.functions.invoke('rescheduleBooking', { bookingId, newDate, newTime }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['my-bookings']);
+      toast.success('Booking rescheduled successfully');
+      setRescheduleModal({ open: false, booking: null });
+    },
+    onError: (error) => {
+      const errorMsg = error.response?.data?.error || 'Failed to reschedule booking';
+      toast.error(errorMsg);
+    }
+  });
+
+  const canModifyBooking = (booking) => {
+    if (booking.status === 'cancelled' || booking.status === 'completed') {
+      return { canModify: false, reason: 'Booking is already ' + booking.status };
+    }
+    
+    const appointmentDateTime = new Date(`${booking.appointment_date}T${booking.appointment_time}`);
+    const now = new Date();
+    const hoursUntil = (appointmentDateTime - now) / (1000 * 60 * 60);
+    
+    if (hoursUntil < 24) {
+      return { canModify: false, reason: 'Within 24 hours of appointment', hoursUntil: Math.round(hoursUntil) };
+    }
+    
+    return { canModify: true };
+  };
+
   const handleLogout = async () => {
     await base44.auth.logout();
     navigate(createPageUrl('Home'));
@@ -111,6 +171,62 @@ export default function MyAccount() {
 
   return (
     <div className="min-h-screen bg-slate-50 py-12">
+      <RescheduleModal
+        open={rescheduleModal.open}
+        onClose={() => setRescheduleModal({ open: false, booking: null })}
+        booking={rescheduleModal.booking}
+        onReschedule={async (newDate, newTime) => {
+          await rescheduleBookingMutation.mutateAsync({
+            bookingId: rescheduleModal.booking.id,
+            newDate,
+            newTime
+          });
+        }}
+      />
+
+      <AlertDialog open={cancelDialog.open} onOpenChange={(open) => !open && setCancelDialog({ open: false, booking: null })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Booking?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {cancelDialog.booking && canModifyBooking(cancelDialog.booking).canModify ? (
+                <>
+                  Are you sure you want to cancel your appointment on {cancelDialog.booking.appointment_date} at {cancelDialog.booking.appointment_time}?
+                  {cancelDialog.booking.payment_status === 'paid' && (
+                    <div className="mt-2 text-green-600 font-medium">
+                      A refund of ${cancelDialog.booking.total_amount} will be processed.
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex items-start gap-2 text-red-600">
+                  <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <strong>Cannot cancel:</strong> {canModifyBooking(cancelDialog.booking || {}).reason}
+                    {canModifyBooking(cancelDialog.booking || {}).hoursUntil !== undefined && (
+                      <div className="mt-1 text-sm">
+                        Only {canModifyBooking(cancelDialog.booking || {}).hoursUntil} hours until your appointment. Our no-cancellation policy applies.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+            {cancelDialog.booking && canModifyBooking(cancelDialog.booking).canModify && (
+              <AlertDialogAction
+                onClick={() => cancelBookingMutation.mutate(cancelDialog.booking.id)}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Cancel Booking
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-slate-900">My Account</h1>
@@ -246,25 +362,57 @@ export default function MyAccount() {
                   <div>
                     <h3 className="font-semibold text-sm text-slate-700 mb-2">Mobile Recovery Sessions</h3>
                     <div className="space-y-2">
-                      {bookings.map((booking) => (
-                        <div key={booking.id} className="border rounded-lg p-3 bg-white">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <div className="font-medium text-slate-900">
-                                {booking.appointment_date ? format(new Date(booking.appointment_date), 'MMM dd, yyyy') : 'N/A'} at {booking.appointment_time}
+                      {bookings.map((booking) => {
+                        const modifyStatus = canModifyBooking(booking);
+                        return (
+                          <div key={booking.id} className="border rounded-lg p-3 bg-white">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <div className="font-medium text-slate-900">
+                                  {booking.appointment_date ? format(new Date(booking.appointment_date), 'MMM dd, yyyy') : 'N/A'} at {booking.appointment_time}
+                                </div>
+                                <div className="text-sm text-slate-600">{booking.service_address}</div>
                               </div>
-                              <div className="text-sm text-slate-600">{booking.service_address}</div>
+                              {getStatusBadge(booking.status)}
                             </div>
-                            {getStatusBadge(booking.status)}
+                            <div className="flex items-center gap-2 text-sm mb-2">
+                              <DollarSign className="w-4 h-4 text-green-600" />
+                              <span className="font-semibold text-green-600">${booking.total_amount}</span>
+                              <span className="text-slate-400">•</span>
+                              <span className="text-slate-600">{booking.confirmation_number}</span>
+                            </div>
+                            {booking.status !== 'cancelled' && booking.status !== 'completed' && (
+                              <div className="flex gap-2 mt-3 pt-3 border-t">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setRescheduleModal({ open: true, booking })}
+                                  disabled={!modifyStatus.canModify}
+                                  className="gap-2 flex-1"
+                                >
+                                  <CalendarClock className="w-4 h-4" />
+                                  Reschedule
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setCancelDialog({ open: true, booking })}
+                                  className="gap-2 flex-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                  Cancel
+                                </Button>
+                              </div>
+                            )}
+                            {!modifyStatus.canModify && booking.status !== 'cancelled' && booking.status !== 'completed' && (
+                              <div className="mt-3 pt-3 border-t text-xs text-slate-500 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                {modifyStatus.reason}
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center gap-2 text-sm">
-                            <DollarSign className="w-4 h-4 text-green-600" />
-                            <span className="font-semibold text-green-600">${booking.total_amount}</span>
-                            <span className="text-slate-400">•</span>
-                            <span className="text-slate-600">{booking.confirmation_number}</span>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
