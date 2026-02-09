@@ -37,6 +37,30 @@ Deno.serve(async (req) => {
       appointment_time: newTime
     });
 
+    // Update Google Calendar event
+    try {
+      const [year, month, day] = newDate.split('-').map(Number);
+      const [hours, minutes] = newTime.split(':').map(Number);
+      
+      const newDateTime = new Date(year, month - 1, day, hours, minutes);
+      const endDateTime = new Date(newDateTime);
+      endDateTime.setHours(endDateTime.getHours() + 1); // 1 hour duration
+      
+      await base44.functions.invoke('createCalendarEvent', {
+        title: `Ascension Cryo & Wellness - ${booking.services_selected?.[0]?.service_name || 'Service'}`,
+        description: `Booking: ${booking.confirmation_number}\nCustomer: ${booking.customer_first_name} ${booking.customer_last_name}`,
+        startTime: newDateTime.toISOString(),
+        endTime: endDateTime.toISOString(),
+        customerEmail: booking.customer_email,
+        isReschedule: true,
+        originalDate: booking.appointment_date,
+        originalTime: booking.appointment_time
+      });
+    } catch (calendarError) {
+      console.error('Failed to update calendar:', calendarError);
+      // Don't fail the booking reschedule if calendar update fails
+    }
+
     return Response.json({ 
       success: true,
       message: 'Booking rescheduled successfully'
