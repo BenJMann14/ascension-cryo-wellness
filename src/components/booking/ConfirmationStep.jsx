@@ -216,12 +216,14 @@ END:VCALENDAR`.replace(/\n/g, '\r\n');
             Return Home
           </GradientButton>
         </Link>
-        <Link to={createPageUrl('BookSession')} className="w-full sm:w-auto">
-          <GradientButton size="lg" className="w-full">
-            Book Another Session
-            <ArrowRight className="w-5 h-5" />
-          </GradientButton>
-        </Link>
+        <GradientButton 
+          size="lg" 
+          className="w-full sm:w-auto"
+          onClick={() => window.location.href = createPageUrl('BookSession')}
+        >
+          Book Another Session
+          <ArrowRight className="w-5 h-5" />
+        </GradientButton>
       </div>
     </div>
   );
