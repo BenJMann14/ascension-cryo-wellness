@@ -20,12 +20,14 @@ const navLinks = [
   { name: 'Pricing', page: 'Pricing' },
   { name: 'About', page: 'About' },
   { name: 'Contact', page: 'Contact' },
+  { name: 'My Account', page: 'MyAccount', requireAuth: true },
   { name: 'Admin', page: 'AdminDashboard', adminOnly: true },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -35,6 +37,18 @@ export default function Layout({ children, currentPageName }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const user = await base44.auth.me();
+        setCurrentUser(user);
+      } catch {
+        setCurrentUser(null);
+      }
+    };
+    checkAuth();
+  }, [location]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -69,7 +83,7 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.filter(link => !link.adminOnly).map((link) => (
+              {navLinks.filter(link => !link.adminOnly && (!link.requireAuth || currentUser)).map((link) => (
                 <Link
                   key={link.page}
                   to={createPageUrl(link.page)}
@@ -125,7 +139,7 @@ export default function Layout({ children, currentPageName }) {
               className="lg:hidden bg-white border-t"
             >
               <div className="px-4 py-6 space-y-4">
-                {navLinks.filter(link => !link.adminOnly).map((link) => (
+                {navLinks.filter(link => !link.adminOnly && (!link.requireAuth || currentUser)).map((link) => (
                   <Link
                     key={link.page}
                     to={createPageUrl(link.page)}
