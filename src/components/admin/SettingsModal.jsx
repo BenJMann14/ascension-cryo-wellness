@@ -13,13 +13,38 @@ export default function SettingsModal({ open, onClose }) {
   const [stripeStatus, setStripeStatus] = useState(null);
   const [calendarInfo, setCalendarInfo] = useState(null);
   const [stripeInfo, setStripeInfo] = useState(null);
+  
+  // Stripe form
+  const [showStripeForm, setShowStripeForm] = useState(false);
+  const [stripeSecretKey, setStripeSecretKey] = useState('');
+  const [stripePublishableKey, setStripePublishableKey] = useState('');
+  const [stripeSaving, setStripeSaving] = useState(false);
+  
+  // Google Calendar form
+  const [showCalendarForm, setShowCalendarForm] = useState(false);
+  const [calendarClientId, setCalendarClientId] = useState('');
+  const [calendarClientSecret, setCalendarClientSecret] = useState('');
+  const [calendarRefreshToken, setCalendarRefreshToken] = useState('');
+  const [calendarSaving, setCalendarSaving] = useState(false);
 
   React.useEffect(() => {
     if (open) {
       checkCalendarStatus();
       checkStripeStatus();
+      loadStripeKeys();
     }
   }, [open]);
+
+  const loadStripeKeys = async () => {
+    try {
+      const response = await base44.functions.invoke('getStripeKeys', {});
+      if (response.data.success && response.data.hasKeys) {
+        // Keys are already set, just show masked version
+      }
+    } catch (error) {
+      console.error('Failed to load Stripe keys:', error);
+    }
+  };
 
   const checkCalendarStatus = async () => {
     try {
@@ -50,6 +75,66 @@ export default function SettingsModal({ open, onClose }) {
     } catch (error) {
       setStripeStatus('error');
       setStripeInfo({ error: error.message });
+    }
+  };
+
+  const handleSaveStripeKeys = async () => {
+    if (!stripeSecretKey || !stripePublishableKey) {
+      toast.error('Both keys are required');
+      return;
+    }
+
+    setStripeSaving(true);
+    try {
+      const response = await base44.functions.invoke('updateStripeKeys', {
+        secretKey: stripeSecretKey,
+        publishableKey: stripePublishableKey
+      });
+      
+      if (response.data.success) {
+        toast.success('Stripe keys saved successfully');
+        setShowStripeForm(false);
+        setStripeSecretKey('');
+        setStripePublishableKey('');
+        checkStripeStatus();
+      } else {
+        toast.error('Failed to save keys');
+      }
+    } catch (error) {
+      toast.error('Error saving keys: ' + error.message);
+    } finally {
+      setStripeSaving(false);
+    }
+  };
+
+  const handleSaveCalendarCredentials = async () => {
+    if (!calendarClientId || !calendarClientSecret || !calendarRefreshToken) {
+      toast.error('All fields are required');
+      return;
+    }
+
+    setCalendarSaving(true);
+    try {
+      const response = await base44.functions.invoke('updateGoogleCalendarCredentials', {
+        clientId: calendarClientId,
+        clientSecret: calendarClientSecret,
+        refreshToken: calendarRefreshToken
+      });
+      
+      if (response.data.success) {
+        toast.success('Calendar credentials saved successfully');
+        setShowCalendarForm(false);
+        setCalendarClientId('');
+        setCalendarClientSecret('');
+        setCalendarRefreshToken('');
+        checkCalendarStatus();
+      } else {
+        toast.error('Failed to save credentials');
+      }
+    } catch (error) {
+      toast.error('Error saving credentials: ' + error.message);
+    } finally {
+      setCalendarSaving(false);
     }
   };
 
@@ -131,15 +216,68 @@ export default function SettingsModal({ open, onClose }) {
                 </ol>
               </div>
 
-              <Button 
-                variant="outline" 
-                onClick={checkCalendarStatus}
-                className="w-full"
-                disabled={calendarStatus === null}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${calendarStatus === null ? 'animate-spin' : ''}`} />
-                {calendarStatus === null ? 'Checking...' : 'Refresh Status'}
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={checkCalendarStatus}
+                  className="flex-1"
+                  disabled={calendarStatus === null}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${calendarStatus === null ? 'animate-spin' : ''}`} />
+                  {calendarStatus === null ? 'Checking...' : 'Refresh Status'}
+                </Button>
+                <Button 
+                  onClick={() => setShowCalendarForm(!showCalendarForm)}
+                  className="flex-1"
+                >
+                  {showCalendarForm ? 'Cancel' : 'Update Credentials'}
+                </Button>
+              </div>
+
+              {showCalendarForm && (
+                <div className="bg-white border rounded-lg p-4 space-y-3">
+                  <div>
+                    <Label className="text-xs">Client ID</Label>
+                    <Input
+                      type="text"
+                      placeholder="xxx.apps.googleusercontent.com"
+                      value={calendarClientId}
+                      onChange={(e) => setCalendarClientId(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Client Secret</Label>
+                    <Input
+                      type="password"
+                      placeholder="GOCSPX-xxx"
+                      value={calendarClientSecret}
+                      onChange={(e) => setCalendarClientSecret(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Refresh Token</Label>
+                    <Input
+                      type="password"
+                      placeholder="1//xxx"
+                      value={calendarRefreshToken}
+                      onChange={(e) => setCalendarRefreshToken(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleSaveCalendarCredentials}
+                    disabled={calendarSaving}
+                    className="w-full"
+                  >
+                    {calendarSaving ? 'Saving...' : 'Save Credentials'}
+                  </Button>
+                  <p className="text-xs text-slate-600">
+                    Get these from <a href="https://console.cloud.google.com/apis/credentials" target="_blank" className="text-blue-600 hover:underline">Google Cloud Console</a>
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -214,15 +352,58 @@ export default function SettingsModal({ open, onClose }) {
                 </ol>
               </div>
 
-              <Button 
-                variant="outline" 
-                onClick={checkStripeStatus}
-                className="w-full"
-                disabled={stripeStatus === null}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${stripeStatus === null ? 'animate-spin' : ''}`} />
-                {stripeStatus === null ? 'Checking...' : 'Refresh Status'}
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={checkStripeStatus}
+                  className="flex-1"
+                  disabled={stripeStatus === null}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${stripeStatus === null ? 'animate-spin' : ''}`} />
+                  {stripeStatus === null ? 'Checking...' : 'Refresh Status'}
+                </Button>
+                <Button 
+                  onClick={() => setShowStripeForm(!showStripeForm)}
+                  className="flex-1"
+                >
+                  {showStripeForm ? 'Cancel' : 'Update Keys'}
+                </Button>
+              </div>
+
+              {showStripeForm && (
+                <div className="bg-white border rounded-lg p-4 space-y-3">
+                  <div>
+                    <Label className="text-xs">Secret Key</Label>
+                    <Input
+                      type="password"
+                      placeholder="sk_live_xxx or sk_test_xxx"
+                      value={stripeSecretKey}
+                      onChange={(e) => setStripeSecretKey(e.target.value)}
+                      className="mt-1 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Publishable Key</Label>
+                    <Input
+                      type="text"
+                      placeholder="pk_live_xxx or pk_test_xxx"
+                      value={stripePublishableKey}
+                      onChange={(e) => setStripePublishableKey(e.target.value)}
+                      className="mt-1 font-mono text-xs"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleSaveStripeKeys}
+                    disabled={stripeSaving}
+                    className="w-full"
+                  >
+                    {stripeSaving ? 'Saving...' : 'Save Keys'}
+                  </Button>
+                  <p className="text-xs text-slate-600">
+                    Get your keys from <a href="https://dashboard.stripe.com/apikeys" target="_blank" className="text-blue-600 hover:underline">Stripe Dashboard</a>
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
