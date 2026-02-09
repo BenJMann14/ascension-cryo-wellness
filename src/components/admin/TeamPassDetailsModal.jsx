@@ -12,11 +12,8 @@ export default function TeamPassDetailsModal({ pass, open, onClose, onMarkTicket
 
   const handleMarkUsed = async (ticketId) => {
     setLoadingTicketId(ticketId);
-    try {
-      await onMarkTicketUsed(pass.id, ticketId);
-    } finally {
-      setLoadingTicketId(null);
-    }
+    await onMarkTicketUsed(pass.id, ticketId);
+    setLoadingTicketId(null);
   };
 
   return (
