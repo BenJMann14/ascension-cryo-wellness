@@ -173,6 +173,30 @@ export default function AdminDashboard() {
     });
   }, [bookings, searchTerm, statusFilter, dateFilter, activeView]);
 
+  // Filtered team passes
+  const filteredTeamPasses = useMemo(() => {
+    return teamPasses.filter(pass => {
+      const searchLower = searchTerm.toLowerCase();
+      return !searchTerm || 
+        pass.customer_first_name?.toLowerCase().includes(searchLower) ||
+        pass.customer_last_name?.toLowerCase().includes(searchLower) ||
+        pass.customer_email?.toLowerCase().includes(searchLower) ||
+        pass.redemption_code?.toLowerCase().includes(searchLower);
+    });
+  }, [teamPasses, searchTerm]);
+
+  // Filtered individual services
+  const filteredIndividualServices = useMemo(() => {
+    return individualServices.filter(service => {
+      const searchLower = searchTerm.toLowerCase();
+      return !searchTerm || 
+        service.customer_first_name?.toLowerCase().includes(searchLower) ||
+        service.customer_last_name?.toLowerCase().includes(searchLower) ||
+        service.customer_email?.toLowerCase().includes(searchLower) ||
+        service.confirmation_number?.toLowerCase().includes(searchLower);
+    });
+  }, [individualServices, searchTerm]);
+
   // Stats
   const stats = useMemo(() => {
     const today = new Date();
@@ -415,16 +439,16 @@ export default function AdminDashboard() {
         {(activeView === 'all' || activeView === 'teampass') && (
           <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Team Passes ({teamPasses.length})</CardTitle>
+            <CardTitle>Team Passes ({filteredTeamPasses.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {teamPasses.length === 0 ? (
+              {filteredTeamPasses.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-slate-500">No team passes yet</p>
+                  <p className="text-slate-500">No team passes found</p>
                 </div>
               ) : (
-                teamPasses.map((pass) => (
+                filteredTeamPasses.map((pass) => (
                   <div key={pass.id} className="border rounded-lg p-4 bg-pink-50">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
@@ -480,16 +504,16 @@ export default function AdminDashboard() {
         {(activeView === 'all' || activeView === 'individual') && (
           <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Individual Event Services ({individualServices.length})</CardTitle>
+            <CardTitle>Individual Event Services ({filteredIndividualServices.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {individualServices.length === 0 ? (
+              {filteredIndividualServices.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-slate-500">No individual services yet</p>
+                  <p className="text-slate-500">No individual services found</p>
                 </div>
               ) : (
-                individualServices.map((service) => (
+                filteredIndividualServices.map((service) => (
                   <div key={service.id} className={`border rounded-lg p-4 ${service.is_redeemed ? 'bg-slate-100' : 'bg-purple-50'}`}>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
