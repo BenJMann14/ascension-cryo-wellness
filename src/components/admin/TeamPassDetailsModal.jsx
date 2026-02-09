@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Circle, Calendar } from 'lucide-react';
+import { CheckCircle, Circle, Calendar, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function TeamPassDetailsModal({ pass, open, onClose, onMarkTicketUsed }) {
+  const [loadingTicketId, setLoadingTicketId] = useState(null);
+
   if (!pass) return null;
 
-  const handleMarkUsed = (ticketId) => {
-    onMarkTicketUsed(pass.id, ticketId);
+  const handleMarkUsed = async (ticketId) => {
+    setLoadingTicketId(ticketId);
+    try {
+      await onMarkTicketUsed(pass.id, ticketId);
+    } finally {
+      setLoadingTicketId(null);
+    }
   };
 
   return (
@@ -87,9 +94,17 @@ export default function TeamPassDetailsModal({ pass, open, onClose, onMarkTicket
                       <Button
                         size="sm"
                         onClick={() => handleMarkUsed(ticket.ticket_id)}
-                        className="bg-green-600 hover:bg-green-700"
+                        disabled={loadingTicketId === ticket.ticket_id}
+                        className="bg-green-600 hover:bg-green-700 disabled:opacity-50"
                       >
-                        Mark as Used
+                        {loadingTicketId === ticket.ticket_id ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                            Marking...
+                          </>
+                        ) : (
+                          'Mark as Used'
+                        )}
                       </Button>
                     )}
                     {ticket.is_used && (

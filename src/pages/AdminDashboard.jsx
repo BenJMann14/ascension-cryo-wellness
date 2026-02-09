@@ -822,8 +822,8 @@ export default function AdminDashboard() {
           setTeamPassModalOpen(false);
           setSelectedTeamPass(null);
         }}
-        onMarkTicketUsed={(passId, ticketId) => {
-          markTeamPassTicketUsedMutation.mutate({ passId, ticketId });
+        onMarkTicketUsed={async (passId, ticketId) => {
+          await markTeamPassTicketUsedMutation.mutateAsync({ passId, ticketId });
         }}
       />
 
