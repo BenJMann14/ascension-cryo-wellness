@@ -28,9 +28,9 @@ const services = [
     icon: Sun,
     title: "Red Light Therapy",
     description: "Cellular regeneration and tissue repair through therapeutic light wavelengths.",
-    color: "from-amber-500 to-orange-500",
-    bgColor: "bg-amber-50",
-    iconColor: "text-amber-600",
+    color: "from-red-500 to-rose-500",
+    bgColor: "bg-red-50",
+    iconColor: "text-red-600",
     expandId: "redlight"
   },
   {
