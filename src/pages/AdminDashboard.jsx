@@ -278,9 +278,21 @@ export default function AdminDashboard() {
           }
         ]
       });
+
+      return { updatedTickets, remainingPasses };
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(['admin-team-passes']);
+      
+      // Update the selected team pass immediately so modal shows new state
+      if (selectedTeamPass && selectedTeamPass.id === variables.passId) {
+        setSelectedTeamPass({
+          ...selectedTeamPass,
+          individual_tickets: data.updatedTickets,
+          remaining_passes: data.remainingPasses
+        });
+      }
+      
       toast.success('Ticket marked as used');
     },
     onError: (error) => {
