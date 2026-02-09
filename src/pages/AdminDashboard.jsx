@@ -44,6 +44,8 @@ import {
 } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import RevenueChart from '@/components/admin/RevenueChart';
+import { motion } from 'framer-motion';
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
@@ -52,6 +54,7 @@ export default function AdminDashboard() {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [actionDialog, setActionDialog] = useState({ open: false, type: null });
+  const [activeView, setActiveView] = useState('all'); // 'all', 'mobile', 'teampass', 'individual', 'upcoming', 'completed', 'revenue'
 
   // Check if user is admin
   const { data: user, isLoading: userLoading } = useQuery({
@@ -155,9 +158,20 @@ export default function AdminDashboard() {
         }
       }
 
-      return matchesSearch && matchesStatus && matchesDate;
+      // Active view filter
+      let matchesView = true;
+      if (activeView === 'upcoming') {
+        const appointmentDate = booking.appointment_date ? new Date(booking.appointment_date) : null;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        matchesView = appointmentDate && appointmentDate >= today && booking.status === 'confirmed';
+      } else if (activeView === 'completed') {
+        matchesView = booking.status === 'completed';
+      }
+
+      return matchesSearch && matchesStatus && matchesDate && matchesView;
     });
-  }, [bookings, searchTerm, statusFilter, dateFilter]);
+  }, [bookings, searchTerm, statusFilter, dateFilter, activeView]);
 
   // Stats
   const stats = useMemo(() => {
@@ -260,63 +274,101 @@ export default function AdminDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Mobile Bookings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
-            </CardContent>
-          </Card>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Card 
+              className={`cursor-pointer transition-all ${activeView === 'mobile' ? 'ring-2 ring-cyan-500 bg-cyan-50' : 'hover:shadow-lg'}`}
+              onClick={() => setActiveView(activeView === 'mobile' ? 'all' : 'mobile')}
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">Mobile Bookings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Team Passes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-pink-600">{stats.teamPassCount}</div>
-            </CardContent>
-          </Card>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Card 
+              className={`cursor-pointer transition-all ${activeView === 'teampass' ? 'ring-2 ring-pink-500 bg-pink-50' : 'hover:shadow-lg'}`}
+              onClick={() => setActiveView(activeView === 'teampass' ? 'all' : 'teampass')}
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">Team Passes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-pink-600">{stats.teamPassCount}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Event Services</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{stats.individualServiceCount}</div>
-            </CardContent>
-          </Card>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Card 
+              className={`cursor-pointer transition-all ${activeView === 'individual' ? 'ring-2 ring-purple-500 bg-purple-50' : 'hover:shadow-lg'}`}
+              onClick={() => setActiveView(activeView === 'individual' ? 'all' : 'individual')}
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">Event Services</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">{stats.individualServiceCount}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Upcoming</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-cyan-600">{stats.upcoming}</div>
-            </CardContent>
-          </Card>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Card 
+              className={`cursor-pointer transition-all ${activeView === 'upcoming' ? 'ring-2 ring-cyan-500 bg-cyan-50' : 'hover:shadow-lg'}`}
+              onClick={() => setActiveView(activeView === 'upcoming' ? 'all' : 'upcoming')}
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">Upcoming</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-cyan-600">{stats.upcoming}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Completed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-            </CardContent>
-          </Card>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Card 
+              className={`cursor-pointer transition-all ${activeView === 'completed' ? 'ring-2 ring-green-500 bg-green-50' : 'hover:shadow-lg'}`}
+              onClick={() => setActiveView(activeView === 'completed' ? 'all' : 'completed')}
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">Completed</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Total Revenue</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">${stats.revenue}</div>
-            </CardContent>
-          </Card>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Card 
+              className={`cursor-pointer transition-all ${activeView === 'revenue' ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:shadow-lg'}`}
+              onClick={() => setActiveView(activeView === 'revenue' ? 'all' : 'revenue')}
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-slate-600">Total Revenue</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">${stats.revenue}</div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
 
+        {/* Revenue Chart */}
+        {activeView === 'revenue' && (
+          <div className="mb-6">
+            <RevenueChart />
+          </div>
+        )}
+
         {/* Filters */}
-        <Card className="mb-6">
+        {activeView !== 'revenue' && (
+          <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-2">
@@ -357,9 +409,11 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+        )}
 
         {/* Team Passes Section */}
-        <Card className="mb-6">
+        {(activeView === 'all' || activeView === 'teampass') && (
+          <Card className="mb-6">
           <CardHeader>
             <CardTitle>Team Passes ({teamPasses.length})</CardTitle>
           </CardHeader>
@@ -420,9 +474,11 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+        )}
 
         {/* Individual Event Services Section */}
-        <Card className="mb-6">
+        {(activeView === 'all' || activeView === 'individual') && (
+          <Card className="mb-6">
           <CardHeader>
             <CardTitle>Individual Event Services ({individualServices.length})</CardTitle>
           </CardHeader>
@@ -502,9 +558,11 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+        )}
 
         {/* Mobile Bookings Table */}
-        <Card>
+        {(activeView === 'all' || activeView === 'mobile' || activeView === 'upcoming' || activeView === 'completed') && (
+          <Card>
           <CardHeader>
             <CardTitle>Mobile Recovery Bookings ({filteredBookings.length})</CardTitle>
           </CardHeader>
@@ -602,6 +660,7 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+        )}
       </div>
 
       {/* Refund Dialog */}
