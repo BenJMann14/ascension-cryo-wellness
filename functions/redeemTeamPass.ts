@@ -22,6 +22,20 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No passes remaining' }, { status: 400 });
     }
 
+    // Find next unused ticket and mark it as used
+    const tickets = teamPass.individual_tickets || [];
+    const nextUnusedTicket = tickets.find(t => !t.is_used);
+    
+    if (!nextUnusedTicket) {
+      return Response.json({ error: 'No unused tickets available' }, { status: 400 });
+    }
+
+    const updatedTickets = tickets.map(ticket => 
+      ticket.ticket_id === nextUnusedTicket.ticket_id
+        ? { ...ticket, is_used: true, used_at: new Date().toISOString(), used_by: user.email, service_type: serviceType || 'General Recovery' }
+        : ticket
+    );
+
     const redemption = {
       redeemed_at: new Date().toISOString(),
       redeemed_by: user.email,
@@ -32,7 +46,8 @@ Deno.serve(async (req) => {
 
     const updated = await base44.asServiceRole.entities.TeamPass.update(passId, {
       remaining_passes: teamPass.remaining_passes - 1,
-      redemption_history: updatedHistory
+      redemption_history: updatedHistory,
+      individual_tickets: updatedTickets
     });
 
     return Response.json({ 
