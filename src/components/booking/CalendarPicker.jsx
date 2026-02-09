@@ -7,9 +7,10 @@ import GradientButton from '@/components/ui/GradientButton';
 import { Button } from "@/components/ui/button";
 import { base44 } from '@/api/base44Client';
 
-// Generate time slots from 8 AM to 6 PM
+// Generate time slots from 8 AM to 6 PM (in local time, not UTC)
 const generateTimeSlots = () => {
   const slots = [];
+  // Use simple string generation to avoid timezone issues
   for (let hour = 8; hour <= 18; hour++) {
     slots.push(`${hour.toString().padStart(2, '0')}:00`);
     if (hour < 18) {
