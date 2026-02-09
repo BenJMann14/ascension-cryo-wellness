@@ -206,16 +206,6 @@ export default function SettingsModal({ open, onClose }) {
                 </div>
               )}
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-900 font-semibold mb-2">📋 How to Manage:</p>
-                <ol className="text-sm text-blue-800 space-y-1 ml-4 list-decimal">
-                  <li>Go to your Base44 Dashboard</li>
-                  <li>Click on "Integrations" tab</li>
-                  <li>Find "Google Calendar" under "My Integrations"</li>
-                  <li>Click to reconnect or change accounts</li>
-                </ol>
-              </div>
-
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
@@ -341,16 +331,6 @@ export default function SettingsModal({ open, onClose }) {
                   </div>
                 </div>
               )}
-
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <p className="text-sm text-purple-900 font-semibold mb-2">📋 How to Manage:</p>
-                <ol className="text-sm text-purple-800 space-y-1 ml-4 list-decimal">
-                  <li>Go to your Base44 Dashboard</li>
-                  <li>Click on "Integrations" tab</li>
-                  <li>Find "Stripe" under "My Integrations"</li>
-                  <li>Update your API keys (or claim account if in test mode)</li>
-                </ol>
-              </div>
 
               <div className="flex gap-2">
                 <Button 
