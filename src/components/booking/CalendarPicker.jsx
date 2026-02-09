@@ -21,7 +21,7 @@ const generateTimeSlots = () => {
 
 const TIME_SLOTS = generateTimeSlots();
 
-export default function CalendarPicker({ onSelect, onBack, initialDate, initialTime }) {
+export default function CalendarPicker({ onSelect, onBack, initialDate, initialTime, isRescheduling, originalBooking }) {
   const [currentMonth, setCurrentMonth] = useState(initialDate || new Date());
   const [selectedDate, setSelectedDate] = useState(initialDate || null);
   const [selectedTime, setSelectedTime] = useState(initialTime || null);

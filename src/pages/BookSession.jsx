@@ -13,10 +13,13 @@ const STEPS = ['address', 'calendar', 'customer', 'services', 'payment', 'confir
 export default function BookSession() {
   const urlParams = new URLSearchParams(window.location.search);
   const isReturningFromPayment = urlParams.get('success') && urlParams.get('session_id');
+  const rescheduleBookingId = urlParams.get('reschedule');
   
-  const [currentStep, setCurrentStep] = useState(isReturningFromPayment ? 5 : 0);
-  const [isLoading, setIsLoading] = useState(isReturningFromPayment);
+  const [currentStep, setCurrentStep] = useState(isReturningFromPayment ? 5 : rescheduleBookingId ? 1 : 0);
+  const [isLoading, setIsLoading] = useState(isReturningFromPayment || !!rescheduleBookingId);
   const [preselectedServiceId, setPreselectedServiceId] = useState(null);
+  const [isRescheduling, setIsRescheduling] = useState(false);
+  const [originalBooking, setOriginalBooking] = useState(null);
   const [bookingData, setBookingData] = useState({
     addressData: null,
     calendarData: null,
@@ -25,12 +28,56 @@ export default function BookSession() {
   });
   const [paymentData, setPaymentData] = useState(null);
 
-  // Check for Stripe return and preselected service
+  // Check for Stripe return, preselected service, and reschedule
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
     const success = urlParams.get('success');
     const serviceParam = urlParams.get('service');
+    const rescheduleId = urlParams.get('reschedule');
+    
+    if (rescheduleId) {
+      // Load existing booking for rescheduling
+      const loadBooking = async () => {
+        setIsLoading(true);
+        try {
+          const booking = await base44.entities.Booking.get(rescheduleId);
+          
+          const [year, month, day] = booking.appointment_date.split('-').map(Number);
+          const appointmentDate = new Date(year, month - 1, day);
+
+          setOriginalBooking(booking);
+          setIsRescheduling(true);
+          
+          setBookingData({
+            addressData: {
+              address: booking.service_address,
+              city: booking.service_city,
+              zip: booking.service_zip,
+              distance: booking.distance_miles,
+              fullAddress: `${booking.service_address}, ${booking.service_city}, ${booking.service_zip}`
+            },
+            calendarData: null, // Will be updated when user selects new time
+            customerData: {
+              firstName: booking.customer_first_name,
+              lastName: booking.customer_last_name,
+              email: booking.customer_email,
+              phone: booking.customer_phone,
+              specialRequests: booking.special_requests
+            },
+            services: booking.services_selected || []
+          });
+          
+          setCurrentStep(1); // Go to calendar picker
+        } catch (error) {
+          console.error('Error loading booking:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadBooking();
+      return;
+    }
     
     if (success && sessionId) {
       // Payment successful, fetch booking data and show confirmation
@@ -111,9 +158,30 @@ export default function BookSession() {
     setCurrentStep(1);
   };
 
-  const handleCalendarSelect = (data) => {
+  const handleCalendarSelect = async (data) => {
     setBookingData(prev => ({ ...prev, calendarData: data }));
-    setCurrentStep(2);
+    
+    // If rescheduling, update the booking and redirect back to account
+    if (isRescheduling && originalBooking) {
+      setIsLoading(true);
+      try {
+        const response = await base44.functions.invoke('rescheduleBooking', {
+          bookingId: originalBooking.id,
+          newDate: `${data.date.getFullYear()}-${String(data.date.getMonth() + 1).padStart(2, '0')}-${String(data.date.getDate()).padStart(2, '0')}`,
+          newTime: data.time
+        });
+        
+        if (response.data.success) {
+          window.location.href = '/pages/MyAccount?rescheduled=success';
+        }
+      } catch (error) {
+        console.error('Error rescheduling:', error);
+        alert('Failed to reschedule booking. Please try again.');
+        setIsLoading(false);
+      }
+    } else {
+      setCurrentStep(2);
+    }
   };
 
   const handleCustomerInfo = (data) => {
@@ -231,9 +299,11 @@ export default function BookSession() {
             {currentStep === 1 && (
               <CalendarPicker 
                 onSelect={handleCalendarSelect}
-                onBack={goBack}
+                onBack={isRescheduling ? null : goBack}
                 initialDate={bookingData.calendarData?.date}
                 initialTime={bookingData.calendarData?.time}
+                isRescheduling={isRescheduling}
+                originalBooking={originalBooking}
               />
             )}
             {currentStep === 2 && (
