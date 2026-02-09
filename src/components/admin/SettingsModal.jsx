@@ -4,45 +4,56 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, CreditCard, CheckCircle, XCircle, ExternalLink, AlertCircle } from 'lucide-react';
+import { Calendar, CreditCard, CheckCircle, XCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
 export default function SettingsModal({ open, onClose }) {
-  const [calendarStatus, setCalendarStatus] = useState('connected');
-  const [stripeStatus, setStripeStatus] = useState('connected');
+  const [calendarStatus, setCalendarStatus] = useState(null);
+  const [stripeStatus, setStripeStatus] = useState(null);
+  const [calendarInfo, setCalendarInfo] = useState(null);
+  const [stripeInfo, setStripeInfo] = useState(null);
 
-  const handleTestCalendar = async () => {
+  React.useEffect(() => {
+    if (open) {
+      checkCalendarStatus();
+      checkStripeStatus();
+    }
+  }, [open]);
+
+  const checkCalendarStatus = async () => {
     try {
       const response = await base44.functions.invoke('testGoogleCalendar', {});
       if (response.data.success) {
-        toast.success('Google Calendar is connected and working');
         setCalendarStatus('connected');
+        setCalendarInfo({ calendars: response.data.calendars });
       } else {
-        toast.error('Calendar connection failed');
         setCalendarStatus('error');
+        setCalendarInfo({ error: response.data.error });
       }
     } catch (error) {
-      toast.error('Failed to test calendar connection');
       setCalendarStatus('error');
+      setCalendarInfo({ error: error.message });
     }
   };
 
-  const handleTestStripe = async () => {
+  const checkStripeStatus = async () => {
     try {
       const response = await base44.functions.invoke('testStripeConnection', {});
       if (response.data.success) {
-        toast.success('Stripe is connected and working');
         setStripeStatus('connected');
+        setStripeInfo({ mode: response.data.mode, accountId: response.data.accountId });
       } else {
-        toast.error('Stripe connection failed');
         setStripeStatus('error');
+        setStripeInfo({ error: response.data.error });
       }
     } catch (error) {
-      toast.error('Failed to test Stripe connection');
       setStripeStatus('error');
+      setStripeInfo({ error: error.message });
     }
   };
+
+
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -66,59 +77,69 @@ export default function SettingsModal({ open, onClose }) {
                   <p className="text-sm text-slate-600">Manage calendar integration</p>
                 </div>
               </div>
-              <Badge className={calendarStatus === 'connected' ? 'bg-green-600' : 'bg-red-600'}>
-                {calendarStatus === 'connected' ? (
-                  <>
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Connected
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-3 h-3 mr-1" />
-                    Not Connected
-                  </>
-                )}
-              </Badge>
+              {calendarStatus === null ? (
+                <Badge className="bg-slate-400">
+                  Checking...
+                </Badge>
+              ) : calendarStatus === 'connected' ? (
+                <Badge className="bg-green-600">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Connected
+                </Badge>
+              ) : (
+                <Badge className="bg-red-600">
+                  <XCircle className="w-3 h-3 mr-1" />
+                  Error
+                </Badge>
+              )}
             </div>
 
             <div className="space-y-3">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex gap-2 mb-2">
-                  <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-blue-900 font-medium mb-1">Current Setup</p>
-                    <p className="text-sm text-blue-800">
-                      Your Google Calendar is connected via App Connectors. To reconnect or change accounts:
-                    </p>
+              {calendarStatus === 'connected' && calendarInfo && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-green-900 font-medium mb-1">✓ Connected & Working</p>
+                      <p className="text-sm text-green-800">
+                        Access to {calendarInfo.calendars} calendar{calendarInfo.calendars !== 1 ? 's' : ''}
+                      </p>
+                    </div>
                   </div>
                 </div>
+              )}
+
+              {calendarStatus === 'error' && calendarInfo && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex gap-2">
+                    <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-red-900 font-medium mb-1">Connection Error</p>
+                      <p className="text-sm text-red-800">{calendarInfo.error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-900 font-semibold mb-2">📋 How to Manage:</p>
+                <ol className="text-sm text-blue-800 space-y-1 ml-4 list-decimal">
+                  <li>Go to your Base44 Dashboard</li>
+                  <li>Click on "Integrations" tab</li>
+                  <li>Find "Google Calendar" under "My Integrations"</li>
+                  <li>Click to reconnect or change accounts</li>
+                </ol>
               </div>
 
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={handleTestCalendar}
-                  className="flex-1"
-                >
-                  Test Connection
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => window.open('https://base44.app/dashboard', '_blank')}
-                  className="flex-1"
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Manage in Dashboard
-                </Button>
-              </div>
-
-              <div className="bg-slate-100 border border-slate-300 rounded-lg p-4 mt-3">
-                <p className="text-xs font-semibold text-slate-700 mb-2">For Self-Hosting:</p>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  When self-hosting, you'll need to set up your own Google Calendar OAuth credentials. 
-                  Visit the Google Cloud Console, create OAuth 2.0 credentials, and configure the redirect URIs for your domain.
-                </p>
-              </div>
+              <Button 
+                variant="outline" 
+                onClick={checkCalendarStatus}
+                className="w-full"
+                disabled={calendarStatus === null}
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${calendarStatus === null ? 'animate-spin' : ''}`} />
+                {calendarStatus === null ? 'Checking...' : 'Refresh Status'}
+              </Button>
             </div>
           </div>
 
@@ -134,65 +155,74 @@ export default function SettingsModal({ open, onClose }) {
                   <p className="text-sm text-slate-600">Manage payment integration</p>
                 </div>
               </div>
-              <Badge className={stripeStatus === 'connected' ? 'bg-green-600' : 'bg-red-600'}>
-                {stripeStatus === 'connected' ? (
-                  <>
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                    Connected
-                  </>
-                ) : (
-                  <>
-                    <XCircle className="w-3 h-3 mr-1" />
-                    Not Connected
-                  </>
-                )}
-              </Badge>
+              {stripeStatus === null ? (
+                <Badge className="bg-slate-400">
+                  Checking...
+                </Badge>
+              ) : stripeStatus === 'connected' ? (
+                <Badge className="bg-green-600">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Connected
+                </Badge>
+              ) : (
+                <Badge className="bg-red-600">
+                  <XCircle className="w-3 h-3 mr-1" />
+                  Error
+                </Badge>
+              )}
             </div>
 
             <div className="space-y-3">
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <div className="flex gap-2 mb-2">
-                  <AlertCircle className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-purple-900 font-medium mb-1">Current Setup</p>
-                    <p className="text-sm text-purple-800">
-                      Your Stripe API keys are configured as environment variables. To update:
-                    </p>
+              {stripeStatus === 'connected' && stripeInfo && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-green-900 font-medium mb-1">✓ Connected & Working</p>
+                      <p className="text-sm text-green-800">
+                        Mode: <span className="font-semibold">{stripeInfo.mode === 'test' ? 'Test Mode' : 'Live Mode'}</span>
+                      </p>
+                      {stripeInfo.mode === 'test' && (
+                        <p className="text-xs text-green-700 mt-1">
+                          💳 Use test card: 4242 4242 4242 4242
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
+              )}
+
+              {stripeStatus === 'error' && stripeInfo && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex gap-2">
+                    <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-red-900 font-medium mb-1">Connection Error</p>
+                      <p className="text-sm text-red-800">{stripeInfo.error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                <p className="text-sm text-purple-900 font-semibold mb-2">📋 How to Manage:</p>
+                <ol className="text-sm text-purple-800 space-y-1 ml-4 list-decimal">
+                  <li>Go to your Base44 Dashboard</li>
+                  <li>Click on "Integrations" tab</li>
+                  <li>Find "Stripe" under "My Integrations"</li>
+                  <li>Update your API keys (or claim account if in test mode)</li>
+                </ol>
               </div>
 
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={handleTestStripe}
-                  className="flex-1"
-                >
-                  Test Connection
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => window.open('https://base44.app/dashboard', '_blank')}
-                  className="flex-1"
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Update Keys in Dashboard
-                </Button>
-              </div>
-
-              <div className="bg-slate-100 border border-slate-300 rounded-lg p-4 mt-3">
-                <p className="text-xs font-semibold text-slate-700 mb-2">For Self-Hosting:</p>
-                <p className="text-xs text-slate-600 leading-relaxed mb-2">
-                  Set these environment variables on your server:
-                </p>
-                <code className="text-xs bg-slate-900 text-green-400 p-2 rounded block">
-                  STRIPE_SECRET_KEY=sk_live_...<br/>
-                  STRIPE_PUBLISHABLE_KEY=pk_live_...
-                </code>
-                <p className="text-xs text-slate-600 mt-2">
-                  Get your keys from <a href="https://dashboard.stripe.com/apikeys" target="_blank" className="text-blue-600 hover:underline">Stripe Dashboard</a>
-                </p>
-              </div>
+              <Button 
+                variant="outline" 
+                onClick={checkStripeStatus}
+                className="w-full"
+                disabled={stripeStatus === null}
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${stripeStatus === null ? 'animate-spin' : ''}`} />
+                {stripeStatus === null ? 'Checking...' : 'Refresh Status'}
+              </Button>
             </div>
           </div>
         </div>
