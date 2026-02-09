@@ -10,33 +10,36 @@ const services = [
     icon: Snowflake,
     title: "Localized Cryotherapy",
     description: "Targeted cold therapy at -10°F for rapid inflammation reduction and pain relief.",
-    color: "from-cyan-400 to-cyan-600",
+    color: "from-cyan-500 to-cyan-600",
     bgColor: "bg-cyan-50",
+    iconColor: "text-cyan-600",
     expandId: "cryo"
   },
   {
     icon: Wind,
     title: "Compression Therapy",
     description: "Normatec pneumatic compression for enhanced circulation and faster recovery.",
-    color: "from-blue-400 to-blue-600",
+    color: "from-blue-500 to-blue-600",
     bgColor: "bg-blue-50",
+    iconColor: "text-blue-600",
     expandId: "compression"
   },
   {
     icon: Sun,
     title: "Red Light Therapy",
     description: "Cellular regeneration and tissue repair through therapeutic light wavelengths.",
-    color: "from-red-500 to-rose-600",
-    bgColor: "bg-red-50",
-    iconColor: "text-red-500",
+    color: "from-amber-500 to-orange-500",
+    bgColor: "bg-amber-50",
+    iconColor: "text-amber-600",
     expandId: "redlight"
   },
   {
     icon: Activity,
     title: "Vibration Therapy",
     description: "Lymphatic drainage and muscle activation through whole-body vibration.",
-    color: "from-emerald-400 to-emerald-600",
+    color: "from-emerald-500 to-emerald-600",
     bgColor: "bg-emerald-50",
+    iconColor: "text-emerald-600",
     expandId: "vibration"
   }
 ];
@@ -80,7 +83,7 @@ export default function ServicesOverview() {
             >
               <GlassCard className="h-full p-6 group">
                 <div className={`w-14 h-14 ${service.bgColor} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
-                  <service.icon className={service.iconColor || 'text-cyan-500'} style={{ width: '28px', height: '28px' }} />
+                  <service.icon className={service.iconColor} style={{ width: '28px', height: '28px' }} />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
                 <p className="text-slate-600 mb-5 leading-relaxed">{service.description}</p>

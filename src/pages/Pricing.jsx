@@ -270,7 +270,7 @@ export default function Pricing() {
                 {/* Aesthetic Services */}
                 <div>
                   <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                    <Sparkles className="w-6 h-6 text-pink-500" />
+                    <Sparkles className="w-6 h-6 text-rose-500" />
                     Aesthetic Services
                   </h2>
                   <GlassCard className="overflow-hidden">
@@ -288,7 +288,7 @@ export default function Pricing() {
                             <tr key={i} className="border-b last:border-0 hover:bg-slate-50/50 transition-colors">
                               <td className="p-4 font-medium text-slate-900">{service.name}</td>
                               <td className="p-4 text-slate-600">{service.duration}</td>
-                              <td className="p-4 text-right font-bold text-pink-600">${service.price}</td>
+                              <td className="p-4 text-right font-bold text-rose-600">${service.price}</td>
                             </tr>
                           ))}
                         </tbody>

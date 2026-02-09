@@ -203,7 +203,7 @@ const aestheticServices = [
     pricing: [
       { name: "Per Area Treatment", price: 300 }
     ],
-    color: "pink"
+    color: "rose"
   },
   {
     id: 'facial',
@@ -232,7 +232,7 @@ const aestheticServices = [
     pricing: [
       { name: "Per Session", price: 125 }
     ],
-    color: "rose"
+    color: "pink"
   },
   {
     id: 'scalp',
@@ -258,7 +258,7 @@ const aestheticServices = [
     pricing: [
       { name: "Per Session", price: 125 }
     ],
-    color: "violet"
+    color: "purple"
   },
 ];
 
@@ -268,10 +268,9 @@ function ServiceCard({ service, isExpanded, onToggle }) {
     blue: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200', gradient: 'from-blue-500 to-blue-600' },
     amber: { bg: 'bg-amber-50', text: 'text-amber-600', border: 'border-amber-200', gradient: 'from-amber-500 to-orange-500' },
     emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', gradient: 'from-emerald-500 to-emerald-600' },
-    pink: { bg: 'bg-pink-50', text: 'text-pink-600', border: 'border-pink-200', gradient: 'from-pink-500 to-pink-600' },
-    rose: { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-200', gradient: 'from-rose-500 to-rose-600' },
-    violet: { bg: 'bg-violet-50', text: 'text-violet-600', border: 'border-violet-200', gradient: 'from-violet-500 to-violet-600' },
-    purple: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200', gradient: 'from-purple-500 to-purple-600' }
+    rose: { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-200', gradient: 'from-rose-500 to-pink-600' },
+    pink: { bg: 'bg-pink-50', text: 'text-pink-600', border: 'border-pink-200', gradient: 'from-pink-500 to-rose-600' },
+    purple: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200', gradient: 'from-purple-500 to-pink-600' }
   };
 
   const colors = colorClasses[service.color];
@@ -464,7 +463,7 @@ export default function Services() {
               onClick={() => setActiveTab('aesthetic')}
               className={`px-6 py-3 rounded-xl font-medium whitespace-nowrap transition-all ${
                 activeTab === 'aesthetic'
-                  ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-lg shadow-pink-500/25'
+                  ? 'bg-gradient-to-r from-rose-500 to-pink-600 text-white shadow-lg shadow-rose-500/25'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
