@@ -105,7 +105,14 @@ export default function Layout({ children, currentPageName }) {
 
             {/* CTA Button */}
             {!['VolleyballRecovery', 'BasketballRecovery', 'RunningRecovery', 'HyroxRecovery'].includes(currentPageName) && (
-              <div className="hidden lg:flex items-center gap-4">
+              <div className="hidden lg:flex items-center gap-3">
+                {currentUser && (
+                  <Link to={createPageUrl('MyAccount')}>
+                    <Button variant="outline" size="icon" className="rounded-full w-10 h-10">
+                      <User className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                )}
                 <Link to={createPageUrl('BookSession')}>
                   <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold px-6 rounded-xl shadow-lg shadow-cyan-500/25">
                     <Calendar className="w-4 h-4 mr-2" />
@@ -152,6 +159,14 @@ export default function Layout({ children, currentPageName }) {
                     {link.name}
                   </Link>
                 ))}
+                {currentUser && (
+                  <Link to={createPageUrl('MyAccount')} className="block pt-4">
+                    <Button variant="outline" className="w-full py-6 rounded-xl gap-2">
+                      <User className="w-5 h-5" />
+                      My Account
+                    </Button>
+                  </Link>
+                )}
                 {!['VolleyballRecovery', 'BasketballRecovery', 'RunningRecovery', 'HyroxRecovery'].includes(currentPageName) && (
                   <Link to={createPageUrl('BookSession')} className="block pt-4">
                     <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold py-6 rounded-xl">
