@@ -115,6 +115,16 @@ Deno.serve(async (req) => {
     const totalPasses = parseInt(metadata.total_passes);
     console.log('Creating team pass with', totalPasses, 'passes');
     
+    // Generate individual tickets
+    const individualTickets = Array.from({ length: totalPasses }, (_, i) => ({
+      ticket_id: `${redemptionCode}-T${i + 1}-${Date.now()}`,
+      ticket_number: i + 1,
+      is_used: false,
+      used_at: null,
+      used_by: null,
+      service_type: null
+    }));
+    
     const teamPass = await base44.asServiceRole.entities.TeamPass.create({
       redemption_code: redemptionCode,
       customer_first_name: metadata.customer_first_name,
@@ -127,6 +137,7 @@ Deno.serve(async (req) => {
       stripe_session_id: sessionId,
       stripe_payment_intent_id: session.payment_intent,
       purchase_amount: session.amount_total / 100,
+      individual_tickets: individualTickets,
       redemption_history: []
     });
 

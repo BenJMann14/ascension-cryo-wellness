@@ -171,22 +171,41 @@ export default function TeamPassSuccess() {
 
         {/* Individual Tickets */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {Array.from({ length: teamPass.total_passes }).map((_, index) => {
-            const passNumber = index + 1;
-            const isUsed = passNumber > teamPass.remaining_passes;
+          {teamPass.individual_tickets?.map((ticket) => {
+            const isUsed = ticket.is_used;
             
+            const shareUrl = `${window.location.origin}${createPageUrl('SharedTicket')}?pass=${teamPass.id}&ticket=${ticket.ticket_id}`;
+            
+            const shareTicket = async () => {
+              if (navigator.share) {
+                try {
+                  await navigator.share({
+                    title: `Recovery Pass #${ticket.ticket_number}`,
+                    text: `Here's your recovery pass from ${teamPass.customer_first_name}!`,
+                    url: shareUrl
+                  });
+                } catch (error) {
+                  console.log('Share cancelled');
+                }
+              } else {
+                navigator.clipboard.writeText(shareUrl);
+                setCopied(ticket.ticket_id);
+                setTimeout(() => setCopied(false), 2000);
+              }
+            };
+
             return (
               <motion.div
-                key={passNumber}
+                key={ticket.ticket_id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 + index * 0.05 }}
-                className={`bg-white rounded-2xl p-6 shadow-xl border-4 ${
+                transition={{ delay: 0.4 + ticket.ticket_number * 0.05 }}
+                className={`bg-white rounded-2xl p-6 shadow-xl border-4 relative ${
                   isUsed ? 'border-slate-300 opacity-60' : 'border-slate-900'
                 }`}
               >
                 {isUsed && (
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
                     <div className="bg-red-500 text-white font-black text-4xl px-8 py-4 rotate-12 rounded-xl shadow-2xl">
                       USED ✓
                     </div>
@@ -199,7 +218,7 @@ export default function TeamPassSuccess() {
                       <Ticket className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-xl font-black text-slate-900">
-                      Pass #{passNumber}
+                      Pass #{ticket.ticket_number}
                     </h3>
                   </div>
 
@@ -216,12 +235,33 @@ export default function TeamPassSuccess() {
                   </div>
 
                   {!isUsed && (
-                    <Button
-                      onClick={() => setShowRedeemDialog(true)}
-                      className="w-full bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black text-sm py-3"
-                    >
-                      Use This Pass
-                    </Button>
+                    <>
+                      <Button
+                        onClick={shareTicket}
+                        variant="outline"
+                        className="w-full font-bold border-2 mb-2"
+                      >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        {copied === ticket.ticket_id ? 'Link Copied!' : 'Share Ticket'}
+                      </Button>
+                      <a 
+                        href={shareUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button
+                          className="w-full bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black text-sm py-3"
+                        >
+                          View Ticket
+                        </Button>
+                      </a>
+                    </>
+                  )}
+                  
+                  {isUsed && ticket.service_type && (
+                    <div className="text-xs text-slate-600 text-center mt-2">
+                      Used: {ticket.service_type}
+                    </div>
                   )}
                 </div>
               </motion.div>

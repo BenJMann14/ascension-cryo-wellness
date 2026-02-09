@@ -65,6 +65,7 @@ import TeamPassSuccess from './pages/TeamPassSuccess';
 import VolleyballRecovery from './pages/VolleyballRecovery';
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import SharedTicket from './pages/SharedTicket';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +88,7 @@ export const PAGES = {
     "VolleyballRecovery": VolleyballRecovery,
     "TermsOfService": TermsOfService,
     "PrivacyPolicy": PrivacyPolicy,
+    "SharedTicket": SharedTicket,
 }
 
 export const pagesConfig = {
