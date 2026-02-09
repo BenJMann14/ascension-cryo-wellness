@@ -296,6 +296,20 @@ export default function AdminDashboard() {
           </Button>
         </div>
 
+        {/* Active Filter Indicator */}
+        {activeView !== 'all' && (
+          <div className="mb-4">
+            <Button
+              variant="outline"
+              onClick={() => setActiveView('all')}
+              className="gap-2"
+            >
+              <XCircle className="w-4 h-4" />
+              Clear Filter - View All
+            </Button>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
