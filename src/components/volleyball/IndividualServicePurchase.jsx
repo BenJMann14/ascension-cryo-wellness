@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Snowflake, Wind } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function IndividualServicePurchase({ isOpen, onClose, service }) {
   const [selectedService, setSelectedService] = useState(null);
@@ -11,7 +14,8 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
     firstName: '',
     lastName: '',
     email: '',
-    phone: ''
+    phone: '',
+    termsAccepted: false
   });
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -44,6 +48,10 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
       alert('Please fill in all required fields');
       return;
     }
+    if (!customerInfo.termsAccepted) {
+      alert('You must accept the Terms of Service to continue');
+      return;
+    }
 
     setIsProcessing(true);
     try {
@@ -71,7 +79,7 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
 
   const resetAndClose = () => {
     setSelectedService(null);
-    setCustomerInfo({ firstName: '', lastName: '', email: '', phone: '' });
+    setCustomerInfo({ firstName: '', lastName: '', email: '', phone: '', termsAccepted: false });
     onClose();
   };
 
@@ -226,11 +234,41 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
                       className="border-2 border-slate-300 rounded-xl p-3 font-medium"
                     />
                   </div>
+
+                  {/* Terms of Service */}
+                  <div className="bg-slate-50 rounded-xl p-4 border-2 border-slate-200">
+                    <label className="flex items-start gap-3 cursor-pointer">
+                      <Checkbox
+                        checked={customerInfo.termsAccepted}
+                        onCheckedChange={(checked) => handleInfoChange('termsAccepted', checked)}
+                        className="mt-1"
+                      />
+                      <span className="text-sm text-slate-700 font-medium">
+                        I agree to the{' '}
+                        <Link 
+                          to={createPageUrl('TermsOfService')} 
+                          target="_blank" 
+                          className="text-blue-600 underline hover:text-blue-700"
+                        >
+                          Terms of Service
+                        </Link>
+                        {' '}and{' '}
+                        <Link 
+                          to={createPageUrl('PrivacyPolicy')} 
+                          target="_blank" 
+                          className="text-blue-600 underline hover:text-blue-700"
+                        >
+                          Privacy Policy
+                        </Link>
+                        {' '}*
+                      </span>
+                    </label>
+                  </div>
                 </div>
 
                 <Button
                   onClick={handleCheckout}
-                  disabled={isProcessing || !customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone}
+                  disabled={isProcessing || !customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone || !customerInfo.termsAccepted}
                   className="w-full bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black text-xl py-6 rounded-2xl"
                 >
                   {isProcessing ? 'Processing...' : `Book Now - $${selectedService.price}`}
