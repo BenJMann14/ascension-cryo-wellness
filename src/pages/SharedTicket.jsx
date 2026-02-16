@@ -262,9 +262,10 @@ export default function SharedTicket() {
           <div className="absolute -top-2 -right-2 w-8 h-8 border-r-4 border-t-4 border-slate-600 rounded-tr-2xl opacity-50" />
           <div className="absolute -bottom-2 -left-2 w-8 h-8 border-l-4 border-b-4 border-slate-600 rounded-bl-2xl opacity-50" />
           <div className="absolute -bottom-2 -right-2 w-8 h-8 border-r-4 border-b-4 border-slate-600 rounded-br-2xl opacity-50" />
+        </motion.div>
 
         {/* Footer */}
-        <div className="mt-6 text-center text-slate-600 text-sm">
+        <div className="mt-6 text-center text-slate-400 text-sm">
           <p className="font-bold">Valid for tournament weekend</p>
           <p>Show this screen at the recovery booth</p>
         </div>
