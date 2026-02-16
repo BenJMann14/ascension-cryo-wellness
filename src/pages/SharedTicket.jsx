@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Ticket, CheckCircle2, XCircle, Loader2, Copy, Share2 } from 'lucide-react';
+import { Ticket, CheckCircle2, XCircle, Loader2, Copy, Share2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import confetti from 'canvas-confetti';
