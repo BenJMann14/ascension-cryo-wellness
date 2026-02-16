@@ -49,21 +49,15 @@
  */
 import About from './pages/About';
 import AdminDashboard from './pages/AdminDashboard';
-import BasketballRecovery from './pages/BasketballRecovery';
 import BookSession from './pages/BookSession';
 import Contact from './pages/Contact';
-import EventBooking from './pages/EventBooking';
-import EventBookingFlow from './pages/EventBookingFlow';
 import Home from './pages/Home';
-import HyroxRecovery from './pages/HyroxRecovery';
 import IndividualServiceSuccess from './pages/IndividualServiceSuccess';
 import MyAccount from './pages/MyAccount';
 import Pricing from './pages/Pricing';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import RunningRecovery from './pages/RunningRecovery';
 import Services from './pages/Services';
 import SharedTicket from './pages/SharedTicket';
-import TeamPassAdmin from './pages/TeamPassAdmin';
 import TeamPassSuccess from './pages/TeamPassSuccess';
 import TermsOfService from './pages/TermsOfService';
 import VolleyballRecovery from './pages/VolleyballRecovery';
@@ -73,21 +67,15 @@ import __Layout from './Layout.jsx';
 export const PAGES = {
     "About": About,
     "AdminDashboard": AdminDashboard,
-    "BasketballRecovery": BasketballRecovery,
     "BookSession": BookSession,
     "Contact": Contact,
-    "EventBooking": EventBooking,
-    "EventBookingFlow": EventBookingFlow,
     "Home": Home,
-    "HyroxRecovery": HyroxRecovery,
     "IndividualServiceSuccess": IndividualServiceSuccess,
     "MyAccount": MyAccount,
     "Pricing": Pricing,
     "PrivacyPolicy": PrivacyPolicy,
-    "RunningRecovery": RunningRecovery,
     "Services": Services,
     "SharedTicket": SharedTicket,
-    "TeamPassAdmin": TeamPassAdmin,
     "TeamPassSuccess": TeamPassSuccess,
     "TermsOfService": TermsOfService,
     "VolleyballRecovery": VolleyballRecovery,
