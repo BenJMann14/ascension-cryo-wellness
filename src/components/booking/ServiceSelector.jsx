@@ -131,14 +131,14 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 rounded-full mb-4">
-          <ShoppingCart className="w-5 h-5 text-cyan-600" />
-          <span className="font-medium text-cyan-700">Step {currentStep} of {totalSteps}</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 rounded-full mb-4 border-2 border-cyan-400">
+          <ShoppingCart className="w-5 h-5 text-cyan-400" />
+          <span className="font-bold text-white">Step {currentStep} of {totalSteps}</span>
         </div>
-        <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+        <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-2 uppercase tracking-wide">
           Select Your Services
         </h2>
-        <p className="text-slate-600">
+        <p className="text-slate-600 font-medium">
           Choose the treatments you'd like to receive
         </p>
       </div>
@@ -150,10 +150,10 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
             key={key}
             onClick={() => setActiveCategory(key)}
             className={`
-              flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap transition-all
+              flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold whitespace-nowrap transition-all uppercase tracking-wide text-sm
               ${activeCategory === key
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'bg-slate-700 text-white border-2 border-cyan-400 shadow-lg'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-2 border-transparent'
               }
             `}
           >
@@ -177,20 +177,25 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
             const Icon = service.icon;
             
             return (
-              <GlassCard
+              <div
                 key={service.id}
-                className={`p-4 cursor-pointer transition-all ${
-                  selected ? 'ring-2 ring-cyan-500 bg-cyan-50/50' : ''
-                } ${service.featured ? 'border-2 border-amber-300' : ''}`}
+                className={`
+                  p-4 cursor-pointer transition-all rounded-xl border-2
+                  ${selected 
+                    ? 'bg-slate-700 border-cyan-400' 
+                    : 'bg-white border-slate-200 hover:border-slate-300'
+                  }
+                  ${service.featured ? 'ring-2 ring-cyan-400' : ''}
+                `}
                 onClick={() => toggleService(service)}
               >
                 <div className="flex items-center gap-4">
                   <div className={`
                     w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors
-                    ${selected ? 'bg-gradient-to-br from-cyan-500 to-blue-600' : 'bg-slate-100'}
+                    ${selected ? 'bg-cyan-400' : 'bg-slate-100'}
                   `}>
                     {selected ? (
-                      <Check className="w-6 h-6 text-white" />
+                      <Check className="w-6 h-6 text-slate-900" />
                     ) : (
                       <Icon className="w-6 h-6 text-slate-500" />
                     )}
@@ -198,18 +203,22 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold text-slate-900">{service.name}</h3>
+                      <h3 className={`font-bold ${selected ? 'text-white' : 'text-slate-900'}`}>
+                        {service.name}
+                      </h3>
                       {service.featured && (
-                        <Badge className="bg-amber-100 text-amber-700 text-xs">Best Value</Badge>
+                        <Badge className="bg-cyan-400 text-slate-900 text-xs font-bold">Best Value</Badge>
                       )}
                       {service.savings && (
-                        <Badge className="bg-green-100 text-green-700 text-xs">Save ${service.savings}</Badge>
+                        <Badge className="bg-green-500 text-white text-xs font-bold">Save ${service.savings}</Badge>
                       )}
                     </div>
                     {service.description && (
-                      <p className="text-sm text-slate-500">{service.description}</p>
+                      <p className={`text-sm ${selected ? 'text-slate-300' : 'text-slate-500'}`}>
+                        {service.description}
+                      </p>
                     )}
-                    <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
+                    <div className={`flex items-center gap-3 mt-1 text-sm ${selected ? 'text-slate-300' : 'text-slate-500'}`}>
                       <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
                         {service.duration}
@@ -218,19 +227,21 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
                   </div>
                   
                   <div className="text-right flex-shrink-0">
-                    <div className="text-xl font-bold text-slate-900">${service.price}</div>
+                    <div className={`text-xl font-bold ${selected ? 'text-cyan-400' : 'text-slate-900'}`}>
+                      ${service.price}
+                    </div>
                     {selected && (
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="text-xs text-cyan-600 font-medium"
+                        className="text-xs text-cyan-400 font-bold"
                       >
-                        Added
+                        ADDED
                       </motion.div>
                     )}
                   </div>
                 </div>
-              </GlassCard>
+              </div>
             );
           })}
         </motion.div>
@@ -244,40 +255,40 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
           >
-            <GlassCard className="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 sticky bottom-4">
+            <div className="p-4 bg-slate-700 sticky bottom-4 rounded-xl border-2 border-cyan-400 shadow-xl">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <ShoppingCart className="w-5 h-5 text-cyan-600" />
-                    <span className="font-medium text-slate-700">
+                    <ShoppingCart className="w-5 h-5 text-cyan-400" />
+                    <span className="font-bold text-white">
                       {selectedServices.length} service{selectedServices.length !== 1 ? 's' : ''} selected
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-slate-600">
+                  <div className="flex items-center gap-4 text-sm text-slate-300">
                     <span>Est. Duration: {totalDuration()}</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm text-slate-500">Total</div>
-                  <div className="text-2xl font-bold text-cyan-600">${totalPrice}</div>
+                  <div className="text-sm text-slate-400 uppercase tracking-wide">Total</div>
+                  <div className="text-3xl font-black text-cyan-400">${totalPrice}</div>
                 </div>
               </div>
 
               {/* Selected items list */}
-              <div className="mt-4 pt-4 border-t border-cyan-200">
+              <div className="mt-4 pt-4 border-t border-slate-600">
                 <div className="flex flex-wrap gap-2">
                   {selectedServices.map(service => (
                     <div 
                       key={service.id}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg text-sm"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-slate-600 rounded-lg text-sm border border-cyan-400/30"
                     >
-                      <span className="text-slate-700">{service.name}</span>
+                      <span className="text-white font-medium">{service.name}</span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleService(service);
                         }}
-                        className="text-slate-400 hover:text-red-500 transition-colors"
+                        className="text-slate-400 hover:text-red-400 transition-colors font-bold"
                       >
                         ×
                       </button>
@@ -285,7 +296,7 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
                   ))}
                 </div>
               </div>
-            </GlassCard>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -300,15 +311,14 @@ export default function ServiceSelector({ onSubmit, onBack, currentStep = 4, tot
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
-        <GradientButton
+        <Button
           onClick={handleContinue}
           disabled={selectedServices.length === 0}
-          className="order-1 sm:order-2"
-          size="lg"
+          className="order-1 sm:order-2 bg-slate-700 hover:bg-slate-600 text-white border-2 border-cyan-400 font-bold px-8 py-6 text-lg uppercase tracking-wide"
         >
           Continue to Payment
           <ArrowRight className="w-5 h-5" />
-        </GradientButton>
+        </Button>
       </div>
     </div>
   );
