@@ -116,27 +116,27 @@ const recoveryServices = [
     color: "red"
   },
   {
-    id: 'vibration',
+    id: 'lymphatic',
     icon: Activity,
-    title: "Vibration Plate Therapy",
-    description: "Whole-body vibration therapy activates muscles and stimulates lymphatic drainage, helping remove toxins while priming your body for recovery or performance. This passive exercise modality complements other recovery treatments perfectly.",
-    howItWorks: "Stand on the vibration plate while it delivers rapid, controlled vibrations throughout your body. These vibrations cause involuntary muscle contractions, activate your lymphatic system, and stimulate your nervous system—all while you remain stationary.",
+    title: "Lymphatic Therapy",
+    description: "Lymphatic therapy stimulates the body's lymphatic system to remove toxins, reduce inflammation, and support immune function. This gentle treatment complements other recovery modalities perfectly.",
+    howItWorks: "Using targeted techniques, this therapy activates your lymphatic system to help flush metabolic waste and toxins from your body. The lymphatic system plays a crucial role in immune function and recovery, making this an essential component of comprehensive wellness.",
     benefits: [
       "Lymphatic detoxification",
-      "Muscle activation without exertion",
-      "Nervous system stimulation",
+      "Reduced inflammation",
+      "Enhanced immune function",
       "Improved circulation",
-      "Enhanced bone density",
-      "Balance and stability improvement",
-      "Pre-workout warm-up"
+      "Reduced swelling and water retention",
+      "Accelerated recovery",
+      "Overall wellness support"
     ],
     idealFor: [
       "Lymphatic system support",
-      "Pre-recovery warm-up",
-      "Complementing compression therapy",
-      "Low-impact muscle activation",
-      "Detoxification protocols",
-      "Mobility and balance training"
+      "Post-recovery detoxification",
+      "Complementing other therapies",
+      "Reducing inflammation",
+      "Supporting immune health",
+      "Wellness optimization"
     ],
     duration: "10-15 minutes",
     pricing: [
@@ -233,6 +233,33 @@ const aestheticServices = [
     ],
     color: "purple"
   },
+  {
+    id: 'skin',
+    icon: Sparkles,
+    title: "Skin Health & Tattoo Brightening",
+    description: "Advanced cryotherapy treatment to improve overall skin health, reduce inflammation, and brighten tattoos. This non-invasive treatment enhances skin tone and texture while supporting tattoo vibrancy.",
+    howItWorks: "Targeted cold therapy is applied to skin areas, stimulating blood flow and collagen production. The treatment reduces inflammation, improves circulation, and helps maintain tattoo clarity and brightness over time.",
+    benefits: [
+      "Improved skin health",
+      "Enhanced tattoo brightness",
+      "Reduced inflammation",
+      "Better skin tone and texture",
+      "Increased collagen production",
+      "Natural skin rejuvenation"
+    ],
+    idealFor: [
+      "Tattoo maintenance and brightening",
+      "Overall skin health improvement",
+      "Reducing skin inflammation",
+      "Enhancing skin appearance",
+      "Supporting skin rejuvenation"
+    ],
+    duration: "20-30 minutes",
+    pricing: [
+      { name: "Per Session", price: 100 }
+    ],
+    color: "cyan"
+  }
 ];
 
 function ServiceCard({ service, isExpanded, onToggle }) {
