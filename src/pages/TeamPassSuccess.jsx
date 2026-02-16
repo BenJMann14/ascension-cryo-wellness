@@ -148,7 +148,7 @@ export default function TeamPassSuccess() {
           <div className="text-center mb-4">
             <h2 className="text-2xl font-black text-slate-900 mb-4">📲 Share With Your Team</h2>
             <p className="text-slate-700 font-medium mb-2">
-              Each teammate can screenshot their individual ticket below
+              Each teammate can use their individual ticket below
             </p>
             <div className="bg-yellow-50 rounded-xl p-4 border-2 border-yellow-300 inline-block">
               <p className="font-bold text-slate-900">
@@ -278,7 +278,7 @@ export default function TeamPassSuccess() {
         >
           <p className="text-white font-bold mb-4">
             ✓ Each teammate gets their own ticket<br/>
-            ✓ Screenshot and share the tickets above<br/>
+            ✓ Share the tickets above with your team<br/>
             ✓ Valid for tournament weekend
           </p>
           <Link to={createPageUrl('VolleyballRecovery')}>
