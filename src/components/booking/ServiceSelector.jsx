@@ -30,38 +30,50 @@ const services = {
       { id: 'cryo-single', name: 'Localized Cryo (Single Area)', duration: '5-15 min', price: 75, icon: Snowflake },
       { id: 'cryo-dual', name: 'Localized Cryo (Dual Area)', duration: '10-20 min', price: 120, icon: Snowflake },
       { id: 'cryo-full', name: 'Localized Cryo (Full Protocol)', duration: '15-30 min', price: 150, icon: Snowflake },
-      { id: 'compression', name: 'Compression Therapy', duration: '15 min', price: 40, icon: Wind },
-      { id: 'redlight', name: 'Red Light Therapy', duration: '15-30 min', price: 30, icon: Sun },
-      { id: 'vibration', name: 'Vibration Plate', duration: '10-15 min', price: 20, icon: Activity }
+      { id: 'compression', name: 'Compression Therapy (15 min)', duration: '15 min', price: 40, icon: Wind },
+      { id: 'compression-addon', name: 'Compression Therapy (Add On)', duration: '15 min', price: 35, icon: Wind },
+      { id: 'redlight', name: 'Red Light Therapy (Standalone)', duration: '15-30 min', price: 30, icon: Sun },
+      { id: 'redlight-addon', name: 'Red Light Therapy (Add On)', duration: '15-30 min', price: 25, icon: Sun },
+      { id: 'lymphatic', name: 'Lymphatic Therapy (Standalone)', duration: '10-15 min', price: 20, icon: Activity },
+      { id: 'lymphatic-addon', name: 'Lymphatic Therapy (Add On)', duration: '10-15 min', price: 15, icon: Activity }
     ]
   },
   aesthetic: {
     title: "Aesthetic Services",
     icon: Sparkles,
     items: [
-      { id: 'body-sculpt', name: 'Cryo Body Sculpting', duration: '30-60 min/area', price: 300, icon: Sparkles },
+      { id: 'body-sculpt', name: 'Cryo Body Sculpting (Per Area)', duration: '30-60 min', price: 300, icon: Sparkles },
       { id: 'facial', name: 'Cryo Facial (Frotox)', duration: '20-30 min', price: 125, icon: Heart },
-      { id: 'scalp', name: 'Scalp & Hair Therapy', duration: '20-30 min', price: 125, icon: Sparkles }
+      { id: 'scalp', name: 'Scalp & Hair Therapy', duration: '20-30 min', price: 125, icon: Sparkles },
+      { id: 'skin-health', name: 'Skin Health & Tattoo Brightening', duration: '20-30 min', price: 100, icon: Sparkles }
     ]
   },
   packages: {
-    title: "Recovery Packages",
+    title: "Orthopedic & Sports Medicine Packages",
     icon: Package,
     items: [
-      { id: 'pkg-rapid', name: 'Rapid Relief Package', description: '3 Cryo Sessions', duration: '60 days validity', price: 210, savings: 15, icon: Package },
-      { id: 'pkg-injury', name: 'Injury Recovery Package', description: '6 Cryo Sessions', duration: '90 days validity', price: 390, savings: 60, icon: Package },
-      { id: 'pkg-elite', name: 'Elite Recovery Package', description: '10 Cryo Sessions', duration: '6 months validity', price: 600, savings: 150, featured: true, icon: Package }
+      { id: 'pkg-acute', name: 'Acute Pain Relief Program', description: '3 Cryotherapy Sessions', duration: 'As needed', price: 210, savings: 15, icon: Package },
+      { id: 'pkg-injury', name: 'Injury Recovery Program', description: '6 Cryotherapy Sessions', duration: 'As needed', price: 390, savings: 60, icon: Package },
+      { id: 'pkg-chronic', name: 'Chronic Pain & Joint Care Program', description: '10 Cryotherapy Sessions', duration: 'As needed', price: 600, savings: 150, icon: Package },
+      { id: 'pkg-sports', name: 'Sports Performance Recovery Program', description: '6 Cryo + 6 Compression Sessions', duration: 'As needed', price: 690, savings: 120, featured: true, icon: Package },
+      { id: 'pkg-elite', name: 'Elite Orthopedic Recovery Program', description: '10 Cryo + 10 Compression + 5 Red Light', duration: 'As needed', price: 1050, savings: 275, featured: true, icon: Package }
     ]
   },
-  combos: {
-    title: "Performance Combos",
-    icon: Zap,
+  aestheticPackages: {
+    title: "Aesthetic Session Packages",
+    icon: Heart,
     items: [
-      { id: 'combo-express', name: 'Recovery Express', description: 'Cryo + Vibration', duration: '~20 min', price: 65, savings: 10, icon: Zap },
-      { id: 'combo-reset', name: 'Athlete Reset', description: 'Cryo + Compression', duration: '~30 min', price: 80, savings: 15, icon: Zap },
-      { id: 'combo-boost', name: 'Performance Boost', description: 'Cryo + Red Light', duration: '~30 min', price: 75, savings: 10, icon: Zap },
-      { id: 'combo-full', name: 'Full Recovery Stack', description: 'Cryo + Compression + Red Light', duration: '~45-60 min', price: 110, savings: 20, featured: true, icon: Zap },
-      { id: 'combo-lymph', name: 'Ultimate Lymphatic Flush', description: 'Cryo + Vibration + Red Light', duration: '~40 min', price: 90, savings: 15, icon: Zap }
+      { id: 'pkg-body-starter', name: 'Starter Sculpt', description: '3 Body Sculpting Sessions', duration: 'Per area', price: 840, savings: 60, icon: Sparkles },
+      { id: 'pkg-body-transform', name: 'Transformation Sculpt', description: '6 Body Sculpting Sessions', duration: 'Per area', price: 1560, savings: 240, icon: Sparkles },
+      { id: 'pkg-body-ultimate', name: 'Ultimate Sculpt', description: '10 Body Sculpting Sessions', duration: 'Per area', price: 2400, savings: 600, featured: true, icon: Sparkles },
+      { id: 'pkg-facial-glow', name: 'Glow Boost', description: '3 Cryo Facial Sessions', duration: 'As needed', price: 330, savings: 45, icon: Heart },
+      { id: 'pkg-facial-series', name: 'Age-Defying Series', description: '6 Cryo Facial Sessions', duration: 'As needed', price: 630, savings: 120, icon: Heart },
+      { id: 'pkg-facial-signature', name: 'Signature Plan', description: '10 Cryo Facial Sessions', duration: 'As needed', price: 1000, savings: 250, featured: true, icon: Heart },
+      { id: 'pkg-hair-revival', name: 'Hair Revival', description: '6 Scalp Therapy Sessions', duration: 'As needed', price: 660, savings: 90, icon: Sparkles },
+      { id: 'pkg-hair-restoration', name: 'Full Restoration', description: '10 Scalp Therapy Sessions', duration: 'As needed', price: 1000, savings: 250, icon: Sparkles },
+      { id: 'pkg-skin-reset', name: 'Skin Reset', description: '3 Skin Health Sessions', duration: 'As needed', price: 270, savings: 30, icon: Sparkles },
+      { id: 'pkg-skin-renewal', name: 'Skin Renewal', description: '6 Skin Health Sessions', duration: 'As needed', price: 510, savings: 90, icon: Sparkles },
+      { id: 'pkg-skin-optimization', name: 'Skin Optimization', description: '10 Skin Health Sessions', duration: 'As needed', price: 800, savings: 200, icon: Sparkles }
     ]
   }
 };
