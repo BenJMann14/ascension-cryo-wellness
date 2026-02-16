@@ -80,7 +80,7 @@ const eventPasses = [
     price: 180,
     savings: null,
     popular: true,
-    description: 'All-day recovery access'
+    description: 'All-day access for 1 person'
   },
   {
     name: 'Team Pack',
@@ -369,7 +369,7 @@ export default function VolleyballRecovery() {
 
           <div className="mt-12 text-center">
             <p className="text-lg font-bold text-slate-900 bg-white/80 inline-block px-8 py-4 rounded-2xl shadow-lg">
-              All passes can be shared among team members
+              3 Cryo & Team Pack can be shared • Unlimited Day Pass is for 1 person
             </p>
           </div>
         </div>
