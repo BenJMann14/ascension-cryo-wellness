@@ -22,16 +22,15 @@ export default function IndividualServicePurchase({ isOpen, onClose, service }) 
   const availableServices = [
     {
       icon: Snowflake,
-      name: 'Cryo Therapy',
+      name: 'Cryotherapy',
       description: 'Rapid inflammation reduction',
       price: 50
     },
     {
       icon: Wind,
-      name: 'Compression Boots',
+      name: 'Compression',
       description: 'Leg recovery between matches',
-      price: 40,
-      duration: '15 min'
+      price: 40
     }
   ];
 
