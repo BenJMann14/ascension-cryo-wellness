@@ -33,38 +33,62 @@ const services = [
   }
 ];
 
-const teamPasses = [
+const eventBundles = [
   {
+    name: 'Recovery Express',
+    description: 'Cryo + Vibration',
+    price: 65,
+    savings: 10,
+    icon: Zap
+  },
+  {
+    name: 'Athlete Reset',
+    description: 'Cryo + Compression',
+    price: 80,
+    savings: 10,
+    icon: Wind
+  },
+  {
+    name: 'Performance Boost',
+    description: 'Cryo + Red Light',
+    price: 75,
+    savings: 10,
+    icon: Sun
+  },
+  {
+    name: 'Full Recovery Stack',
+    description: 'Complete recovery package',
+    price: 110,
+    savings: 20,
+    icon: Sparkles,
+    featured: true
+  }
+];
+
+const eventPasses = [
+  {
+    name: '3 Cryo',
     passes: 3,
     price: 135,
-    perPass: 45,
     savings: 15,
     popular: false,
-    description: '3 × 15-min compression sessions'
+    description: '3 cryotherapy sessions'
   },
   {
-    passes: 6,
-    price: 240,
-    perPass: 40,
-    savings: 60,
+    name: 'Unlimited Day Pass',
+    passes: '∞',
+    price: 180,
+    savings: null,
     popular: true,
-    description: '6 × 15-min compression sessions'
+    description: 'All-day recovery access'
   },
   {
-    passes: 9,
-    price: 315,
-    perPass: 35,
-    savings: 135,
+    name: 'Team Pack',
+    passes: 10,
+    price: 450,
+    savings: 50,
     popular: false,
-    description: '9 × 15-min compression sessions'
-  },
-  {
-    passes: 12,
-    price: 360,
-    perPass: 30,
-    savings: 240,
-    popular: false,
-    description: '12 × 15-min compression sessions'
+    description: '10 sessions for your team'
   }
 ];
 
@@ -195,7 +219,62 @@ export default function VolleyballRecovery() {
         </div>
       </section>
 
-      {/* Team Passes - Featured Section */}
+      {/* Event Bundles */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="bg-blue-400 hover:bg-blue-400 text-white text-lg px-6 py-2 font-black mb-4">
+              EVENT BUNDLES
+            </Badge>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
+              Combo Packages
+            </h2>
+            <p className="text-xl text-slate-600">
+              Save money with bundled services
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {eventBundles.map((bundle, idx) => (
+              <motion.div
+                key={bundle.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                whileHover={{ y: -8 }}
+                className={`relative bg-white rounded-3xl p-6 shadow-xl border-4 ${
+                  bundle.featured ? 'border-pink-500' : 'border-slate-300'
+                }`}
+              >
+                {bundle.featured && (
+                  <div className="absolute -top-3 -right-3">
+                    <Badge className="bg-yellow-400 hover:bg-yellow-400 text-slate-900 font-black text-xs px-3 py-1">
+                      BEST VALUE
+                    </Badge>
+                  </div>
+                )}
+                <div className={`w-14 h-14 bg-gradient-to-br ${
+                  bundle.featured ? 'from-pink-500 to-fuchsia-600' : 'from-blue-400 to-cyan-500'
+                } rounded-2xl flex items-center justify-center mb-4 shadow-lg`}>
+                  <bundle.icon className="w-7 h-7 text-white" />
+                </div>
+                
+                <h3 className="text-xl font-black text-slate-900 mb-2">{bundle.name}</h3>
+                <p className="text-slate-600 text-sm font-medium mb-4">{bundle.description}</p>
+                
+                <div className="mb-3">
+                  <span className="text-3xl font-black text-pink-600">${bundle.price}</span>
+                </div>
+                <div className="text-green-600 font-bold text-sm">
+                  Save ${bundle.savings}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Event Passes - Featured Section */}
       <section className="py-24 bg-gradient-to-br from-yellow-400 via-yellow-300 to-green-400 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute inset-0 opacity-20">
@@ -215,7 +294,7 @@ export default function VolleyballRecovery() {
               className="inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-3xl font-black text-2xl mb-6 shadow-2xl"
             >
               <Users className="w-8 h-8" />
-              TEAM PASS DEALS
+              EVENT PASSES
             </motion.div>
             <h2 className="text-5xl md:text-6xl font-black text-slate-900 mb-4">
               Share With Your Team!
@@ -225,10 +304,10 @@ export default function VolleyballRecovery() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {teamPasses.map((pass, idx) => (
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {eventPasses.map((pass, idx) => (
               <motion.div
-                key={pass.passes}
+                key={pass.name}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.1 }}
@@ -252,7 +331,7 @@ export default function VolleyballRecovery() {
                     {pass.passes}
                   </div>
                   <div className={`text-xl font-black ${pass.popular ? 'text-white' : 'text-slate-900'}`}>
-                    PASSES
+                    {pass.name}
                   </div>
                   <div className={`text-sm font-medium mt-2 ${pass.popular ? 'text-white/80' : 'text-slate-600'}`}>
                     {pass.description}
@@ -263,17 +342,16 @@ export default function VolleyballRecovery() {
                   <div className={`text-5xl font-black mb-1 ${pass.popular ? 'text-white' : 'text-slate-900'}`}>
                     ${pass.price}
                   </div>
-                  <div className={`text-lg font-bold ${pass.popular ? 'text-yellow-200' : 'text-slate-600'}`}>
-                    ${pass.perPass} per pass
-                  </div>
                 </div>
 
-                <div className={`text-center mb-6 ${pass.popular ? 'text-yellow-300' : 'text-green-600'}`}>
-                  <Sparkles className="w-6 h-6 inline-block mr-2" />
-                  <span className="text-xl font-black">
-                    SAVE ${pass.savings}
-                  </span>
-                </div>
+                {pass.savings && (
+                  <div className={`text-center mb-6 ${pass.popular ? 'text-yellow-300' : 'text-green-600'}`}>
+                    <Sparkles className="w-6 h-6 inline-block mr-2" />
+                    <span className="text-xl font-black">
+                      SAVE ${pass.savings}
+                    </span>
+                  </div>
+                )}
 
                 <Button 
                   onClick={() => handlePassClick(pass)}
@@ -283,7 +361,7 @@ export default function VolleyballRecovery() {
                       : 'bg-slate-900 hover:bg-slate-800 text-white'
                   }`}
                 >
-                  GET {pass.passes} PASSES
+                  GET THIS PASS
                 </Button>
               </motion.div>
             ))}
@@ -291,7 +369,7 @@ export default function VolleyballRecovery() {
 
           <div className="mt-12 text-center">
             <p className="text-lg font-bold text-slate-900 bg-white/80 inline-block px-8 py-4 rounded-2xl shadow-lg">
-              Team passes can be shared among any players
+              All passes can be shared among team members
             </p>
           </div>
         </div>
