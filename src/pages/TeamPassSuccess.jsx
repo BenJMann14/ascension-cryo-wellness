@@ -252,7 +252,7 @@ export default function TeamPassSuccess() {
                         <Button
                           className="w-full bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-400 hover:to-fuchsia-500 text-white font-black text-sm py-3"
                         >
-                          View Ticket
+                          Use Ticket
                         </Button>
                       </a>
                     </>

@@ -57,6 +57,7 @@ import EventBookingFlow from './pages/EventBookingFlow';
 import Home from './pages/Home';
 import HyroxRecovery from './pages/HyroxRecovery';
 import IndividualServiceSuccess from './pages/IndividualServiceSuccess';
+import MyAccount from './pages/MyAccount';
 import Pricing from './pages/Pricing';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import RunningRecovery from './pages/RunningRecovery';
@@ -66,7 +67,6 @@ import TeamPassAdmin from './pages/TeamPassAdmin';
 import TeamPassSuccess from './pages/TeamPassSuccess';
 import TermsOfService from './pages/TermsOfService';
 import VolleyballRecovery from './pages/VolleyballRecovery';
-import MyAccount from './pages/MyAccount';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +81,7 @@ export const PAGES = {
     "Home": Home,
     "HyroxRecovery": HyroxRecovery,
     "IndividualServiceSuccess": IndividualServiceSuccess,
+    "MyAccount": MyAccount,
     "Pricing": Pricing,
     "PrivacyPolicy": PrivacyPolicy,
     "RunningRecovery": RunningRecovery,
@@ -90,7 +91,6 @@ export const PAGES = {
     "TeamPassSuccess": TeamPassSuccess,
     "TermsOfService": TermsOfService,
     "VolleyballRecovery": VolleyballRecovery,
-    "MyAccount": MyAccount,
 }
 
 export const pagesConfig = {
