@@ -20,6 +20,20 @@ const generateTimeSlots = () => {
   return slots;
 };
 
+// Format time based on user's locale preference (12h vs 24h)
+const formatTimeForDisplay = (time24) => {
+  const [hours, minutes] = time24.split(':');
+  const date = new Date();
+  date.setHours(parseInt(hours), parseInt(minutes), 0);
+  
+  // Use the user's locale to determine 12/24 hour format
+  return date.toLocaleTimeString([], { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: undefined // Let browser decide based on locale
+  });
+};
+
 const TIME_SLOTS = generateTimeSlots();
 
 export default function CalendarPicker({ onSelect, onBack, initialDate, initialTime, isRescheduling, originalBooking }) {
@@ -262,7 +276,7 @@ export default function CalendarPicker({ onSelect, onBack, initialDate, initialT
                         }
                       `}
                     >
-                      {time}
+                      {formatTimeForDisplay(time)}
                     </button>
                   ))}
                 </div>
@@ -298,7 +312,7 @@ export default function CalendarPicker({ onSelect, onBack, initialDate, initialT
                   <p className="font-semibold text-slate-900">
                     {format(selectedDate, 'EEEE, MMMM d, yyyy')}
                   </p>
-                  <p className="text-cyan-600 font-medium">{selectedTime}</p>
+                  <p className="text-cyan-600 font-medium">{formatTimeForDisplay(selectedTime)}</p>
                 </div>
               </div>
             </div>
