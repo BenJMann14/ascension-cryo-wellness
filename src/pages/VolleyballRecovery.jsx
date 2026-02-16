@@ -29,7 +29,7 @@ const services = [
     description: 'Leg recovery between matches',
     duration: '15 min',
     price: 40,
-    featured: true
+    featured: false
   }
 ];
 
