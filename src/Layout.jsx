@@ -85,8 +85,12 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to={createPageUrl('Home')} className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
-                <Snowflake className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden">
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/9b621d955_AscensionCryoWellness_Logo1.jpg" 
+                  alt="Ascension Logo" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <span className={`text-xl font-bold tracking-wide ${isScrolled || !isHomePage ? 'text-slate-900' : 'text-slate-900'}`}>
@@ -225,8 +229,12 @@ export default function Layout({ children, currentPageName }) {
             {/* Brand */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <Snowflake className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 rounded-xl overflow-hidden">
+                  <img 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/697aae0c4062dd0f1716e345/9b621d955_AscensionCryoWellness_Logo1.jpg" 
+                    alt="Ascension Logo" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
                   <span className="text-xl font-bold">Ascension</span>
